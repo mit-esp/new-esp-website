@@ -1,0 +1,29 @@
+Django==3.2.*  # Latest LTS version
+django-environ
+requests
+psycopg2
+ujson
+
+django-crispy-forms
+django-storages
+djangorestframework
+django-cors-headers
+django-ses
+
+social-auth-app-django
+
+sentry-sdk
+gunicorn
+
+# Development Convenience
+django-extensions
+ipython
+werkzeug
+pip-tools
+flake8
+isort
+pre-commit
+yapf
+
+# Security
+cryptography==3.3.2  # Lock to 3.3.2 if running into "No module named 'setuptools_rust'" error

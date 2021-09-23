@@ -1,0 +1,15 @@
+[style]
+based_on_style = pep8
+
+allow_split_before_default_or_named_assigns = false
+allow_split_before_dict_value = false
+column_limit = 100
+indent_blank_lines = true
+join_multiple_lines = false
+space_between_ending_comma_and_closing_bracket = false
+spaces_around_power_operator = true
+split_before_arithmetic_operator = true
+split_before_dot = true
+split_before_logical_operator = true
+split_complex_comprehension = true
+split_penalty_import_names = 120
