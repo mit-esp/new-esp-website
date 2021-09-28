@@ -4,6 +4,7 @@ from common import views
 
 urlpatterns = [
     path("", views.IndexView.as_view(), name="index"),
+    path("login", views.LogoutView.as_view(), name="login"),
     path("logout", views.LogoutView.as_view(), name="logout"),
     # path("upload_file", views.FileUploadView.as_view(), name="upload_file"),
 ]

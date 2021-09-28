@@ -22,7 +22,7 @@ class LogoutView(View):
 #     template_name = "portal/upload_file.html"
 #     http_method_names = ["get", "post"]
 #     form_class = FileUploadForm
-# 
+#
 #     def form_valid(self, form):
 #         form.save(self.request.user)
 #         messages.success(self.request, "File successfully uploaded.")

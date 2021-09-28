@@ -6,10 +6,4 @@ class UserType(TextChoices):
     teacher = "teacher"
     student = "student"
     guardian = "guardian"
-
-
-class ProgramType(TextChoices):
-    splash = "splash"
-    spark = "spark"
-    hssp = "hssp"
-    cascade = "cascade"
+    onsite_volunteer = "onsite_volunteer", "On-site Volunteer"

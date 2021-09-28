@@ -43,6 +43,9 @@ class User(AbstractUser, TimestampedModel):
     def __str__(self):
         return self.email
 
+class Program(TimestampedModel):
+    pass
+
 
 #################################################################################
 

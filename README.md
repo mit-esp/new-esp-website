@@ -7,10 +7,10 @@ A website to help manage the logistics of large short-term educational programs.
 
 ## Local Project Setup
 ```
-# Create environment variable config file.
+# Create environment config file.
 cp config/.env.example config/.env
 
-# Fill in appropriate environment variable values if appropriate.
+# Fill in appropriate environment values.
 vim config/.env
 
 # Install pip requirements.
