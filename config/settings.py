@@ -47,13 +47,11 @@ THIRD_PARTY_APPS = [
     "django.contrib.staticfiles",
     "django_extensions",
     "crispy_forms",
-    # START_FEATURE django_social
-    "social_django",
-    # END_FEATURE django_social
 ]
 
 LOCAL_APPS = [
     "common",
+    "esp",
 ]
 
 INSTALLED_APPS = THIRD_PARTY_APPS + LOCAL_APPS
@@ -165,18 +163,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "static"), os.path.join(BASE_DIR, "dist/static")]
 
 AUTH_USER_MODEL = "common.User"
-
-# START_FEATURE django_social
-AUTHENTICATION_BACKENDS = [
-    "social_core.backends.google.GoogleOAuth2",
-]
-
-LOGIN_URL = "index"
-LOGIN_REDIRECT_URL = "index"
-
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = env("GOOGLE_OAUTH2_KEY")
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = env("GOOGLE_OAUTH2_SECRET")
-# END_FEATURE django_social
 
 CRISPY_TEMPLATE_PACK = "bootstrap4"
 

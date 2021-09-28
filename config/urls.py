@@ -23,6 +23,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path("oauth/", include("social_django.urls", namespace="social")),
     path('', include("common.urls")),
+    path('', include("esp.urls")),
     path("health_check/", lambda request: HttpResponse("ok")),
     path(
         "ses/event-webhook/",
