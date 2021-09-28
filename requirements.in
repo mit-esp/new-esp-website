@@ -10,7 +10,7 @@ djangorestframework
 django-cors-headers
 django-ses
 
-social-auth-app-django
+django-simple-history
 
 sentry-sdk
 gunicorn

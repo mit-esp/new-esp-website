@@ -1,5 +1,13 @@
 {% extends "base_templates/base.html" %}
 {% block title %}Home{% endblock %}
 {% block body %}
-Welcome to MIT ESP.  Please log in to continue.
+  {% if not request.user.is_authenticated %}
+    <h1>Please log in first.</h1>
+  {% else %}
+    <h1>Welcome to MIT ESP!</h1>
+    <br>
+    <h3><a href="{% url 'programs' %}">Programs</a></h3>
+    <ul>
+    </ul>
+  {% endif %}
 {% endblock %}

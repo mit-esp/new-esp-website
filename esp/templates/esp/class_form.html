@@ -1,0 +1,25 @@
+{% extends "base_templates/base.html" %}
+{% load crispy_forms_tags %}
+{% block title %}Class{% endblock %}
+
+{% block body %}
+<h1>Class</h1>
+<div class="col-sm-6">
+  {% csrf_token %}
+  {% crispy form %}
+</div>
+{% endblock %}
+{% block script %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+  $(function() {
+    $( ".datepicker" ).datepicker({
+      changeMonth: true,
+      changeYear: true,
+      yearRange: "1900:2012",
+      // You can put more options here.
+
+    });
+  });
+</script>
+{% endblock %}

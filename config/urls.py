@@ -20,14 +20,9 @@ from django.urls import path
 from django_ses.views import SESEventWebhookView
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path("oauth/", include("social_django.urls", namespace="social")),
     path('', include("common.urls")),
     path('', include("esp.urls")),
+    path('admin/', admin.site.urls),
     path("health_check/", lambda request: HttpResponse("ok")),
-    path(
-        "ses/event-webhook/",
-        SESEventWebhookView.as_view(),
-        name="handle-event-webhook",
-    ),
+    path("ses/event-webhook/", SESEventWebhookView.as_view(), name="handle-event-webhook"),
 ]

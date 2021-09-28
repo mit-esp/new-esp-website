@@ -1,0 +1,26 @@
+{% extends "base_templates/base.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block title %}User Registration{% endblock %}
+
+{% block css %}
+{% endblock %}
+
+{% block body %}
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-10 col-lg-8 col-xl-6">
+      <div class="card">
+        <div class="card-body">
+          <h1>Register MIT ESP Account</h1>
+          <form method="post" action="{% url 'register' %}">
+            {% csrf_token %}
+            <section>
+              {% crispy form  %}
+            </section>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

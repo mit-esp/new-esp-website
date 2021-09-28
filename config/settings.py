@@ -47,6 +47,7 @@ THIRD_PARTY_APPS = [
     "django.contrib.staticfiles",
     "django_extensions",
     "crispy_forms",
+    "simple_history"
 ]
 
 LOCAL_APPS = [
@@ -64,6 +65,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "simple_history.middleware.HistoryRequestMiddleware",
 ]
 
 ROOT_URLCONF = "config.urls"
@@ -163,6 +165,8 @@ STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "static"), os.path.join(BASE_DIR, "dist/static")]
 
 AUTH_USER_MODEL = "common.User"
+LOGIN_URL = "index"
+LOGIN_REDIRECT_URL = "index"
 
 CRISPY_TEMPLATE_PACK = "bootstrap4"
 
@@ -216,3 +220,6 @@ if not DEBUG:
     SESSION_COOKIE_AGE = 60 * 60 * 3  # 3 hours
     CSRF_COOKIE_SECURE = True
     CSRF_COOKIE_HTTPONLY = True  # Only do this if you are not accessing the CSRF cookie with JS
+
+
+SIMPLE_HISTORY_HISTORY_ID_USE_UUID = True

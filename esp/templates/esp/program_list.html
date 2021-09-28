@@ -1,0 +1,18 @@
+{% extends "base_templates/base.html" %}
+{% load crispy_forms_tags %}
+{% block title %}Programs{% endblock %}
+
+{% block body %}
+<h3>Programs</h3>
+<h4><a href='{% url "create_program" %}'>Create New Program</a></h4>
+<hr />
+{% for program in object_list %}
+    <h5>{{ program.name }}</h5>
+    <p><strong>{{program.start_date}} to {{program.end_date}}</strong></p>
+    <br/>
+    <p>Created: {{ program.created_on }} - Updated: {{ program.updated_on }}
+    <a href = '{% url "update_program" program.id %}'>Update</a> -
+    <a href = '{% url "update_program" program.id %}'>Clone</a>
+    <hr />
+{% endfor %}
+{% endblock %}

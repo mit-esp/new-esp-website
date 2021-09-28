@@ -1,3 +1,6 @@
+{% load static %}
+{% load crispy_forms_tags %}
+
 <html>
 <head>
     <title>MIT ESP - {% block title %}{% endblock %}</title>
@@ -8,6 +11,7 @@
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container">
       <a class="navbar-brand" href="/">
+        <img  width="40px" height="40px" src="{% static 'images/esp_logo.png' %}" alt="MIT ESP Logo">
         MIT ESP
       </a>
     </div>
@@ -42,4 +46,5 @@
     </div>
     {# END_FEATRUE bootstrap_messages #}
   </body>
+{% block script %}{% endblock %}
 </html>
