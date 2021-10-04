@@ -1,5 +1,6 @@
 {% extends "base_templates/base.html" %}
 {% load crispy_forms_tags %}
+{% block head %}{% endblock %}
 {% block title %}Class{% endblock %}
 
 {% block body %}
@@ -10,15 +11,14 @@
 </div>
 {% endblock %}
 {% block script %}
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<script src="https://code.jquery.com/jquery-3.6.0.slim.min.js" integrity="sha256-u7e5khyithlIdTpu22PHhENmPcRdFiHRjhAuHcs05RI=" crossorigin="anonymous"></script>
 <script>
   $(function() {
     $( ".datepicker" ).datepicker({
       changeMonth: true,
       changeYear: true,
-      yearRange: "1900:2012",
-      // You can put more options here.
-
+      todayHighlight: true,
     });
   });
 </script>

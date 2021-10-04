@@ -9,6 +9,9 @@ django-storages
 djangorestframework
 django-cors-headers
 django-ses
+django-compressor
+django-sass-processor
+libsass
 
 django-simple-history
 
@@ -24,6 +27,7 @@ flake8
 isort
 pre-commit
 yapf
+django-debug-toolbar
 
 # Security
 cryptography==3.3.2  # Lock to 3.3.2 if running into "No module named 'setuptools_rust'" error

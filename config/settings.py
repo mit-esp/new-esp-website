@@ -16,6 +16,9 @@ from django.contrib.messages import constants as messages
 env = environ.Env(
     DEBUG=(bool, False),
     HOST=(str, "localhost"),
+    LOCALHOST=(bool, False),
+    MAINTENANCE_MODE=(bool, False),
+    SENTRY_DSN=(str, None),
 )
 environ.Env.read_env()
 
@@ -25,11 +28,16 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = env("SECRET_KEY")
 
+MAINTENANCE_MODE = env("MAINTENANCE_MODE")
+
 # SECURITY WARNING: do not run with debug turned on in production!
 DEBUG = env("DEBUG")
 
+# run with this set to False in production
+LOCALHOST = env("LOCALHOST")
+
 ALLOWED_HOSTS = [env("HOST")]
-if DEBUG:
+if LOCALHOST is True:
     ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
 else:
     # If deploying to AWS in the future
@@ -46,7 +54,9 @@ THIRD_PARTY_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django_extensions",
+    "debug_toolbar",
     "crispy_forms",
+    "sass_processor",
     "simple_history"
 ]
 
@@ -61,6 +71,7 @@ MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
+    "common.middleware.MaintenanceModeMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
@@ -162,7 +173,9 @@ USE_TZ = True
 
 STATIC_URL = "/static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
-STATICFILES_DIRS = [os.path.join(BASE_DIR, "static"), os.path.join(BASE_DIR, "dist/static")]
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static")
+]
 
 AUTH_USER_MODEL = "common.User"
 LOGIN_URL = "index"
@@ -220,6 +233,19 @@ if not DEBUG:
     SESSION_COOKIE_AGE = 60 * 60 * 3  # 3 hours
     CSRF_COOKIE_SECURE = True
     CSRF_COOKIE_HTTPONLY = True  # Only do this if you are not accessing the CSRF cookie with JS
+
+
+SASS_PRECISION = 8  # Bootstrap's sass requires a precision of at least 8 to prevent layout errors
+SASS_PROCESSOR_CUSTOM_FUNCTIONS = {
+    'django-static': 'django.templatetags.static.static',
+}
+SASS_PROCESSOR_INCLUDE_DIRS = [
+    os.path.join(BASE_DIR, 'static/styles'),
+    os.path.join(BASE_DIR, 'node_modules'),
+]
+SASS_PROCESSOR_ROOT = os.path.join(BASE_DIR, 'static')
+COMPRESS_ROOT = SASS_PROCESSOR_ROOT
+
 
 
 SIMPLE_HISTORY_HISTORY_ID_USE_UUID = True

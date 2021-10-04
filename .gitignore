@@ -50,6 +50,8 @@ venv/
 # Compiled Files
 staticfiles/
 staticfiles/*
+/static/styles/**/*.css
+/static/styles/**/*.map
 
 # Local development
 **/dist/*
