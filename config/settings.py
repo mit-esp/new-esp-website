@@ -79,6 +79,13 @@ MIDDLEWARE = [
     "simple_history.middleware.HistoryRequestMiddleware",
 ]
 
+
+DEBUG_TOOLBAR = DEBUG and env("DEBUG_TOOLBAR")
+INTERNAL_IPS = ['127.0.0.1']
+if DEBUG_TOOLBAR:
+    MIDDLEWARE.append('debug_toolbar.middleware.DebugToolbarMiddleware')
+
+
 ROOT_URLCONF = "config.urls"
 
 TEMPLATES = [
@@ -192,17 +199,19 @@ MESSAGE_TAGS = {
     messages.ERROR: "alert-danger",
 }
 
-if DEBUG is False:
+if LOCALHOST is True:
+    DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
+    MEDIA_ROOT = "/media/"
+    MEDIA_URL = '/media/'
+else:
     DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
     AWS_DEFAULT_ACL = "private"
     AWS_S3_FILE_OVERWRITE = False
     AWS_STORAGE_BUCKET_NAME = env("AWS_STORAGE_BUCKET_NAME")
-else:
-    DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
-    MEDIA_ROOT = "/media/"
-    MEDIA_URL = '/media/'
 
-if not DEBUG:
+
+SENTRY_DSN = env("SENTRY_DSN")
+if LOCALHOST is False and SENTRY_DSN:
     import sentry_sdk
     from sentry_sdk.integrations.django import DjangoIntegration
     sentry_sdk.init(
@@ -214,7 +223,7 @@ if not DEBUG:
         # send_default_pii=True
     )
 
-if not DEBUG:
+if LOCALHOST is False:
     SECURE_SSL_REDIRECT = True
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 

@@ -31,7 +31,7 @@ To access the database:
 ```
 python manage.py shell_plus
 ```
-To run test suite:
+To run the test suite:
 ```
 python manage.py test
 ```
