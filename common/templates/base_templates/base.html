@@ -1,13 +1,18 @@
+{% load static %}
+{% load crispy_forms_tags %}
+{% load sass_tags %}
+
 <html>
-<head>
-    <title>MIT ESP - {% block title %}{% endblock %}</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
-    {% block css %}{% endblock %}
-</head>
+  <head>
+      <title>MIT ESP - {% block title %}{% endblock %}</title>
+      <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+      {% block head %}{% endblock %}
+  </head>
   <body>
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container">
       <a class="navbar-brand" href="/">
+        <img  width="40px" height="40px" src="{% static 'images/esp_logo.png' %}" alt="MIT ESP Logo">
         MIT ESP
       </a>
     </div>
@@ -18,13 +23,15 @@
         <button type="submit" class="btn btn-default">Log Out</button>
       </form>
     {% else %}
-      <div class="nav-item">
-        {# START_FEATURE django_social #}
-        <a href="{% url 'social:begin' 'google-oauth2' %}" class="btn btn-primary navbar-btn">Log in with Google</a>
-        {# END_FEATURE django_social #}
-      </div>
+       <ul class="nav justify-content-end">
+          <li class="nav-item">
+            <a href="{% url 'register' %}" class="btn btn-primary navbar-btn">Register</a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'login' %}" class="btn btn-primary navbar-btn">Log in</a>
+          </li>
+       </ul>
     {% endif %}
-    </div>
     </nav>
     {# START_FEATURE bootstrap_messages #}
     <div class="container">
@@ -40,4 +47,5 @@
     </div>
     {# END_FEATRUE bootstrap_messages #}
   </body>
+{% block script %}{% endblock %}
 </html>

@@ -16,6 +16,9 @@ from django.contrib.messages import constants as messages
 env = environ.Env(
     DEBUG=(bool, False),
     HOST=(str, "localhost"),
+    LOCALHOST=(bool, False),
+    MAINTENANCE_MODE=(bool, False),
+    SENTRY_DSN=(str, None),
 )
 environ.Env.read_env()
 
@@ -25,11 +28,16 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = env("SECRET_KEY")
 
+MAINTENANCE_MODE = env("MAINTENANCE_MODE")
+
 # SECURITY WARNING: do not run with debug turned on in production!
 DEBUG = env("DEBUG")
 
+# run with this set to False in production
+LOCALHOST = env("LOCALHOST")
+
 ALLOWED_HOSTS = [env("HOST")]
-if DEBUG:
+if LOCALHOST is True:
     ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
 else:
     # If deploying to AWS in the future
@@ -46,14 +54,15 @@ THIRD_PARTY_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django_extensions",
+    "debug_toolbar",
     "crispy_forms",
-    # START_FEATURE django_social
-    "social_django",
-    # END_FEATURE django_social
+    "sass_processor",
+    "simple_history"
 ]
 
 LOCAL_APPS = [
     "common",
+    "esp",
 ]
 
 INSTALLED_APPS = THIRD_PARTY_APPS + LOCAL_APPS
@@ -62,11 +71,20 @@ MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
+    "common.middleware.MaintenanceModeMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "simple_history.middleware.HistoryRequestMiddleware",
 ]
+
+
+DEBUG_TOOLBAR = DEBUG and env("DEBUG_TOOLBAR")
+INTERNAL_IPS = ['127.0.0.1']
+if DEBUG_TOOLBAR:
+    MIDDLEWARE.append('debug_toolbar.middleware.DebugToolbarMiddleware')
+
 
 ROOT_URLCONF = "config.urls"
 
@@ -162,21 +180,13 @@ USE_TZ = True
 
 STATIC_URL = "/static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
-STATICFILES_DIRS = [os.path.join(BASE_DIR, "static"), os.path.join(BASE_DIR, "dist/static")]
-
-AUTH_USER_MODEL = "common.User"
-
-# START_FEATURE django_social
-AUTHENTICATION_BACKENDS = [
-    "social_core.backends.google.GoogleOAuth2",
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static")
 ]
 
+AUTH_USER_MODEL = "common.User"
 LOGIN_URL = "index"
 LOGIN_REDIRECT_URL = "index"
-
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = env("GOOGLE_OAUTH2_KEY")
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = env("GOOGLE_OAUTH2_SECRET")
-# END_FEATURE django_social
 
 CRISPY_TEMPLATE_PACK = "bootstrap4"
 
@@ -189,17 +199,19 @@ MESSAGE_TAGS = {
     messages.ERROR: "alert-danger",
 }
 
-if DEBUG is False:
+if LOCALHOST is True:
+    DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
+    MEDIA_ROOT = "/media/"
+    MEDIA_URL = '/media/'
+else:
     DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
     AWS_DEFAULT_ACL = "private"
     AWS_S3_FILE_OVERWRITE = False
     AWS_STORAGE_BUCKET_NAME = env("AWS_STORAGE_BUCKET_NAME")
-else:
-    DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
-    MEDIA_ROOT = "/media/"
-    MEDIA_URL = '/media/'
 
-if not DEBUG:
+
+SENTRY_DSN = env("SENTRY_DSN")
+if LOCALHOST is False and SENTRY_DSN:
     import sentry_sdk
     from sentry_sdk.integrations.django import DjangoIntegration
     sentry_sdk.init(
@@ -211,7 +223,7 @@ if not DEBUG:
         # send_default_pii=True
     )
 
-if not DEBUG:
+if LOCALHOST is False:
     SECURE_SSL_REDIRECT = True
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
@@ -230,3 +242,19 @@ if not DEBUG:
     SESSION_COOKIE_AGE = 60 * 60 * 3  # 3 hours
     CSRF_COOKIE_SECURE = True
     CSRF_COOKIE_HTTPONLY = True  # Only do this if you are not accessing the CSRF cookie with JS
+
+
+SASS_PRECISION = 8  # Bootstrap's sass requires a precision of at least 8 to prevent layout errors
+SASS_PROCESSOR_CUSTOM_FUNCTIONS = {
+    'django-static': 'django.templatetags.static.static',
+}
+SASS_PROCESSOR_INCLUDE_DIRS = [
+    os.path.join(BASE_DIR, 'static/styles'),
+    os.path.join(BASE_DIR, 'node_modules'),
+]
+SASS_PROCESSOR_ROOT = os.path.join(BASE_DIR, 'static')
+COMPRESS_ROOT = SASS_PROCESSOR_ROOT
+
+
+
+SIMPLE_HISTORY_HISTORY_ID_USE_UUID = True

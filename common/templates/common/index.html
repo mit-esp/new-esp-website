@@ -1,5 +1,21 @@
 {% extends "base_templates/base.html" %}
+{% load sass_tags %}
 {% block title %}Home{% endblock %}
+{% block head %}
+  <link href="{% sass_src 'styles/pages/index.scss' %}" rel="stylesheet">
+{% endblock %}
 {% block body %}
-Welcome to MIT ESP.  Please log in to continue.
+ <div class="container">
+  {% if not request.user.is_authenticated %}
+    <h1>Please log in first.</h1>
+  {% else %}
+    <h1>Welcome to MIT ESP!</h1>
+    <br>
+    <h3><a href="{% url 'programs' %}">Programs</a></h3>
+    <h3><a href="{% url 'classes' %}">Classes</a></h3>
+    <ul>
+    </ul>
+    <button class="btn btn-primary does-nothing-button">This button does nothing</button>
+  </div>
+  {% endif %}
 {% endblock %}

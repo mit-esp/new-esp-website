@@ -7,10 +7,10 @@ A website to help manage the logistics of large short-term educational programs.
 
 ## Local Project Setup
 ```
-# Create environment variable config file.
+# Create environment config file.
 cp config/.env.example config/.env
 
-# Fill in appropriate environment variable values if appropriate.
+# Fill in appropriate environment values.
 vim config/.env
 
 # Install pip requirements.
@@ -31,9 +31,13 @@ To access the database:
 ```
 python manage.py shell_plus
 ```
-To run test suite:
+To run the test suite:
 ```
 python manage.py test
+```
+To get a test coverage report:
+```
+coverage run --source='.' manage.py test; coverage report
 ```
 To run auto formatter(s) and style checks:
 ```
@@ -57,5 +61,10 @@ Deployment commands
 pip install --upgrade pip
 pip install -r requirements.txt
 python manage.py migrate --noinput
-python manage.py collectstatic --noinput
+python manage.py collectstatic --noinput --ignore *.scss
 ```
+
+### Settings
+
+`MAINTENANCE_MODE`: Set this flag on a server environment to stop all user requests to the site, such as when you need to make substantial server updates or run a complex database migration.
+
