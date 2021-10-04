@@ -55,3 +55,8 @@ staticfiles/*
 
 # Local development
 **/dist/*
+webpack-stats.json
+node_modules/
+yarn.lock
+package-lock.json
+*.log

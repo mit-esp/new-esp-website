@@ -13,8 +13,11 @@ cp config/.env.example config/.env
 # Fill in appropriate environment values.
 vim config/.env
 
-# Install pip requirements.
+# Install backend requirements.
 pip install -r requirements.txt
+
+# Install frontend requirements.
+npm install
 
 # Apply migrations and sync database schema.
 python manage.py migrate
