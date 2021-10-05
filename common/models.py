@@ -13,7 +13,7 @@ class BaseModel(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
     is_deleted = models.BooleanField(default=False)
-    history = HistoricalRecords()
+    history = HistoricalRecords(inherit=True)
 
     def update(self, update_dict=None, **kwargs):
         """ Helper method to update objects """
@@ -41,5 +41,3 @@ class User(AbstractUser, BaseModel):
 
     def __str__(self):
         return self.username
-
-
