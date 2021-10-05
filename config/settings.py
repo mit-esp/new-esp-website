@@ -15,6 +15,7 @@ from django.contrib.messages import constants as messages
 
 env = environ.Env(
     DEBUG=(bool, False),
+    DEBUG_TOOLBAR=(bool, False),
     HOST=(str, "localhost"),
     LOCALHOST=(bool, False),
     MAINTENANCE_MODE=(bool, False),
@@ -254,7 +255,6 @@ SASS_PROCESSOR_INCLUDE_DIRS = [
 ]
 SASS_PROCESSOR_ROOT = os.path.join(BASE_DIR, 'static')
 COMPRESS_ROOT = SASS_PROCESSOR_ROOT
-
 
 
 SIMPLE_HISTORY_HISTORY_ID_USE_UUID = True
