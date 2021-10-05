@@ -4,7 +4,7 @@ from django.db.models import TextChoices
 class ProgramType(TextChoices):
     splash = "splash"
     spark = "spark"
-    hssp = "hssp"
+    hssp = "hssp", "HSSP"
     cascade = "cascade"
 
 

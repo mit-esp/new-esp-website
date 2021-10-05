@@ -6,11 +6,11 @@ from esp.constants import ProgramType, RegistrationStep
 
 class Program(BaseModel):
     name = models.CharField(max_length=512)
-    program_type = models.CharField(choices=ProgramType.choices, max_length=128, null=True)
+    program_type = models.CharField(choices=ProgramType.choices, max_length=128, null=True, blank=True)
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
     description = models.TextField(null=True)
-    notes = models.TextField(null=True)
+    notes = models.TextField(null=True, blank=True)
 
 
 class Class(BaseModel):
@@ -27,9 +27,9 @@ class ProgramStage(BaseModel):
     program = models.ForeignKey(Program, related_name="stages", on_delete=models.PROTECT)
     name = models.CharField(max_length=256)
     index = models.IntegerField(default=0)
-    stage_starts_on = models.DateTimeField()
-    stage_ends_on = models.DateTimeField()
-    description = models.TextField(default="")
+    start_date = models.DateTimeField()
+    end_date = models.DateTimeField()
+    description = models.TextField(null=True, blank=True)
 
     class Meta:
         constraints = [models.UniqueConstraint(fields=("program", "index"), name="unique_program_stage_index")]
@@ -37,10 +37,10 @@ class ProgramStage(BaseModel):
 
 class ProgramRegistrationStep(BaseModel):
     program_stage = models.ForeignKey(ProgramStage, related_name="steps", on_delete=models.PROTECT)
-    display_name = models.CharField(max_length=512)
+    display_name = models.CharField(max_length=512, null=True, blank=True)
     step_key = models.CharField(choices=RegistrationStep.choices, max_length=256)
     index = models.IntegerField(default=0)
-    description = models.TextField(default="")
+    description = models.TextField(null=True, blank=True)
 
     class Meta:
         constraints = [
