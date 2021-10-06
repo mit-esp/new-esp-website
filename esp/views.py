@@ -10,7 +10,7 @@ from django.views.generic.edit import CreateView, FormView, UpdateView
 from common.forms import CrispyFormsetHelper
 from esp.forms import (ClassForm, ProgramForm, ProgramRegistrationStepFormset,
                        ProgramStageForm, RegisterUserForm)
-from esp.models import Class, Program, ProgramStage
+from esp.models import Course, Program, ProgramStage
 
 
 class RegisterView(CreateView):
@@ -107,19 +107,19 @@ class ProgramStageUpdateView(ProgramStageFormsetMixin, UpdateView):
 
 
 class ClassCreateView(CreateView):
-    model = Class
+    model = Course
     form_class = ClassForm
     success_url = reverse_lazy('programs')
 
 
 class ClassUpdateView(UpdateView):
-    model = Class
+    model = Course
     form_class = ClassForm
     success_url = reverse_lazy('programs')
 
 
 class ClassListView(ListView):
-    model = Class
+    model = Course
 
 
 ###########################################################

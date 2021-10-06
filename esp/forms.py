@@ -6,7 +6,7 @@ from django.forms import ModelForm, inlineformset_factory
 from common.constants import UserType
 from common.forms import CrispyFormMixin, HiddenOrderingInputFormset
 from common.models import User
-from esp.models import Class, Program, ProgramRegistrationStep, ProgramStage
+from esp.models import Course, Program, ProgramRegistrationStep, ProgramStage
 
 
 class RegisterUserForm(CrispyFormMixin, UserCreationForm):
@@ -83,7 +83,7 @@ class ClassForm(CrispyFormMixin, ModelForm):
     submit_kwargs = {"onclick": "return confirm('Are you sure?')"}
 
     class Meta:
-        model = Class
+        model = Course
         fields = ["name", "start_date", "end_date", "description", "notes", "max_size", "prerequisites"]
         widgets = {
             'start_date': forms.DateInput(attrs={'class': 'datepicker'}),
