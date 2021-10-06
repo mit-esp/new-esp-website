@@ -1,0 +1,19 @@
+{% extends "base_templates/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block body %}
+  <h1>Add Program Stage for {{ program.name }}</h1>
+  <form method="post" action="">
+    <div class="col-sm-6">
+      {% crispy form %}
+    </div>
+    <div class="col">
+      <h4>Registration Steps</h4>
+      {% crispy step_formset step_formset_helper %}
+      <div>
+        <button type="submit" name="save-add-new" class="btn btn-secondary">Save program stage</button>
+        <button type="submit" class="btn btn-primary">Save and add another</button>
+      </div>
+    </div>
+  </form>
+{% endblock %}

@@ -80,6 +80,7 @@ MIDDLEWARE = [
     "simple_history.middleware.HistoryRequestMiddleware",
 ]
 
+
 DEBUG_TOOLBAR = DEBUG and env("DEBUG_TOOLBAR")
 INTERNAL_IPS = ['127.0.0.1']
 if DEBUG_TOOLBAR:
@@ -254,5 +255,6 @@ SASS_PROCESSOR_INCLUDE_DIRS = [
 ]
 SASS_PROCESSOR_ROOT = os.path.join(BASE_DIR, 'static')
 COMPRESS_ROOT = SASS_PROCESSOR_ROOT
+
 
 SIMPLE_HISTORY_HISTORY_ID_USE_UUID = True
