@@ -1,7 +1,8 @@
 from django.db import models
 
 from common.models import BaseModel, User
-from esp.constants import ProgramType, RegistrationStep
+from esp.constants import (CourseRoleType, CourseStatus, ProgramType,
+                           RegistrationStep)
 
 
 class PreferenceEntryConfiguration(BaseModel):
@@ -24,12 +25,22 @@ class Program(BaseModel):
 
 class Course(BaseModel):
     name = models.CharField(max_length=2048)
+    display_id = models.BigIntegerField(null=True)
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
     description = models.TextField()
-    notes = models.TextField()
     max_size = models.IntegerField()
-    prerequisites = models.TextField()
+    prerequisites = models.TextField(default="None", blank=True)
+
+    status = models.CharField(choices=CourseStatus.choices, max_length=32, default=CourseStatus.unreviewed)
+    notes = models.TextField(null=True, blank=True)
+    planned_purchases = models.TextField(null=True, blank=True)
+
+
+class CourseRole(BaseModel):
+    course = models.ForeignKey(Course, related_name="roles", on_delete=models.PROTECT)
+    user = models.ForeignKey(User, related_name="course_roles", on_delete=models.PROTECT)
+    role = models.CharField(choices=CourseRoleType.choices, max_length=32)
 
 
 class Classroom(BaseModel):

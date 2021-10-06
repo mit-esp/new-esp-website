@@ -21,3 +21,16 @@ class RegistrationStep(TextChoices):
     check_in = "check_in"
     program_started = "program_started"
     program_ended = "program_ended"
+
+
+class CourseStatus(TextChoices):
+    unreviewed = "unreviewed"
+    accepted = "accepted"
+    rejected = "rejected"
+    cancelled = "cancelled"
+
+
+class CourseRoleType(TextChoices):
+    teacher = "teacher"
+    observer = "observer"
+    student = "student"
