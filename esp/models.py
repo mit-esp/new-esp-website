@@ -10,6 +10,9 @@ class PreferenceEntryConfiguration(BaseModel):
     name = models.CharField(max_length=512, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
 
+    def __str__(self):
+        return self.name
+
 
 class Program(BaseModel):
     preference_entry_configuration = models.ForeignKey(
@@ -22,8 +25,12 @@ class Program(BaseModel):
     description = models.TextField(null=True)
     notes = models.TextField(null=True, blank=True)
 
+    def __str__(self):
+        return self.name
+
 
 class Course(BaseModel):
+    program = models.ForeignKey(Program, related_name="courses", on_delete=models.PROTECT)
     name = models.CharField(max_length=2048)
     display_id = models.BigIntegerField(null=True)
     start_date = models.DateTimeField()
@@ -35,6 +42,9 @@ class Course(BaseModel):
     status = models.CharField(choices=CourseStatus.choices, max_length=32, default=CourseStatus.unreviewed)
     notes = models.TextField(null=True, blank=True)
     planned_purchases = models.TextField(null=True, blank=True)
+
+    def __str__(self):
+        return self.name
 
 
 class CourseRole(BaseModel):
@@ -81,7 +91,7 @@ class ProgramStage(BaseModel):
     end_date = models.DateTimeField()
     description = models.TextField(null=True, blank=True)
 
-    class Meta:
+    class Meta(BaseModel.Meta):
         constraints = [models.UniqueConstraint(fields=("program_id", "index"), name="unique_program_stage_index")]
 
 
@@ -89,12 +99,12 @@ class ProgramRegistrationStep(BaseModel):
     program_stage = models.ForeignKey(ProgramStage, related_name="steps", on_delete=models.PROTECT)
     display_name = models.CharField(max_length=512, null=True, blank=True)
     step_key = models.CharField(choices=RegistrationStep.choices, max_length=256)
-    index = models.IntegerField(default=0)
+    required_for_stage_completion = models.BooleanField(default=True)
     description = models.TextField(null=True, blank=True)
 
-    class Meta:
+    class Meta(BaseModel.Meta):
         constraints = [
-            models.UniqueConstraint(fields=("program_stage_id", "index"), name="unique_program_stage_step_index")
+            models.UniqueConstraint(fields=("program_stage_id", "step_key"), name="unique_program_stage_step")
         ]
 
 
@@ -109,9 +119,10 @@ class PreferenceEntryRound(BaseModel):
         PreferenceEntryConfiguration, on_delete=models.PROTECT, related_name="rounds"
     )
     index = models.IntegerField(default=0)
+    title = models.CharField(max_length=512, null=True, blank=True)
     help_text = models.TextField()
 
-    class Meta:
+    class Meta(BaseModel.Meta):
         constraints = [
             models.UniqueConstraint(
                 fields=("preference_entry_configuration_id", "index"), name="unique_preference_entry_round_index"
