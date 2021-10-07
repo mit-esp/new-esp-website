@@ -16,5 +16,5 @@ urlpatterns = [
 
     path('classes/create/', CourseCreateView.as_view(), name='create_course'),
     path('classes/update/<uuid:pk>/', CourseUpdateView.as_view(), name='update_course'),
-    path('classes/all/', CourseListView.as_view(), name='coursees'),
+    path('classes/all/', CourseListView.as_view(), name='courses'),
 ]

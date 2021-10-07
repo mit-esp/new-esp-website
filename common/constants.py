@@ -11,8 +11,8 @@ class UserType(TextChoices):
 
 class PermissionType(TextChoices):
     # WIP: permissions list TBD
-    view_coursees = "view_coursees"
-    edit_coursees = "edit_coursees"
+    view_courses = "view_courses"
+    edit_courses = "edit_courses"
     view_all_programs = "view_all_programs"
     edit_programs = "edit_programs"
     view_student_dashboard = "view_student_dashboard"
