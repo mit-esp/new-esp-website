@@ -4,14 +4,14 @@
 
 {% block body %}
 <h3>Classes</h3>
-<h4><a href='{% url "create_class" %}'>Create New Class</a></h4>
+<h4><a href='{% url "create_course" %}'>Create New Class</a></h4>
 <hr />
-{% for class in object_list %}
-    <h5>{{ class.name }}</h5>
-    <p><strong>{{class.start_date}} to {{class.end_date}}</strong></p>
+{% for course in object_list %}
+    <h5>{{ course.name }}</h5>
+    <p><strong>{{course.start_date}} to {{course.end_date}}</strong></p>
     <br/>
-    <p>Created: {{ class.created_on }} - Updated: {{ class.updated_on }}
-    <a href = '{% url "update_class" class.id %}'>Update</a> -
+    <p>Created: {{ course.created_on }} - Updated: {{ course.updated_on }}
+    <a href = '{% url "update_course" course.id %}'>Update</a> -
     <hr />
 {% endfor %}
 {% endblock %}

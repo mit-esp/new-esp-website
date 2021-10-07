@@ -153,6 +153,6 @@ class ProgramTag(BaseModel):
     tag = models.CharField(max_length=256)
 
 
-class ClassTag(BaseModel):
+class CourseTag(BaseModel):
     course = models.ForeignKey(Course, on_delete=models.PROTECT, related_name="tags")
     tag = models.CharField(max_length=256)

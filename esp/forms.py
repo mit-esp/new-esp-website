@@ -78,7 +78,7 @@ ProgramRegistrationStepFormset = inlineformset_factory(
 )
 
 
-class ClassForm(CrispyFormMixin, ModelForm):
+class CourseForm(CrispyFormMixin, ModelForm):
     submit_label = "Create Class"
     submit_kwargs = {"onclick": "return confirm('Are you sure?')"}
 
