@@ -6,6 +6,7 @@ from esp.constants import (CourseRoleType, CourseStatus, ProgramType,
 
 
 class PreferenceEntryConfiguration(BaseModel):
+    """PreferenceEntryConfiguration represents a set of stages and steps for student class preference entry."""
     saved_as_preset = models.BooleanField(default=False)
     name = models.CharField(max_length=512, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
@@ -15,6 +16,7 @@ class PreferenceEntryConfiguration(BaseModel):
 
 
 class Program(BaseModel):
+    """Program represents an ESP program instance, e.g. Splash 2021"""
     preference_entry_configuration = models.ForeignKey(
         PreferenceEntryConfiguration, on_delete=models.PROTECT, related_name="+", null=True
     )
@@ -30,6 +32,10 @@ class Program(BaseModel):
 
 
 class Course(BaseModel):
+    """
+    Course represents an ESP class in a specific program (named to avoid reserved word 'class' conflicts).
+    It is still referred to as 'class' in urls and on the frontend to match existing terminology.
+    """
     program = models.ForeignKey(Program, related_name="courses", on_delete=models.PROTECT)
     name = models.CharField(max_length=2048)
     display_id = models.BigIntegerField(null=True)
@@ -64,6 +70,7 @@ class ResourceType(BaseModel):
 
 
 class ClassroomResource(BaseModel):
+    """ClassroomResource represents a specific resource that exists in a specific classroom"""
     classroom = models.ForeignKey(Classroom, related_name="resources", on_delete=models.CASCADE)
     resource_type = models.ForeignKey(ResourceType, related_name="classrooms", on_delete=models.PROTECT)
     quantity = models.IntegerField(null=True, blank=True)
@@ -76,6 +83,10 @@ class ResourceRequest(BaseModel):
 
 
 class ClassSection(BaseModel):
+    """
+    ClassSection represents a particular enrollment section of a Course, with a (clock) time and place.
+    Programs that meet multiple times still have a single ClassSection for all meetings of the same group of students.
+    """
     course = models.ForeignKey(Course, related_name="sections", on_delete=models.PROTECT)
     classroom = models.ForeignKey(Classroom, related_name="sections", on_delete=models.PROTECT, null=True)
     day = models.DateField(null=True)
@@ -84,6 +95,7 @@ class ClassSection(BaseModel):
 
 
 class ProgramStage(BaseModel):
+    """ProgramStage represents configuration for a program stage, e.g. 'Initiation' or 'Post-Lottery'"""
     program = models.ForeignKey(Program, related_name="stages", on_delete=models.PROTECT)
     name = models.CharField(max_length=256)
     index = models.IntegerField(default=0)
@@ -96,6 +108,7 @@ class ProgramStage(BaseModel):
 
 
 class ProgramRegistrationStep(BaseModel):
+    """ProgramRegistrationStep represents config for a single student interaction step within a program stage."""
     program_stage = models.ForeignKey(ProgramStage, related_name="steps", on_delete=models.PROTECT)
     display_name = models.CharField(max_length=512, null=True, blank=True)
     step_key = models.CharField(choices=RegistrationStep.choices, max_length=256)
@@ -109,6 +122,7 @@ class ProgramRegistrationStep(BaseModel):
 
 
 class ProgramRegistration(BaseModel):
+    """ProgramRegistration represents a user's registration for a program."""
     program = models.ForeignKey(Program, related_name="registrations", on_delete=models.PROTECT)
     program_stage = models.ForeignKey(ProgramStage, on_delete=models.PROTECT, related_name="registrations")
     user = models.ForeignKey(User, on_delete=models.PROTECT, related_name="registrations")
@@ -142,6 +156,7 @@ class PreferenceEntryCategory(BaseModel):
 
 
 class ClassPreference(BaseModel):
+    """ClassPreference represents a preference entry category that a user has applied to a class section."""
     registration = models.ForeignKey(ProgramRegistration, related_name="preferences", on_delete=models.PROTECT)
     class_section = models.ForeignKey(ClassSection, related_name="preferences", on_delete=models.PROTECT)
     category = models.ForeignKey(PreferenceEntryCategory, related_name="preferences", on_delete=models.PROTECT)
