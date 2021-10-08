@@ -53,6 +53,8 @@ staticfiles/*
 /static/styles/**/*.css
 /static/styles/**/*.map
 
+docs/_build/
+
 # Local development
 **/dist/*
 webpack-stats.json
