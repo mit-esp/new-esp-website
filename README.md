@@ -73,9 +73,9 @@ python manage.py collectstatic --noinput --ignore *.scss
 
 
 ### Documentation
-Work in progress
+After installing Sphinx via `pip install sphinx`:
 ```
-sphinx-apidoc -o . ..
+# sphinx-apidoc -o . ..
 make html
 make linkcheck
 ```
