@@ -31,9 +31,10 @@ ChromeVox, VoiceOver, JAWS, ZoomText) would give you the highest fidelity test b
 
 Some basic conditions of accessibility are: 
 
-- that the interface can be entirely navigated by keyboard (such as by tab)
-- that all images (including glyphicons) have alt text
-- use aria labels. 
+- Use HTML logically not for style (h1, h2, ...), rely on CSS for styling
+- Build the interface such that it can be entirely navigated by keyboard (such as by tab)
+- Ensure all images (including glyphicons) have alt text
+- Use aria labels
 
 Resources:
 
