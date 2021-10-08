@@ -71,3 +71,11 @@ python manage.py collectstatic --noinput --ignore *.scss
 
 `MAINTENANCE_MODE`: Set this flag on a server environment to stop all user requests to the site, such as when you need to make substantial server updates or run a complex database migration.
 
+
+### Documentation
+After installing Sphinx via `pip install sphinx`:
+```
+# sphinx-apidoc -o . ..
+make html
+make linkcheck
+```
