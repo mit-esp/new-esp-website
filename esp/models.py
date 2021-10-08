@@ -1,5 +1,6 @@
 from django.db import models
 from django.db.models import Max
+from django.utils import timezone
 
 from common.constants import Weekday
 from common.models import BaseModel, User
@@ -110,19 +111,24 @@ class ResourceRequest(BaseModel):
 
 class TimeSlot(BaseModel):
     program = models.ForeignKey(Program, related_name="time_slots", on_delete=models.PROTECT)
-    day = models.CharField(choices=Weekday.choices, max_length=16, null=True)  # Required only for multi-day events
+    day = models.CharField(choices=Weekday.choices, max_length=16, null=True, blank=True)
     start_time = models.TimeField()
     end_time = models.TimeField()
 
     def __str__(self):
         start = self.start_time.strftime('%I:%M%p').lstrip('0')
         end = self.end_time.strftime('%I:%M%p').lstrip('0')
-        return f"{start} - {end}" + (f"({self.get_day_display()})" if self.day else "")
+        return f"{start} - {end}" + (f" ({self.get_day_display()})" if self.day else "")
+
+
+class ClassroomAvailability(BaseModel):
+    classroom = models.ForeignKey(Classroom, related_name="time_slots", on_delete=models.CASCADE)
+    time_slot = models.ForeignKey(TimeSlot, related_name="classrooms", on_delete=models.PROTECT)
 
 
 class ClassSection(BaseModel):
     """
-    ClassSection represents a particular enrollment section of a Course, with a (clock) time and place.
+    ClassSection represents a particular enrollment section of a Course, in a specific time slot and place.
     Programs that meet multiple times still have a single ClassSection for all meetings of the same group of students.
     """
     course = models.ForeignKey(Course, related_name="sections", on_delete=models.PROTECT)
@@ -140,6 +146,9 @@ class ProgramStage(BaseModel):
     index = models.IntegerField(default=0)
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
+    manually_activated = models.BooleanField(default=False, blank=True)
+    manually_hidden = models.BooleanField(default=False, blank=True)
+
     description = models.TextField(null=True, blank=True)
 
     class Meta(BaseModel.Meta):
@@ -147,6 +156,12 @@ class ProgramStage(BaseModel):
 
     def __str__(self):
         return f"{self.program}: {self.name}"
+
+    def show_on_dashboard(self):
+        return (
+            ((self.start_date < timezone.now() < self.end_date) and not self.manually_hidden)
+            or self.manually_activated
+        )
 
 
 class ProgramRegistrationStep(BaseModel):
@@ -176,6 +191,11 @@ class ProgramRegistration(BaseModel):
         return f"{self.program} registration for {self.user}"
 
 
+class CompletedRegistrationStep(BaseModel):
+    registration = models.ForeignKey(ProgramRegistration, related_name="completed_steps", on_delete=models.PROTECT)
+    step = models.ForeignKey(ProgramRegistrationStep, related_name="registrations", on_delete=models.PROTECT)
+
+
 class PreferenceEntryRound(BaseModel):
     preference_entry_configuration = models.ForeignKey(
         PreferenceEntryConfiguration, on_delete=models.PROTECT, related_name="rounds"
@@ -183,6 +203,9 @@ class PreferenceEntryRound(BaseModel):
     index = models.IntegerField(default=0)
     title = models.CharField(max_length=512, null=True, blank=True)
     help_text = models.TextField()
+    applied_category_filter = models.CharField(max_length=512, null=True, blank=True)
+    applied_category_min_value = models.IntegerField(null=True, blank=True)
+    applied_category_max_value = models.IntegerField(null=True, blank=True)
 
     class Meta(BaseModel.Meta):
         constraints = [
@@ -201,8 +224,11 @@ class PreferenceEntryCategory(BaseModel):
     )
     tag = models.CharField(max_length=512)
     has_integer_value = models.BooleanField(default=False)
+    max_count = models.IntegerField(null=True, blank=True)
+    min_count = models.IntegerField(null=True, blank=True)
     max_value = models.IntegerField(null=True, blank=True)
     max_value_sum = models.IntegerField(null=True, blank=True)
+    allow_value_repeats = models.BooleanField(default=True, blank=True)
     help_text = models.TextField()
 
     def __str__(self):

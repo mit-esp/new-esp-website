@@ -13,7 +13,7 @@
       <div class="card">
         <div class="card-body">
           <h1>Register MIT ESP Account</h1>
-          <form method="post" action="{% url 'register' %}">
+          <form method="post" action="{% url 'register_account' %}">
             {% csrf_token %}
             <section>
               {% crispy form  %}

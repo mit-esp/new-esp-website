@@ -1,19 +1,19 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Max
-from django.shortcuts import redirect
-from django.urls import reverse_lazy
+from django.shortcuts import get_object_or_404, redirect
+from django.urls import reverse, reverse_lazy
 from django.views.generic import ListView
-from django.views.generic.base import TemplateView
-from django.views.generic.detail import SingleObjectMixin
+from django.views.generic.base import TemplateView, View
+from django.views.generic.detail import DetailView, SingleObjectMixin
 from django.views.generic.edit import CreateView, FormView, UpdateView
 
 from common.forms import CrispyFormsetHelper
 from esp.forms import (CourseForm, ProgramForm, ProgramRegistrationStepFormset,
                        ProgramStageForm, RegisterUserForm)
-from esp.models import Course, Program, ProgramStage
+from esp.models import Course, Program, ProgramRegistration, ProgramStage
 
 
-class RegisterView(CreateView):
+class RegisterAccountView(CreateView):
     template_name = "registration.html"
     form_class = RegisterUserForm
     success_url = reverse_lazy('index')
@@ -132,16 +132,49 @@ class BaseDashboardView(LoginRequiredMixin, TemplateView):
 
 
 class TeacherDashboardView(BaseDashboardView):
-    template_name = 'esp/teacher_dashboard.html'
+    template_name = 'dashboards/teacher_dashboard.html'
 
 
 class AdminDashboardView(BaseDashboardView):
-    template_name = 'esp/admin_dashboard.html'
+    template_name = 'dashboards/admin_dashboard.html'
 
 
 class StudentDashboardView(BaseDashboardView):
-    template_name = 'esp/student_dashboard.html'
+    template_name = 'dashboards/student_dashboard.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user_registrations = self.request.user.registrations.all()
+        context["registrations"] = user_registrations
+        # TODO: add eligible program logic once student profile model exists
+        context["eligible_programs"] = Program.objects.exclude(id__in=user_registrations.values("program_id"))
+        return context
 
 
 class GuardianDashboardView(BaseDashboardView):
-    template_name = 'esp/guardian_dashboard.html'
+    template_name = 'dashboards/guardian_dashboard.html'
+
+
+#######################################################
+class ProgramRegistrationView(SingleObjectMixin, View):
+    model = Program
+
+    def get(self, request, *args, **kwargs):
+        program = self.get_object()
+        ProgramRegistration.objects.get_or_create(
+            program=program, user=self.request.user, defaults={"stage": program.stages.first()}
+        )
+        return redirect(reverse("current_registration_step", kwargs={"pk": program.id}))
+
+
+class PreferenceEntryView(DetailView):
+    model = Program
+    context_object_name = "program"
+    template_name = 'esp/class_preference_entry.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["registration"] = get_object_or_404(
+            ProgramRegistration, program_id=self.object.id, user=self.request.user
+        )
+        return context

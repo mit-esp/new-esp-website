@@ -28,9 +28,15 @@ class CourseStatus(TextChoices):
     accepted = "accepted"
     rejected = "rejected"
     cancelled = "cancelled"
+    hidden = "hidden"
 
 
 class CourseRoleType(TextChoices):
     teacher = "teacher"
     observer = "observer"
     student = "student"
+
+
+REGISTRATION_STEP_TO_URL = {
+    RegistrationStep.lottery_preferences: "preference_entry",
+}
