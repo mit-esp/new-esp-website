@@ -19,3 +19,13 @@ class PermissionType(TextChoices):
     view_all_student_dashboards = "view_all_student_dashboards"
     view_teacher_dashboard = "view_teacher_dashboard"
     view_all_teacher_dashboards = "view_all_teacher_dashboards"
+
+
+class Weekday(TextChoices):
+    monday = "monday", "Mon"
+    tuesday = "tuesday", "Tues"
+    wednesday = "wednesday", "Wed"
+    thursday = "thursday", "Thurs"
+    friday = "friday", "Friday"
+    saturday = "saturday", "Sat"
+    sunday = "sunday", "Sun"
