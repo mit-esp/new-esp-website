@@ -3,12 +3,11 @@ Accessibility (a11y)
 #####################
 
 Accessibility, like nearly all engineering problems, has a wide range of being good enough versus not good enough. 
-Determining what level you are aiming for, and figuring out what are the cost-effective wins are key to success. 
+Determining what level you are aiming for and figuring out what are the cost-effective wins are key. 
 There is a wide spectrum of blindness and deafness, but at some point you will hit a trade-off where you would be hurting 
 the user experience of your majority user base if you were to help make your website more usable for a small minority 
-of users. So there is a difficult engineering challenge here of keeping things accessible, without interfering 
-with the user experience of most users, without interfering with the code quality of non-accessibility related code, 
-and while figuring out how to write high quality accessibility-related code in the first place.
+of users. So there is an engineering trade-off here of keeping things accessible, without interfering 
+with the user experience of most users, without interfering with the code quality of non-accessibility related code.
 
 Automated accessibility checkers, like WAVE (Chrome Extension), SiteImprove, AMP, available as a free
 browser extension for Chrome and Firefox should be a component of one's strategy. 
@@ -38,8 +37,20 @@ Some basic conditions of accessibility are:
 
 Resources:
 
+- Plug in to test accessibility in chrome dev tools: https://chrome.google.com/webstore/detail/axe/lhdoppojpmngadmnindnejefpokejbdd?hl=en-US
+
+- Other tools to test site accessibility: https://www.w3.org/WAI/ER/tools/
+
+- W3.org's accessibility tutorial/walk through: https://www.w3.org/WAI/tutorials/
+
+- Accessible color contrast checker: https://webaim.org/resources/contrastchecker/
+
+- On using ARIA (Accessible Rich Internet Applications specification: https://www.w3.org/TR/using-aria/ (basics at the bottom)
+
 - A federal government guide to accessibility: https://pages.18f.gov/accessibility/index.html
+
 - An easy checklist to go over: https://pages.18f.gov/accessibility/checklist/
+
 - Auto html checker: http://squizlabs.github.io/HTML_CodeSniffer/
 
 
