@@ -1,0 +1,58 @@
+{% extends "student_base.html" %}
+
+{% block title %}Enter Class Preferences{% endblock %}
+
+{% block content %}
+  <h2>{{ round.title }}</h2>
+  <p>{{ round.help_text }}</p>
+
+  {% if not round.group_sections_by_course %}
+  <table class="table">
+    <thead>
+      <tr>
+      {% for slot in time_slots %}
+        <td>{{ slot }}</td>
+      {% endfor %}
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        {% for slot, section_list in time_slots.items %}
+          <td>{% for section in section_list %}
+            <p>{{ section.course.name }}</p>
+            {% for category in round.categories.all %}
+              <button class="btn btn-outline-primary" id="mark-{{ section.id }}-{{ category.id }}" onclick="markCourseAsCategory('{{ section.id }}', '{{ category }}')">Mark '{{ category }}'</button>
+              <span id="show-{{ section.id }}-{{ category.id }}" class="d-none">{{ category }}</span>
+            {% endfor %}
+          {% endfor %}</td>
+        {% endfor %}
+      </tr>
+    </tbody>
+  </table>
+  {% else %}
+    <h4>Classes</h4>
+    {% for course in courses %}<p>ESP {{ course.display_id }}: {{ course.name }}
+      {% for category in round.categories.all %}
+        <button class="btn btn-outline-primary" id="mark-{{ course.id }}-{{ category.id }}" onclick="markCourseAsCategory('{{ course.id }}', '{{ category.id }}')">Mark '{{ category }}'</button>
+        <span id="show-{{ course.id }}-{{ category.id }}" class="d-none">{{ category }}</span>
+      {% endfor %}
+    </p>{% endfor %}
+  {% endif %}
+  <form method="post">
+    {% csrf_token %}
+    <input type="hidden" name="data" id="data"/>
+    <button class="btn btn-primary" type="submit">Submit</button>
+  </form>
+  <script>
+    const courseCategories = {}
+    const markCourseAsCategory = (courseId, category) => {
+      courseCategories[courseId] = category
+      const btn = document.getElementById(`mark-${courseId}-${category}`)
+      btn.setAttribute("class", "d-none")
+      const mark = document.getElementById(`show-${courseId}-${category}`)
+      mark.setAttribute("class", "")
+      const data_input = document.getElementById("data")
+      data_input.setAttribute("value", JSON.stringify(courseCategories))
+    }
+  </script>
+{% endblock %}

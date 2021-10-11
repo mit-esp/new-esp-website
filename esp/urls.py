@@ -1,11 +1,15 @@
 from django.urls import path
 
+from esp.constants import RegistrationStep
 from esp.views import (AdminDashboardView, CourseCreateView, CourseListView,
                        CourseUpdateView, GuardianDashboardView,
-                       PreferenceEntryView, ProgramCreateView, ProgramListView,
-                       ProgramStageCreateView, ProgramStageUpdateView,
-                       ProgramUpdateView, RegisterAccountView,
-                       StudentDashboardView, TeacherDashboardView)
+                       InitiatePreferenceEntryView, PreferenceEntryRoundView,
+                       ProgramCreateView, ProgramListView,
+                       ProgramRegistrationCreateView,
+                       ProgramRegistrationStageView, ProgramStageCreateView,
+                       ProgramStageUpdateView, ProgramUpdateView,
+                       RegisterAccountView, StudentDashboardView,
+                       TeacherDashboardView)
 
 urlpatterns = [
     path('accounts/register', RegisterAccountView.as_view(), name="register_account"),
@@ -25,7 +29,18 @@ urlpatterns = [
     path('dashboard/student/', StudentDashboardView.as_view(), name="student_dashboard"),
     path('dashboard/teacher/', TeacherDashboardView.as_view(), name="teacher_dashboard"),
 
-    path("programs/<uuid:pk>/registration/", PreferenceEntryView.as_view(), name="create_program_registration"),
-    path('programs/<uuid:pk>/registration/continue/', PreferenceEntryView.as_view(), name="current_registration_step"),
-    path('programs/<uuid:pk>/preferences/', PreferenceEntryView.as_view(), name="preference_entry")
+    path(
+        "programs/<uuid:pk>/registration/", ProgramRegistrationCreateView.as_view(), name="create_program_registration"
+    ),
+    path(
+        'programs/registration/<uuid:pk>/continue/', ProgramRegistrationStageView.as_view(),
+        name="current_registration_stage"
+    ),
+    path(
+        'programs/registration/<uuid:pk>/preferences/', InitiatePreferenceEntryView.as_view(),
+        name=RegistrationStep.lottery_preferences
+    ),
+    path(
+        'programs/registration/<uuid:registration_id>/preferences/round_<int:index>/',
+        PreferenceEntryRoundView.as_view(), name="preference_entry_round")
 ]

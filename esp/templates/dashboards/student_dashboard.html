@@ -1,11 +1,11 @@
 {% extends "student_base.html" %}
 
-{% block body %}
+{% block content %}
   <h1>Student Dashboard</h1>
   <hr/>
   <h2>Active Registrations</h2>
   {% for registration in registrations %}
-    <div>{{ registration.program.name }}: <a href="{% url "current_registration_step" pk=registration.program_id %}"></a></div>
+    <div>{{ registration.program.name }}: <a href="{% url "current_registration_stage" pk=registration.id %}">{{ registration.program_stage.name }}</a></div>
   {% empty %}No active registrations. See below for eligible programs.
   {% endfor %}
   <hr/>

@@ -111,7 +111,7 @@ class ResourceRequest(BaseModel):
 
 class TimeSlot(BaseModel):
     program = models.ForeignKey(Program, related_name="time_slots", on_delete=models.PROTECT)
-    day = models.CharField(choices=Weekday.choices, max_length=16, null=True, blank=True)
+    day = models.IntegerField(choices=Weekday.choices, null=True, blank=True)
     start_time = models.TimeField()
     end_time = models.TimeField()
 
@@ -119,6 +119,9 @@ class TimeSlot(BaseModel):
         start = self.start_time.strftime('%I:%M%p').lstrip('0')
         end = self.end_time.strftime('%I:%M%p').lstrip('0')
         return f"{start} - {end}" + (f" ({self.get_day_display()})" if self.day else "")
+
+    class Meta(BaseModel.Meta):
+        ordering = ("day", "start_time")
 
 
 class ClassroomAvailability(BaseModel):
@@ -143,7 +146,6 @@ class ProgramStage(BaseModel):
     """ProgramStage represents configuration for a program stage, e.g. 'Initiation' or 'Post-Lottery'"""
     program = models.ForeignKey(Program, related_name="stages", on_delete=models.PROTECT)
     name = models.CharField(max_length=256)
-    index = models.IntegerField(default=0)
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
     manually_activated = models.BooleanField(default=False, blank=True)
@@ -152,7 +154,7 @@ class ProgramStage(BaseModel):
     description = models.TextField(null=True, blank=True)
 
     class Meta(BaseModel.Meta):
-        constraints = [models.UniqueConstraint(fields=("program_id", "index"), name="unique_program_stage_index")]
+        order_with_respect_to = "program"
 
     def __str__(self):
         return f"{self.program}: {self.name}"
@@ -200,22 +202,18 @@ class PreferenceEntryRound(BaseModel):
     preference_entry_configuration = models.ForeignKey(
         PreferenceEntryConfiguration, on_delete=models.PROTECT, related_name="rounds"
     )
-    index = models.IntegerField(default=0)
     title = models.CharField(max_length=512, null=True, blank=True)
     help_text = models.TextField()
+    group_sections_by_course = models.BooleanField(default=False)
     applied_category_filter = models.CharField(max_length=512, null=True, blank=True)
     applied_category_min_value = models.IntegerField(null=True, blank=True)
     applied_category_max_value = models.IntegerField(null=True, blank=True)
 
     class Meta(BaseModel.Meta):
-        constraints = [
-            models.UniqueConstraint(
-                fields=("preference_entry_configuration_id", "index"), name="unique_preference_entry_round_index"
-            )
-        ]
+        order_with_respect_to = "preference_entry_configuration_id"
 
     def __str__(self):
-        return f"{self.title} (Round {self.index})"
+        return f"{self.title} (Round {self._order})"
 
 
 class PreferenceEntryCategory(BaseModel):

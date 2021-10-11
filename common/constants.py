@@ -1,4 +1,4 @@
-from django.db.models import TextChoices
+from django.db.models import IntegerChoices, TextChoices
 
 
 class UserType(TextChoices):
@@ -21,11 +21,11 @@ class PermissionType(TextChoices):
     view_all_teacher_dashboards = "view_all_teacher_dashboards"
 
 
-class Weekday(TextChoices):
-    monday = "monday", "Mon"
-    tuesday = "tuesday", "Tues"
-    wednesday = "wednesday", "Wed"
-    thursday = "thursday", "Thurs"
-    friday = "friday", "Friday"
-    saturday = "saturday", "Sat"
-    sunday = "sunday", "Sun"
+class Weekday(IntegerChoices):
+    monday = 0, "Mon"
+    tuesday = 1, "Tues"
+    wednesday = 2, "Wed"
+    thursday = 3, "Thurs"
+    friday = 4, "Friday"
+    saturday = 5, "Sat"
+    sunday = 6, "Sun"

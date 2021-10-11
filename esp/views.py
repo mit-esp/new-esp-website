@@ -1,5 +1,8 @@
+import json
+
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Max
+from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
 from django.views.generic import ListView
@@ -10,7 +13,9 @@ from django.views.generic.edit import CreateView, FormView, UpdateView
 from common.forms import CrispyFormsetHelper
 from esp.forms import (CourseForm, ProgramForm, ProgramRegistrationStepFormset,
                        ProgramStageForm, RegisterUserForm)
-from esp.models import Course, Program, ProgramRegistration, ProgramStage
+from esp.models import (ClassPreference, ClassSection, Course,
+                        PreferenceEntryCategory, PreferenceEntryRound, Program,
+                        ProgramRegistration, ProgramStage)
 
 
 class RegisterAccountView(CreateView):
@@ -67,7 +72,6 @@ class ProgramStageFormsetMixin:
 
 class ProgramStageCreateView(SingleObjectMixin, ProgramStageFormsetMixin, FormView):
     model = Program
-    context_object_name = "program"
     form_class = ProgramStageForm
     template_name = "esp/program_stage_form.html"
 
@@ -102,7 +106,6 @@ class ProgramStageUpdateView(ProgramStageFormsetMixin, UpdateView):
         self.program_stage = super().get_object(queryset)
         return self.program_stage
 
-
 ###########################################################
 
 
@@ -121,8 +124,9 @@ class CourseUpdateView(UpdateView):
 class CourseListView(ListView):
     model = Course
 
-
 ###########################################################
+
+
 class BaseDashboardView(LoginRequiredMixin, TemplateView):
     login_url = reverse_lazy('index')
 
@@ -154,27 +158,114 @@ class StudentDashboardView(BaseDashboardView):
 class GuardianDashboardView(BaseDashboardView):
     template_name = 'dashboards/guardian_dashboard.html'
 
-
 #######################################################
-class ProgramRegistrationView(SingleObjectMixin, View):
+
+
+class ProgramRegistrationCreateView(SingleObjectMixin, View):
     model = Program
 
     def get(self, request, *args, **kwargs):
         program = self.get_object()
-        ProgramRegistration.objects.get_or_create(
-            program=program, user=self.request.user, defaults={"stage": program.stages.first()}
+        registration, _created = ProgramRegistration.objects.get_or_create(
+            program=program, user=self.request.user, defaults={"program_stage": program.stages.first()}
         )
-        return redirect(reverse("current_registration_step", kwargs={"pk": program.id}))
+        return redirect(reverse("current_registration_stage", kwargs={"pk": registration.id}))
 
 
-class PreferenceEntryView(DetailView):
-    model = Program
-    context_object_name = "program"
-    template_name = 'esp/class_preference_entry.html'
+class ProgramRegistrationStageView(DetailView):
+    model = ProgramRegistration
+
+    def get_queryset(self):
+        return ProgramRegistration.objects.filter(user_id=self.request.user.id)
+
+
+class InitiatePreferenceEntryView(DetailView):
+    model = ProgramRegistration
+    template_name = "esp/initiate_preference_entry.html"
+
+    def get_queryset(self):
+        return ProgramRegistration.objects.filter(user_id=self.request.user.id)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["registration"] = get_object_or_404(
-            ProgramRegistration, program_id=self.object.id, user=self.request.user
-        )
+        if not self.object.program.preference_entry_configuration:
+            raise Http404("Program missing preference entry configuration")
+        context["preference_entry_configuration"] = self.object.program.preference_entry_configuration
         return context
+
+
+class PreferenceEntryRoundView(DetailView):
+    model = PreferenceEntryRound
+    context_object_name = "round"
+    slug_url_kwarg = "index"
+    slug_field = "_order"
+    template_name = "esp/preference_entry_round.html"
+
+    def get_queryset(self):
+        self.registration = get_object_or_404(
+            ProgramRegistration, id=self.kwargs["registration_id"], user_id=self.request.user.id
+        )
+        return PreferenceEntryRound.objects.filter(
+            preference_entry_configuration_id=self.registration.program.preference_entry_configuration_id,
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["registration"] = self.registration
+        class_sections = ClassSection.objects.filter(course__program_id=self.registration.program_id)
+        if self.object.applied_category_filter:
+            previous_round = self.object.get_previous_in_order()
+            if previous_round:
+                try:
+                    category = previous_round.categories.filter(tag=self.object.applied_category_filter).get()
+                except PreferenceEntryCategory.DoesNotExist:
+                    raise Http404("Misconfigured preference entry round")
+                filtered_preferences = self.registration.preferences.filter(category=category)
+                if category.has_integer_value and self.object.applied_category_min_value:
+                    filtered_preferences = filtered_preferences.filter(
+                        value__gte=self.object.applied_category_min_value
+                    )
+                if category.has_integer_value and self.object.applied_category_max_value:
+                    filtered_preferences = filtered_preferences.filter(
+                        value__lte=self.object.applied_category_max_value
+                    )
+                class_sections = class_sections.filter(
+                    id__in=filtered_preferences.values("class_section_id").distinct()
+                )
+        if self.object.group_sections_by_course:
+            context["courses"] = Course.objects.filter(id__in=class_sections.values("course_id").distinct())
+        else:
+            context["time_slots"] = {
+                str(slot): class_sections.filter(time_slot_id=slot.id)
+                for slot in self.registration.program.time_slots.all()
+            }
+        return context
+
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.POST.get("data"))
+        self.object = self.get_object()
+        if self.object.group_sections_by_course:
+            for course_id, category_id in data.items():
+                course = get_object_or_404(Course, id=course_id, program_id=self.registration.program_id)
+                category = get_object_or_404(
+                    PreferenceEntryCategory, id=category_id, preference_entry_round_id=self.object.id
+                )
+                for section_id in course.sections.values_list("id", flat=True):
+                    ClassPreference.objects.update_or_create(
+                        registration=self.registration, class_section_id=section_id, defaults={"category": category}
+                    )
+        else:
+            for section_id, category_id in data.items():
+                section = get_object_or_404(
+                    ClassSection, id=section_id, course__program_id=self.registration.program_id
+                )
+                category = get_object_or_404(
+                    PreferenceEntryCategory, id=category_id, preference_entry_round_id=self.object.id
+                )
+                ClassPreference.objects.update_or_create(
+                    registration=self.registration, class_section=section, defaults={"category": category}
+                )
+        return redirect(reverse(
+            "preference_entry_round",
+            kwargs={"registration_id": self.registration.id, "index": self.object.get_next_in_order()._order})
+        )

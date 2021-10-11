@@ -20,10 +20,10 @@ class HiddenOrderingInputFormset(BaseInlineFormSet):
 
     def clean(self):
         super().clean()
-        index = 0
+        order = 0
         for form in self.forms:
-            form.instance.index = index
-            index += 1
+            form.instance._order = order
+            order += 1
 
 
 class CrispyFormsetHelper(FormHelper):
