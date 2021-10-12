@@ -1,10 +1,12 @@
 import json
 
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import ValidationError
+from django.db import IntegrityError
 from django.db.models import Max
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect
-from django.urls import reverse, reverse_lazy
+from django.urls import reverse_lazy
 from django.views.generic import ListView
 from django.views.generic.base import TemplateView, View
 from django.views.generic.detail import DetailView, SingleObjectMixin
@@ -13,9 +15,13 @@ from django.views.generic.edit import CreateView, FormView, UpdateView
 from common.forms import CrispyFormsetHelper
 from esp.forms import (CourseForm, ProgramForm, ProgramRegistrationStepFormset,
                        ProgramStageForm, RegisterUserForm)
-from esp.models import (ClassPreference, ClassSection, Course,
+from esp.models import (ClassPreference, ClassSection,
+                        CompletedRegistrationStep, Course,
                         PreferenceEntryCategory, PreferenceEntryRound, Program,
-                        ProgramRegistration, ProgramStage)
+                        ProgramRegistration, ProgramRegistrationStep,
+                        ProgramStage)
+
+# from esp.serializers import ClassPreferenceSerializer
 
 
 class RegisterAccountView(CreateView):
@@ -169,7 +175,7 @@ class ProgramRegistrationCreateView(SingleObjectMixin, View):
         registration, _created = ProgramRegistration.objects.get_or_create(
             program=program, user=self.request.user, defaults={"program_stage": program.stages.first()}
         )
-        return redirect(reverse("current_registration_stage", kwargs={"pk": registration.id}))
+        return redirect("current_registration_stage", pk=registration.id)
 
 
 class ProgramRegistrationStageView(DetailView):
@@ -191,6 +197,7 @@ class InitiatePreferenceEntryView(DetailView):
         if not self.object.program.preference_entry_configuration:
             raise Http404("Program missing preference entry configuration")
         context["preference_entry_configuration"] = self.object.program.preference_entry_configuration
+        context["step_id"] = self.kwargs["step_id"]
         return context
 
 
@@ -202,12 +209,23 @@ class PreferenceEntryRoundView(DetailView):
     template_name = "esp/preference_entry_round.html"
 
     def get_queryset(self):
+        # Called by self.get_object(), which must be manually called in .post()
         self.registration = get_object_or_404(
             ProgramRegistration, id=self.kwargs["registration_id"], user_id=self.request.user.id
         )
         return PreferenceEntryRound.objects.filter(
             preference_entry_configuration_id=self.registration.program.preference_entry_configuration_id,
         )
+
+    def back_url(self):
+        if self.kwargs["index"] > 0:
+            return reverse_lazy(
+                "preference_entry_round",
+                kwargs={
+                    "registration_id": self.registration.id, "index": self.object.get_previous_in_order()._order,
+                    "step_id": self.kwargs["step_id"]
+                }
+            )
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -239,33 +257,62 @@ class PreferenceEntryRoundView(DetailView):
                 str(slot): class_sections.filter(time_slot_id=slot.id)
                 for slot in self.registration.program.time_slots.all()
             }
+        context["back_url"] = self.back_url()
         return context
 
     def post(self, request, *args, **kwargs):
-        data = json.loads(request.POST.get("data"))
         self.object = self.get_object()
+        data = json.loads(request.POST.get("data"))
+        # serializer = ClassPreferenceSerializer(data=data, many=True, context={
+        #     "group_sections_by_course": self.object.group_sections_by_course,
+        #     "registration": self.registration,
+        #     "preference_entry_round_id": self.object.id,
+        # })
+        # serializer.is_valid()
+        # serializer.save()
         if self.object.group_sections_by_course:
-            for course_id, category_id in data.items():
-                course = get_object_or_404(Course, id=course_id, program_id=self.registration.program_id)
-                category = get_object_or_404(
-                    PreferenceEntryCategory, id=category_id, preference_entry_round_id=self.object.id
+            for preference in data:
+                course = get_object_or_404(
+                    Course, id=preference.get("class_section_id"), program_id=self.registration.program_id
                 )
                 for section_id in course.sections.values_list("id", flat=True):
-                    ClassPreference.objects.update_or_create(
-                        registration=self.registration, class_section_id=section_id, defaults={"category": category}
-                    )
+                    try:
+                        ClassPreference.objects.update_or_create(
+                            registration=self.registration, class_section_id=section_id,
+                            category_id=preference.get("category_id"),
+                        )
+                    except IntegrityError:
+                        raise ValidationError("Category does not exist")
         else:
-            for section_id, category_id in data.items():
+            for preference in data:
                 section = get_object_or_404(
-                    ClassSection, id=section_id, course__program_id=self.registration.program_id
+                    ClassSection, id=preference.get("class_section_id"), course__program_id=self.registration.program_id
                 )
                 category = get_object_or_404(
-                    PreferenceEntryCategory, id=category_id, preference_entry_round_id=self.object.id
+                    PreferenceEntryCategory, id=preference.get("category_id"), preference_entry_round_id=self.object.id
                 )
                 ClassPreference.objects.update_or_create(
-                    registration=self.registration, class_section=section, defaults={"category": category}
+                    registration=self.registration, class_section=section, category=category,
                 )
-        return redirect(reverse(
-            "preference_entry_round",
-            kwargs={"registration_id": self.registration.id, "index": self.object.get_next_in_order()._order})
-        )
+        try:
+            return redirect(
+                "preference_entry_round",
+                registration_id=self.registration.id, index=self.object.get_next_in_order()._order,
+                step_id=self.kwargs["step_id"]
+            )
+        except PreferenceEntryRound.DoesNotExist:
+            return redirect(
+                "complete_registration_step",
+                registration_id=self.registration.id, step_id=self.kwargs["step_id"]
+            )
+
+
+class RegistrationStepCompleteView(SingleObjectMixin, View):
+    model = ProgramRegistration
+    pk_url_kwarg = "registration_id"
+
+    def get(self, request, *args, **kwargs):
+        registration = self.get_object()
+        step = get_object_or_404(ProgramRegistrationStep, id=self.kwargs.get("step_id"))
+        CompletedRegistrationStep.objects.update_or_create(registration=registration, step=step)
+        return redirect("current_registration_stage", pk=registration.id)

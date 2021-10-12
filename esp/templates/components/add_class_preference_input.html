@@ -1,0 +1,9 @@
+{% for category in round.categories.all %}
+  <div class="d-flex">
+    <button class="btn btn-sm btn-outline-primary" id="mark-{{ course.id }}-{{ category.id }}"
+            onclick="markCourseAsCategory('{{ course.id }}', '{{ category.id }}')" title="{{ category.help_text }}">
+      {{ category|title }}
+    </button>
+    <span id="show-{{ course.id }}-{{ category.id }}" class="d-none">{{ category.tag }}</span>
+  </div>
+{% endfor %}

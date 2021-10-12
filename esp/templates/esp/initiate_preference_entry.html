@@ -8,7 +8,8 @@
     be able to choose classes to mark as preferred. After you complete all rounds, your preferences will be entered into
     the class lottery.
   </p>
-  <a href="{% url "preference_entry_round" index=0 registration_id=programregistration.id %}" class="btn btn-primary">
+  <a href="{% url "preference_entry_round" index=0 registration_id=programregistration.id step_id=step_id %}"
+     class="btn btn-primary">
     Begin
   </a>
 {% endblock %}

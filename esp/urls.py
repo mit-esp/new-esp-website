@@ -8,8 +8,8 @@ from esp.views import (AdminDashboardView, CourseCreateView, CourseListView,
                        ProgramRegistrationCreateView,
                        ProgramRegistrationStageView, ProgramStageCreateView,
                        ProgramStageUpdateView, ProgramUpdateView,
-                       RegisterAccountView, StudentDashboardView,
-                       TeacherDashboardView)
+                       RegisterAccountView, RegistrationStepCompleteView,
+                       StudentDashboardView, TeacherDashboardView)
 
 urlpatterns = [
     path('accounts/register', RegisterAccountView.as_view(), name="register_account"),
@@ -37,10 +37,14 @@ urlpatterns = [
         name="current_registration_stage"
     ),
     path(
-        'programs/registration/<uuid:pk>/preferences/', InitiatePreferenceEntryView.as_view(),
+        'programs/registration/<uuid:pk>/preferences/<uuid:step_id>/', InitiatePreferenceEntryView.as_view(),
         name=RegistrationStep.lottery_preferences
     ),
     path(
-        'programs/registration/<uuid:registration_id>/preferences/round_<int:index>/',
-        PreferenceEntryRoundView.as_view(), name="preference_entry_round")
+        'programs/registration/<uuid:registration_id>/preferences/<uuid:step_id>/round_<int:index>/',
+        PreferenceEntryRoundView.as_view(), name="preference_entry_round"),
+    path(
+        'programs/registration/<uuid:registration_id>/step/<uuid:step_id>/complete/',
+        RegistrationStepCompleteView.as_view(), name="complete_registration_step",
+    )
 ]

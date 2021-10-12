@@ -16,14 +16,11 @@
       </tr>
     </thead>
     <tbody>
-      <tr>
+      <tr class="overflow-scroll">
         {% for slot, section_list in time_slots.items %}
           <td>{% for section in section_list %}
             <p>{{ section.course.name }}</p>
-            {% for category in round.categories.all %}
-              <button class="btn btn-outline-primary" id="mark-{{ section.id }}-{{ category.id }}" onclick="markCourseAsCategory('{{ section.id }}', '{{ category }}')">Mark '{{ category }}'</button>
-              <span id="show-{{ section.id }}-{{ category.id }}" class="d-none">{{ category }}</span>
-            {% endfor %}
+              {% include "components/add_class_preference_input.html" with course=section %}
           {% endfor %}</td>
         {% endfor %}
       </tr>
@@ -31,18 +28,23 @@
   </table>
   {% else %}
     <h4>Classes</h4>
-    {% for course in courses %}<p>ESP {{ course.display_id }}: {{ course.name }}
-      {% for category in round.categories.all %}
-        <button class="btn btn-outline-primary" id="mark-{{ course.id }}-{{ category.id }}" onclick="markCourseAsCategory('{{ course.id }}', '{{ category.id }}')">Mark '{{ category }}'</button>
-        <span id="show-{{ course.id }}-{{ category.id }}" class="d-none">{{ category }}</span>
-      {% endfor %}
-    </p>{% endfor %}
+    {% for course in courses %}
+      <div class="d-flex mb-3 w-50 justify-content-between">
+        ESP {{ course.display_id }}: {{ course.name }}
+        {% include "components/add_class_preference_input.html" %}
+      </div>
+    {% endfor %}
   {% endif %}
-  <form method="post">
-    {% csrf_token %}
-    <input type="hidden" name="data" id="data"/>
-    <button class="btn btn-primary" type="submit">Submit</button>
-  </form>
+  <div class="d-flex align-items-start">
+    {% if back_url %}
+      <a class="btn btn-secondary me-3" href="{{ back_url }}">Back</a>
+    {% endif %}
+    <form method="post">
+      {% csrf_token %}
+      <input type="hidden" name="data" id="data"/>
+      <button class="btn btn-primary" type="submit" onclick="setPostData()">Submit</button>
+    </form>
+  </div>
   <script>
     const courseCategories = {}
     const markCourseAsCategory = (courseId, category) => {
@@ -51,8 +53,13 @@
       btn.setAttribute("class", "d-none")
       const mark = document.getElementById(`show-${courseId}-${category}`)
       mark.setAttribute("class", "")
-      const data_input = document.getElementById("data")
-      data_input.setAttribute("value", JSON.stringify(courseCategories))
+    }
+    const setPostData = () => {
+      const dataInput = document.getElementById("data")
+      const postData = Object.entries(courseCategories).map(([key, category]) => {
+        return {class_section_id: key, category_id: category}
+      })
+      dataInput.setAttribute("value", JSON.stringify(postData))
     }
   </script>
 {% endblock %}
