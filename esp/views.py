@@ -1,8 +1,6 @@
 import json
 
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.exceptions import ValidationError
-from django.db import IntegrityError
 from django.db.models import Max
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect
@@ -15,13 +13,11 @@ from django.views.generic.edit import CreateView, FormView, UpdateView
 from common.forms import CrispyFormsetHelper
 from esp.forms import (CourseForm, ProgramForm, ProgramRegistrationStepFormset,
                        ProgramStageForm, RegisterUserForm)
-from esp.models import (ClassPreference, ClassSection,
-                        CompletedRegistrationStep, Course,
+from esp.models import (ClassSection, CompletedRegistrationStep, Course,
                         PreferenceEntryCategory, PreferenceEntryRound, Program,
                         ProgramRegistration, ProgramRegistrationStep,
                         ProgramStage)
-
-# from esp.serializers import ClassPreferenceSerializer
+from esp.serializers import ClassPreferenceSerializer
 
 
 class RegisterAccountView(CreateView):
@@ -263,37 +259,13 @@ class PreferenceEntryRoundView(DetailView):
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
         data = json.loads(request.POST.get("data"))
-        # serializer = ClassPreferenceSerializer(data=data, many=True, context={
-        #     "group_sections_by_course": self.object.group_sections_by_course,
-        #     "registration": self.registration,
-        #     "preference_entry_round_id": self.object.id,
-        # })
-        # serializer.is_valid()
-        # serializer.save()
-        if self.object.group_sections_by_course:
-            for preference in data:
-                course = get_object_or_404(
-                    Course, id=preference.get("class_section_id"), program_id=self.registration.program_id
-                )
-                for section_id in course.sections.values_list("id", flat=True):
-                    try:
-                        ClassPreference.objects.update_or_create(
-                            registration=self.registration, class_section_id=section_id,
-                            category_id=preference.get("category_id"),
-                        )
-                    except IntegrityError:
-                        raise ValidationError("Category does not exist")
-        else:
-            for preference in data:
-                section = get_object_or_404(
-                    ClassSection, id=preference.get("class_section_id"), course__program_id=self.registration.program_id
-                )
-                category = get_object_or_404(
-                    PreferenceEntryCategory, id=preference.get("category_id"), preference_entry_round_id=self.object.id
-                )
-                ClassPreference.objects.update_or_create(
-                    registration=self.registration, class_section=section, category=category,
-                )
+        serializer = ClassPreferenceSerializer(data=data, many=True, context={
+            "group_sections_by_course": self.object.group_sections_by_course,
+            "registration": self.registration,
+            "preference_entry_round_id": self.object.id,
+        })
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
         try:
             return redirect(
                 "preference_entry_round",
