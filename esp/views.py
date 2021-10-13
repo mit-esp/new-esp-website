@@ -1,29 +1,71 @@
 import json
 
+from django.contrib.auth import login
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Max
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.views.generic import ListView
 from django.views.generic.base import TemplateView, View
 from django.views.generic.detail import DetailView, SingleObjectMixin
 from django.views.generic.edit import CreateView, FormView, UpdateView
 
+from common.constants import UserType
 from common.forms import CrispyFormsetHelper
 from esp.forms import (CourseForm, ProgramForm, ProgramRegistrationStepFormset,
-                       ProgramStageForm, RegisterUserForm)
+                       ProgramStageForm, RegisterUserForm, StudentProfileForm,
+                       UpdateStudentProfileForm)
 from esp.models import (ClassSection, CompletedRegistrationStep, Course,
                         PreferenceEntryCategory, PreferenceEntryRound, Program,
                         ProgramRegistration, ProgramRegistrationStep,
-                        ProgramStage)
+                        ProgramStage, StudentProfile)
 from esp.serializers import ClassPreferenceSerializer
 
 
 class RegisterAccountView(CreateView):
     template_name = "registration.html"
     form_class = RegisterUserForm
-    success_url = reverse_lazy('index')
+
+    def get_success_url(self):
+        profile_form_url_mapping = {
+            UserType.student: "create_student_profile",
+        }
+        return reverse(profile_form_url_mapping.get(self.object.user_type, self.object.get_dashboard_url()))
+
+    def form_valid(self, form):
+        login(self.request, form.user)
+        return super().form_valid(form)
+
+
+class StudentProfileCreateView(CreateView):
+    model = StudentProfile
+    form_class = StudentProfileForm
+    success_url = reverse_lazy("student_dashboard")
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super().form_valid(form)
+
+
+class StudentProfileUpdateView(UpdateView):
+    model = StudentProfile
+    form_class = UpdateStudentProfileForm
+    success_url = reverse_lazy("student_dashboard")
+
+    def get_initial(self):
+        return {
+            "first_name": self.object.user.first_name,
+            "last_name": self.object.user.last_name,
+            "email": self.object.user.email,
+        }
+
+    def form_valid(self, form):
+        self.object.user.update(
+            first_name=form.cleaned_data["first_name"], last_name=form.cleaned_data["last_name"],
+            email=form.cleaned_data["email"]
+        )
+        return super().form_valid(form)
 
 ###########################################################
 
@@ -160,6 +202,10 @@ class StudentDashboardView(BaseDashboardView):
 class GuardianDashboardView(BaseDashboardView):
     template_name = 'dashboards/guardian_dashboard.html'
 
+
+class VolunteerDashboardView(BaseDashboardView):
+    template_name = 'dashboards/volunteer_dashboard.html'
+
 #######################################################
 
 
@@ -183,6 +229,7 @@ class ProgramRegistrationStageView(DetailView):
 
 class InitiatePreferenceEntryView(DetailView):
     model = ProgramRegistration
+    pk_url_kwarg = "registration_id"
     template_name = "esp/initiate_preference_entry.html"
 
     def get_queryset(self):
@@ -288,3 +335,12 @@ class RegistrationStepCompleteView(SingleObjectMixin, View):
         step = get_object_or_404(ProgramRegistrationStep, id=self.kwargs.get("step_id"))
         CompletedRegistrationStep.objects.update_or_create(registration=registration, step=step)
         return redirect("current_registration_stage", pk=registration.id)
+
+
+class RegistrationStepPlaceholderView(TemplateView):
+    template_name = "esp/registration_step_placeholder.html"
+
+    def post(self, request, *args, **kwargs):
+        return redirect(
+            "complete_registration_step", registration_id=self.kwargs["registration_id"], step_id=self.kwargs["step_id"]
+        )

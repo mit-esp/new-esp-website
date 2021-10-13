@@ -1,5 +1,7 @@
 {% extends "student_base.html" %}
 
+{% block title %}Dashboard{% endblock %}
+
 {% block content %}
   <h1>Student Dashboard</h1>
   <hr/>
@@ -9,11 +11,20 @@
   {% empty %}No active registrations. See below for eligible programs.
   {% endfor %}
   <hr/>
-  <h2>Programs</h2>
-  {% for program in eligible_programs %}
-    <div>
-      <p><a href="{% url 'create_program_registration' pk=program.id %}" >Register for {{ program.name }}</a></p>
-      <p>Description: {{ program.description }}</p>
-    </div>
-  {% endfor %}
+  {% if eligible_programs %}
+    <h2>Eligible Programs</h2>
+    {% for program in eligible_programs %}
+      <div>
+        <p><a href="{% url 'create_program_registration' pk=program.id %}">Register for {{ program.name }}</a></p>
+        <p>Description: {{ program.description }}</p>
+      </div>
+    {% endfor %}
+    <hr/>
+  {% endif %}
+  <h2>Manage account</h2>
+  {% if request.user.student_profile %}
+    <p><a href="{% url 'update_student_profile' pk=request.user.student_profile.id %}">Update Profile</a></p>
+  {% else %}
+    To test student user account management, please log in with a student account.
+  {% endif %}
 {% endblock %}

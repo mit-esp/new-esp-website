@@ -1,0 +1,20 @@
+{% extends "base_templates/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %}Student Profile{% endblock %}
+
+{% block css %}
+{% endblock %}
+
+{% block body %}
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-10 col-lg-8 col-xl-6">
+      <div class="card">
+        <div class="card-body">
+          <h1>Update Student Profile</h1>
+          {% crispy form  %}
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

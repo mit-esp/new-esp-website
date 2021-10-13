@@ -1,6 +1,5 @@
-from rest_framework import serializers
-
 from esp.models import ClassPreference, ClassSection, Course
+from rest_framework import serializers
 
 
 class ClassPreferenceSerializer(serializers.ModelSerializer):
@@ -29,12 +28,12 @@ class ClassPreferenceSerializer(serializers.ModelSerializer):
             for section_id in course.sections.values_list("id", flat=True):
                 ClassPreference.objects.update_or_create(
                     class_section_id=section_id,
-                    registration_id=self.context["registration"].id,
-                    category_id=validated_data["category"],
+                    registration=self.context["registration"],
+                    category=validated_data["category"],
                 )
             return
         return ClassPreference.objects.update_or_create(
-            class_section_id=validated_data["class_section"],
-            registration_id=self.context["registration"].id,
-            category_id=validated_data["category"],
+            class_section=validated_data["class_section"],
+            registration=self.context["registration"],
+            category=validated_data["category"],
         )

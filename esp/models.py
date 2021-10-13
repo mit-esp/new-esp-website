@@ -2,10 +2,10 @@ from django.db import models
 from django.db.models import Max
 from django.utils import timezone
 
-from common.constants import Weekday
+from common.constants import GradeLevel, USState, Weekday
 from common.models import BaseModel, User
-from esp.constants import (CourseRoleType, CourseStatus, ProgramType,
-                           RegistrationStep)
+from esp.constants import (CourseDifficulty, CourseRoleType, CourseStatus,
+                           HeardAboutVia, ProgramType, RegistrationStep)
 
 
 class PreferenceEntryConfiguration(BaseModel):
@@ -27,6 +27,8 @@ class Program(BaseModel):
     program_type = models.CharField(choices=ProgramType.choices, max_length=128, null=True, blank=True)
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
+    min_grade_level = models.IntegerField(choices=GradeLevel.choices, default=7)
+    max_grade_level = models.IntegerField(choices=GradeLevel.choices, default=12)
     description = models.TextField(null=True)
     notes = models.TextField(null=True, blank=True)
 
@@ -47,6 +49,9 @@ class Course(BaseModel):
     description = models.TextField()
     max_size = models.IntegerField()
     prerequisites = models.TextField(default="None", blank=True)
+    min_grade_level = models.IntegerField(choices=GradeLevel.choices, default=GradeLevel.seventh)
+    max_grade_level = models.IntegerField(choices=GradeLevel.choices, default=GradeLevel.twelfth)
+    difficulty = models.IntegerField(choices=CourseDifficulty.choices, default=CourseDifficulty.easy)
 
     status = models.CharField(choices=CourseStatus.choices, max_length=32, default=CourseStatus.unreviewed)
     notes = models.TextField(null=True, blank=True)
@@ -258,3 +263,39 @@ class CourseTag(BaseModel):
 
     def __str__(self):
         return self.tag
+
+
+class StudentProfile(BaseModel):
+    user = models.OneToOneField(User, on_delete=models.PROTECT, related_name="student_profile")
+    address_street = models.CharField(max_length=512)
+    address_city = models.CharField(max_length=512)
+    address_state = models.CharField(choices=USState.choices, max_length=16)
+    address_zip = models.CharField(max_length=10)
+
+    home_phone = models.CharField(max_length=16)
+    cell_phone = models.CharField(max_length=16, null=True, blank=True)
+
+    dob = models.DateField()
+    graduation_year = models.CharField(max_length=4)
+    school = models.CharField(max_length=512)
+    heard_about_esp_via = models.CharField(
+        choices=HeardAboutVia.choices, max_length=32, verbose_name="How did you hear about this program?",
+        help_text="If you select 'Other', please provide detail in the text box."
+    )
+    heard_about_esp_other_detail = models.CharField(max_length=1024, null=True, blank=True)
+
+    guardian_first_name = models.CharField(max_length=128)
+    guardian_last_name = models.CharField(max_length=128)
+    guardian_email = models.EmailField()
+    guardian_home_phone = models.CharField(max_length=16)
+    guardian_cell_phone = models.CharField(max_length=16, null=True, blank=True)
+
+    emergency_contact_first_name = models.CharField(max_length=128)
+    emergency_contact_last_name = models.CharField(max_length=128)
+    emergency_contact_email = models.EmailField()
+    emergency_contact_address_street = models.CharField(max_length=512)
+    emergency_contact_address_city = models.CharField(max_length=512)
+    emergency_contact_address_state = models.CharField(choices=USState.choices, max_length=16)
+    emergency_contact_address_zip = models.CharField(max_length=10)
+    emergency_contact_home_phone = models.CharField(max_length=16)
+    emergency_contact_cell_phone = models.CharField(max_length=16, null=True, blank=True)
