@@ -45,21 +45,31 @@
       <button class="btn btn-primary" type="submit" onclick="setPostData()">Submit</button>
     </form>
   </div>
+{% endblock %}
+
+{% block script %}
   <script>
     const courseCategories = {}
     const markCourseAsCategory = (courseId, category) => {
       courseCategories[courseId] = category
-      const btn = document.getElementById(`mark-${courseId}-${category}`)
+      const btn = document.getElementById(`categories-${courseId}`)
       btn.setAttribute("class", "d-none")
       const mark = document.getElementById(`show-${courseId}-${category}`)
-      mark.setAttribute("class", "")
+      mark.setAttribute("class", "d-flex")
+    }
+    const removeCategoryFromCourse = (courseId, category) => {
+      courseCategories[courseId] = undefined
+      const btn = document.getElementById(`categories-${courseId}`)
+      btn.setAttribute("class", "d-flex")
+      const mark = document.getElementById(`show-${courseId}-${category}`)
+      mark.setAttribute("class", "d-none")
     }
     const setPostData = () => {
       const dataInput = document.getElementById("data")
       const postData = Object.entries(courseCategories).map(([key, category]) => {
         return {class_section: key, category: category}
       })
-      dataInput.setAttribute("value", JSON.stringify(postData))
+      dataInput.setAttribute("value", JSON.stringify(postData.filter(({category}) => {return category})))
     }
   </script>
 {% endblock %}

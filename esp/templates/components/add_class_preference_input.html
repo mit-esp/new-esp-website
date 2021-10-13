@@ -1,9 +1,20 @@
+<div id="categories-{{ course.id }}" class="d-flex">
 {% for category in round.categories.all %}
-  <div class="d-flex">
-    <button class="btn btn-sm btn-outline-primary" id="mark-{{ course.id }}-{{ category.id }}"
-            onclick="markCourseAsCategory('{{ course.id }}', '{{ category.id }}')" title="{{ category.help_text }}">
-      {{ category|title }}
+      <button class="btn btn-sm btn-outline-primary"
+              onclick="markCourseAsCategory('{{ course.id }}', '{{ category.id }}')" title="{{ category.help_text }}">
+        {% if category.pre_add_display_name %}{{ category.pre_add_display_name }}
+        {% else %}{{ category.tag|title }}{% endif %}
+      </button>
+{% endfor %}
+</div>
+{% for category in round.categories.all %}
+  <div id="show-{{ course.id }}-{{ category.id }}" class="d-none">
+    <span class="text-danger fw-bold my-auto">
+      {% if category.post_add_display_name %}{{ category.post_add_display_name }}
+      {% else %}{{ category.tag|title }}{% endif %}
+    </span>
+    <button class="btn btn-sm btn-link ms-1" onclick="removeCategoryFromCourse('{{ course.id }}', '{{ category.id }}')">
+      Remove
     </button>
-    <span id="show-{{ course.id }}-{{ category.id }}" class="d-none">{{ category.tag }}</span>
   </div>
 {% endfor %}

@@ -226,6 +226,8 @@ class PreferenceEntryCategory(BaseModel):
         PreferenceEntryRound, related_name="categories", on_delete=models.PROTECT
     )
     tag = models.CharField(max_length=512)
+    pre_add_display_name = models.CharField(max_length=512, null=True, blank=True)
+    post_add_display_name = models.CharField(max_length=512, null=True, blank=True)
     has_integer_value = models.BooleanField(default=False)
     max_count = models.IntegerField(null=True, blank=True)
     min_count = models.IntegerField(null=True, blank=True)
