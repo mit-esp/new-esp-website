@@ -2,7 +2,7 @@ from django.db import models
 from django.db.models import Max
 from django.utils import timezone
 
-from common.constants import GradeLevel, USState, Weekday
+from common.constants import GradeLevel, USStateEquiv, Weekday
 from common.models import BaseModel, User
 from esp.constants import (CourseDifficulty, CourseRoleType, CourseStatus,
                            HeardAboutVia, ProgramType, RegistrationStep)
@@ -211,8 +211,6 @@ class PreferenceEntryRound(BaseModel):
     help_text = models.TextField()
     group_sections_by_course = models.BooleanField(default=False)
     applied_category_filter = models.CharField(max_length=512, null=True, blank=True)
-    applied_category_min_value = models.IntegerField(null=True, blank=True)
-    applied_category_max_value = models.IntegerField(null=True, blank=True)
 
     class Meta(BaseModel.Meta):
         order_with_respect_to = "preference_entry_configuration_id"
@@ -228,12 +226,8 @@ class PreferenceEntryCategory(BaseModel):
     tag = models.CharField(max_length=512)
     pre_add_display_name = models.CharField(max_length=512, null=True, blank=True)
     post_add_display_name = models.CharField(max_length=512, null=True, blank=True)
-    has_integer_value = models.BooleanField(default=False)
     max_count = models.IntegerField(null=True, blank=True)
     min_count = models.IntegerField(null=True, blank=True)
-    max_value = models.IntegerField(null=True, blank=True)
-    max_value_sum = models.IntegerField(null=True, blank=True)
-    allow_value_repeats = models.BooleanField(default=True, blank=True)
     help_text = models.TextField()
 
     def __str__(self):
@@ -245,7 +239,6 @@ class ClassPreference(BaseModel):
     registration = models.ForeignKey(ProgramRegistration, related_name="preferences", on_delete=models.PROTECT)
     class_section = models.ForeignKey(ClassSection, related_name="preferences", on_delete=models.PROTECT)
     category = models.ForeignKey(PreferenceEntryCategory, related_name="preferences", on_delete=models.PROTECT)
-    value = models.IntegerField(null=True)
 
     def __str__(self):
         return f"{self.registration} - {self.category} preference"
@@ -271,7 +264,7 @@ class StudentProfile(BaseModel):
     user = models.OneToOneField(User, on_delete=models.PROTECT, related_name="student_profile")
     address_street = models.CharField(max_length=512)
     address_city = models.CharField(max_length=512)
-    address_state = models.CharField(choices=USState.choices, max_length=16)
+    address_state = models.CharField(choices=USStateEquiv.choices, max_length=16)
     address_zip = models.CharField(max_length=10)
 
     home_phone = models.CharField(max_length=16)
@@ -297,7 +290,7 @@ class StudentProfile(BaseModel):
     emergency_contact_email = models.EmailField()
     emergency_contact_address_street = models.CharField(max_length=512)
     emergency_contact_address_city = models.CharField(max_length=512)
-    emergency_contact_address_state = models.CharField(choices=USState.choices, max_length=16)
+    emergency_contact_address_state = models.CharField(choices=USStateEquiv.choices, max_length=16)
     emergency_contact_address_zip = models.CharField(max_length=10)
     emergency_contact_home_phone = models.CharField(max_length=16)
     emergency_contact_cell_phone = models.CharField(max_length=16, null=True, blank=True)

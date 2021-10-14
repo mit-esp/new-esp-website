@@ -19,6 +19,7 @@
       <tr class="overflow-scroll">
         {% for slot, section_list in time_slots.items %}
           <td>{% for section in section_list %}
+            {{ section.user_preferences }}
             <p>{{ section.course.name }}</p>
               {% include "components/add_class_preference_input.html" with course=section %}
           {% endfor %}</td>
@@ -51,11 +52,13 @@
   <script>
     const courseCategories = {}
     const markCourseAsCategory = (courseId, category) => {
-      courseCategories[courseId] = category
-      const btn = document.getElementById(`categories-${courseId}`)
-      btn.setAttribute("class", "d-none")
-      const mark = document.getElementById(`show-${courseId}-${category}`)
-      mark.setAttribute("class", "d-flex")
+      if (category) {
+        courseCategories[courseId] = category
+        const btn = document.getElementById(`categories-${courseId}`)
+        btn.setAttribute("class", "d-none")
+        const mark = document.getElementById(`show-${courseId}-${category}`)
+        mark.setAttribute("class", "d-flex")
+      }
     }
     const removeCategoryFromCourse = (courseId, category) => {
       courseCategories[courseId] = undefined

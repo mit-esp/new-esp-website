@@ -2,7 +2,7 @@ import json
 
 from django.contrib.auth import login
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import Max
+from django.db.models import Max, OuterRef, Subquery
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
@@ -282,19 +282,22 @@ class PreferenceEntryRoundView(DetailView):
                 except PreferenceEntryCategory.DoesNotExist:
                     raise Http404("Misconfigured preference entry round")
                 filtered_preferences = self.registration.preferences.filter(category=category)
-                if category.has_integer_value and self.object.applied_category_min_value:
-                    filtered_preferences = filtered_preferences.filter(
-                        value__gte=self.object.applied_category_min_value
-                    )
-                if category.has_integer_value and self.object.applied_category_max_value:
-                    filtered_preferences = filtered_preferences.filter(
-                        value__lte=self.object.applied_category_max_value
-                    )
                 class_sections = class_sections.filter(
                     id__in=filtered_preferences.values("class_section_id").distinct()
                 )
+        class_sections = class_sections.annotate(
+            user_preference=Subquery(
+                self.registration.preferences.filter(
+                    class_section_id=OuterRef('id'), category__preference_entry_round=self.object
+                ).values("category_id")[:1]
+            )
+        )
         if self.object.group_sections_by_course:
-            context["courses"] = Course.objects.filter(id__in=class_sections.values("course_id").distinct())
+            context["courses"] = Course.objects.filter(id__in=class_sections.values("course_id").distinct()).annotate(
+                user_preference=Subquery(self.registration.preferences.filter(
+                    class_section__course_id=OuterRef('id'), category__preference_entry_round=self.object
+                ).values("category_id")[:1])
+            )
         else:
             context["time_slots"] = {
                 str(slot): class_sections.filter(time_slot_id=slot.id)

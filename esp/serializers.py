@@ -33,7 +33,9 @@ class ClassPreferenceSerializer(serializers.ModelSerializer):
         return self.create_single_preference(validated_data["class_section"].id, validated_data["category"])
 
     def create_single_preference(self, section_id, category):
-        return ClassPreference.objects.update_or_create(
+        return ClassPreference.objects.filter(
+            category__preference_entry_round_id=self.context["preference_entry_round_id"]
+        ).update_or_create(
             class_section_id=section_id,
             registration=self.context["registration"],
             defaults={
