@@ -1,6 +1,7 @@
+from django.forms import BaseInlineFormSet, HiddenInput
+
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
-from django.forms import BaseInlineFormSet, HiddenInput
 
 
 class CrispyFormMixin(object):
@@ -9,7 +10,7 @@ class CrispyFormMixin(object):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.helper = FormHelper()
+        self.helper = FormHelper(self)
         self.helper.form_method = "POST"
         self.helper.form_action = self.form_action
         self.helper.add_input(Submit("submit", self.submit_label))
@@ -20,10 +21,10 @@ class HiddenOrderingInputFormset(BaseInlineFormSet):
 
     def clean(self):
         super().clean()
-        index = 0
+        order = 0
         for form in self.forms:
-            form.instance.index = index
-            index += 1
+            form.instance._order = order
+            order += 1
 
 
 class CrispyFormsetHelper(FormHelper):

@@ -1,0 +1,17 @@
+{% extends "base_templates/base.html" %}
+{% load crispy_forms_tags %}
+{% block title %}Classes{% endblock %}
+
+{% block body %}
+<h3>Classes</h3>
+<h4><a href='{% url "create_course" %}'>Create New Class</a></h4>
+<hr />
+{% for course in object_list %}
+    <h5>{{ course.name }}</h5>
+    <p><strong>{{course.start_date}} to {{course.end_date}}</strong></p>
+    <br/>
+    <p>Created: {{ course.created_on }} - Updated: {{ course.updated_on }}
+    <a href = '{% url "update_course" course.id %}'>Update</a> -
+    <hr />
+{% endfor %}
+{% endblock %}

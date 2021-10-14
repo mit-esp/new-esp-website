@@ -1,0 +1,19 @@
+{% extends "student_base.html" %}
+
+{% block title %}{{ programregistration.program }} ({{ programregistration.program_stage.name }}){% endblock %}
+
+{% block content %}
+{% with program_stage=programregistration.program_stage %}
+  <div class="my-3">
+    <a href="{% url 'student_dashboard' %}" class="btn btn-secondary">Return to dashboard</a>
+  </div>
+  <h1>{{ program_stage.program }}: {{ program_stage.name }}</h1>
+  <ul>
+    {% for step in program_stage.steps.all %}
+      <li><a href="{% url step.step_key registration_id=programregistration.id step_id=step.id %}">
+        {% if step.display_name %}{{ step.display_name }}{% else %}{{ step.get_step_key_display }}{% endif %}
+      </a></li>
+    {% endfor %}
+  </ul>
+{% endwith %}
+{% endblock %}

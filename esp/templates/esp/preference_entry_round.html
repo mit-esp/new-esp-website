@@ -1,0 +1,78 @@
+{% extends "student_base.html" %}
+
+{% block title %}Enter Class Preferences{% endblock %}
+
+{% block content %}
+  <h2>{{ round.title }}</h2>
+  <p>{{ round.help_text }}</p>
+
+  {% if not round.group_sections_by_course %}
+  <table class="table">
+    <thead>
+      <tr>
+      {% for slot in time_slots %}
+        <td>{{ slot }}</td>
+      {% endfor %}
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="overflow-scroll">
+        {% for slot, section_list in time_slots.items %}
+          <td>{% for section in section_list %}
+            {{ section.user_preferences }}
+            <p>{{ section.course.name }}</p>
+              {% include "components/add_class_preference_input.html" with course=section %}
+          {% endfor %}</td>
+        {% endfor %}
+      </tr>
+    </tbody>
+  </table>
+  {% else %}
+    <h4>Classes</h4>
+    {% for course in courses %}
+      <div class="d-flex mb-3 w-50 justify-content-between">
+        ESP {{ course.display_id }}: {{ course.name }}
+        {% include "components/add_class_preference_input.html" %}
+      </div>
+    {% endfor %}
+  {% endif %}
+  <div class="d-flex align-items-start">
+    {% if back_url %}
+      <a class="btn btn-secondary me-3" href="{{ back_url }}">Back</a>
+    {% endif %}
+    <form method="post">
+      {% csrf_token %}
+      <input type="hidden" name="data" id="data"/>
+      <button class="btn btn-primary" type="submit" onclick="setPostData()">Submit</button>
+    </form>
+  </div>
+{% endblock %}
+
+{% block script %}
+  <script>
+    const courseCategories = {}
+    const markCourseAsCategory = (courseId, category) => {
+      if (category) {
+        courseCategories[courseId] = category
+        const btn = document.getElementById(`categories-${courseId}`)
+        btn.setAttribute("class", "d-none")
+        const mark = document.getElementById(`show-${courseId}-${category}`)
+        mark.setAttribute("class", "d-flex")
+      }
+    }
+    const removeCategoryFromCourse = (courseId, category) => {
+      courseCategories[courseId] = undefined
+      const btn = document.getElementById(`categories-${courseId}`)
+      btn.setAttribute("class", "d-flex")
+      const mark = document.getElementById(`show-${courseId}-${category}`)
+      mark.setAttribute("class", "d-none")
+    }
+    const setPostData = () => {
+      const dataInput = document.getElementById("data")
+      const postData = Object.entries(courseCategories).map(([key, category]) => {
+        return {class_section: key, category: category}
+      })
+      dataInput.setAttribute("value", JSON.stringify(postData.filter(({category}) => {return category})))
+    }
+  </script>
+{% endblock %}

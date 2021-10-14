@@ -1,4 +1,3 @@
-from crispy_forms.helper import FormHelper
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.forms import ModelForm, inlineformset_factory
@@ -6,7 +5,10 @@ from django.forms import ModelForm, inlineformset_factory
 from common.constants import UserType
 from common.forms import CrispyFormMixin, HiddenOrderingInputFormset
 from common.models import User
-from esp.models import Course, Program, ProgramRegistrationStep, ProgramStage
+from crispy_forms import layout
+from crispy_forms.helper import FormHelper
+from esp.models import (Course, Program, ProgramRegistrationStep, ProgramStage,
+                        StudentProfile)
 
 
 class RegisterUserForm(CrispyFormMixin, UserCreationForm):
@@ -37,6 +39,29 @@ class RegisterUserForm(CrispyFormMixin, UserCreationForm):
             'phone_number',
             'user_type',
         ]
+
+
+class StudentProfileForm(CrispyFormMixin, ModelForm):
+    class Meta:
+        model = StudentProfile
+        exclude = ["is_deleted", "user"]
+        labels = {
+            "heard_about_esp_other_detail": "",
+        }
+
+
+class UpdateStudentProfileForm(StudentProfileForm):
+    first_name = forms.CharField()
+    last_name = forms.CharField()
+    email = forms.CharField()
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper.layout = layout.Layout(
+            layout.Layout(*self.helper.layout[-3:]),
+            layout.Layout(*self.helper.layout[:-3])
+        )
+        self.helper["graduation_year"].wrap(layout.Field, disabled=True)
 
 
 class ProgramForm(CrispyFormMixin, ModelForm):
@@ -78,7 +103,7 @@ ProgramRegistrationStepFormset = inlineformset_factory(
 )
 
 
-class ClassForm(CrispyFormMixin, ModelForm):
+class CourseForm(CrispyFormMixin, ModelForm):
     submit_label = "Create Class"
     submit_kwargs = {"onclick": "return confirm('Are you sure?')"}
 

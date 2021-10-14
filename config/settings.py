@@ -10,8 +10,9 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 
 import os
 
-import environ
 from django.contrib.messages import constants as messages
+
+import environ
 
 env = environ.Env(
     DEBUG=(bool, False),
@@ -243,6 +244,17 @@ if LOCALHOST is False:
     SESSION_COOKIE_AGE = 60 * 60 * 3  # 3 hours
     CSRF_COOKIE_SECURE = True
     CSRF_COOKIE_HTTPONLY = True  # Only do this if you are not accessing the CSRF cookie with JS
+
+if LOCALHOST:
+    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+    DEFAULT_FROM_EMAIL = "webmaster@localhost"
+    RESTRICT_EMAILS = True
+else:
+    EMAIL_BACKEND = "django_ses.SESBackend"
+    AWS_SES_REGION_NAME = env("AWS_SES_REGION_NAME")
+    AWS_SES_REGION_ENDPOINT = env("AWS_SES_REGION_ENDPOINT")
+    AWS_SES_RETURN_PATH = env("DEFAULT_FROM_EMAIL")
+    DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL")
 
 
 SASS_PRECISION = 8  # Bootstrap's sass requires a precision of at least 8 to prevent layout errors

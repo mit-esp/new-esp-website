@@ -2,10 +2,10 @@ import uuid
 
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-from simple_history.models import HistoricalRecords
 
 from common.constants import UserType
 from common.managers import UserManager
+from simple_history.models import HistoricalRecords
 
 
 class BaseModel(models.Model):
@@ -41,3 +41,13 @@ class User(AbstractUser, BaseModel):
 
     def __str__(self):
         return self.username
+
+    def get_dashboard_url(self):
+        dashboard_url_mapping = {
+            UserType.admin: "admin_dashboard",
+            UserType.teacher: "teacher_dashboard",
+            UserType.student: "student_dashboard",
+            UserType.guardian: "guardian_dashboard",
+            UserType.onsite_volunteer: "volunteer_dashboard",
+        }
+        return dashboard_url_mapping[self.user_type]

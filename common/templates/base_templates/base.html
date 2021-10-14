@@ -5,13 +5,14 @@
 <html>
   <head>
       <title>MIT ESP - {% block title %}{% endblock %}</title>
+      <link href="{% static "images/favicon.ico" %}" rel="icon">
       <link href="{% sass_src 'styles/base.scss' %}" rel="stylesheet">
       {% block head %}{% endblock %}
   </head>
   <body>
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container">
-      <a class="navbar-brand" href="/">
+      <a class="navbar-brand" href={% block home_link %}"/"{% endblock %}>
         <img  width="40px" height="40px" src="{% static 'images/esp_logo.png' %}" alt="MIT ESP Logo">
         MIT ESP
       </a>
@@ -25,7 +26,7 @@
     {% else %}
        <ul class="nav justify-content-end">
           <li class="nav-item">
-            <a href="{% url 'register' %}" class="btn btn-primary navbar-btn">Register</a>
+            <a href="{% url 'register_account' %}" class="btn btn-primary navbar-btn">Register</a>
           </li>
           <li class="nav-item">
             <a href="{% url 'login' %}" class="btn btn-primary navbar-btn">Log in</a>

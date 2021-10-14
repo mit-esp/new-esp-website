@@ -1,0 +1,32 @@
+<div id="categories-{{ course.id }}" {% if course.user_preference %}class="d-none"{% else %}class="d-flex"{% endif %}>
+  {% if round.categories.count == 1 %}
+  {% with category=round.categories.first %}
+    <button class="btn btn-sm btn-outline-primary"
+            onclick="markCourseAsCategory('{{ course.id }}', '{{ category.id }}')" title="{{ category.help_text }}">
+      {% if category.pre_add_display_name %}{{ category.pre_add_display_name }}
+      {% else %}{{ category.tag|title }}{% endif %}
+    </button>
+  {% endwith %}
+{% else %}
+  <select class="form-select mb-3" aria-label="" title="{{ category.help_text }}" onchange="markCourseAsCategory('{{ course.id }}', this.value)">
+  <option>--</option>
+  {% for category in round.categories.all %}
+      <option value="{{ category.id }}">
+        {% if category.pre_add_display_name %}{{ category.pre_add_display_name }}
+        {% else %}{{ category.tag|title }}{% endif %}
+      </option>
+  {% endfor %}
+  </select>
+{% endif %}
+</div>
+{% for category in round.categories.all %}
+  <div id="show-{{ course.id }}-{{ category.id }}" {% if category.id == course.user_preference %}class="d-flex"{% else %}class="d-none"{% endif %}>
+    <span class="text-danger fw-bold my-auto">
+      {% if category.post_add_display_name %}{{ category.post_add_display_name }}
+      {% else %}{{ category.tag|title }}{% endif %}
+    </span>
+    <button class="btn btn-sm btn-link ms-1" onclick="removeCategoryFromCourse('{{ course.id }}', '{{ category.id }}')">
+      Remove
+    </button>
+  </div>
+{% endfor %}
