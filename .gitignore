@@ -52,13 +52,11 @@ staticfiles/
 staticfiles/*
 /static/styles/**/*.css
 /static/styles/**/*.map
-
+static/webpack_bundles/
+webpack-stats.json
 docs/_build/
 
 # Local development
 **/dist/*
-webpack-stats.json
 node_modules/
-yarn.lock
-package-lock.json
 *.log
