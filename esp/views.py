@@ -226,6 +226,11 @@ class ProgramRegistrationStageView(DetailView):
     def get_queryset(self):
         return ProgramRegistration.objects.filter(user_id=self.request.user.id)
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["completed_steps"] = self.object.completed_steps.values_list("step_id", flat=True)
+        return context
+
 
 class InitiatePreferenceEntryView(DetailView):
     model = ProgramRegistration
@@ -252,7 +257,7 @@ class PreferenceEntryRoundView(DetailView):
     template_name = "esp/preference_entry_round.html"
 
     def get_queryset(self):
-        # Called by self.get_object(), which must be manually called in .post()
+        # Called by self.get_object(), which is called in the super .get() and must be manually called in .post()
         self.registration = get_object_or_404(
             ProgramRegistration, id=self.kwargs["registration_id"], user_id=self.request.user.id
         )
@@ -260,50 +265,18 @@ class PreferenceEntryRoundView(DetailView):
             preference_entry_configuration_id=self.registration.program.preference_entry_configuration_id,
         )
 
-    def back_url(self):
-        if self.kwargs["index"] > 0:
-            return reverse_lazy(
-                "preference_entry_round",
-                kwargs={
-                    "registration_id": self.registration.id, "index": self.object.get_previous_in_order()._order,
-                    "step_id": self.kwargs["step_id"]
-                }
-            )
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["registration"] = self.registration
-        class_sections = ClassSection.objects.filter(course__program_id=self.registration.program_id)
-        if self.object.applied_category_filter:
-            previous_round = self.object.get_previous_in_order()
-            if previous_round:
-                try:
-                    category = previous_round.categories.filter(tag=self.object.applied_category_filter).get()
-                except PreferenceEntryCategory.DoesNotExist:
-                    raise Http404("Misconfigured preference entry round")
-                filtered_preferences = self.registration.preferences.filter(category=category)
-                class_sections = class_sections.filter(
-                    id__in=filtered_preferences.values("class_section_id").distinct()
-                )
-        class_sections = class_sections.annotate(
-            user_preference=Subquery(
-                self.registration.preferences.filter(
-                    class_section_id=OuterRef('id'), category__preference_entry_round=self.object
-                ).values("category_id")[:1]
-            )
-        )
+        class_sections = self.get_class_sections()
         if self.object.group_sections_by_course:
-            context["courses"] = Course.objects.filter(id__in=class_sections.values("course_id").distinct()).annotate(
-                user_preference=Subquery(self.registration.preferences.filter(
-                    class_section__course_id=OuterRef('id'), category__preference_entry_round=self.object
-                ).values("category_id")[:1])
-            )
+            context["courses"] = self.get_courses(class_sections)
         else:
             context["time_slots"] = {
                 str(slot): class_sections.filter(time_slot_id=slot.id)
                 for slot in self.registration.program.time_slots.all()
             }
-        context["back_url"] = self.back_url()
+        context["back_url"] = self.get_back_url()
         return context
 
     def post(self, request, *args, **kwargs):
@@ -327,6 +300,46 @@ class PreferenceEntryRoundView(DetailView):
                 "complete_registration_step",
                 registration_id=self.registration.id, step_id=self.kwargs["step_id"]
             )
+
+    def get_back_url(self):
+        if self.kwargs["index"] > 0:
+            return reverse_lazy(
+                "preference_entry_round",
+                kwargs={
+                    "registration_id": self.registration.id, "index": self.object.get_previous_in_order()._order,
+                    "step_id": self.kwargs["step_id"]
+                }
+            )
+
+    def get_class_sections(self):
+        class_sections = ClassSection.objects.filter(course__program_id=self.registration.program_id)
+        if self.object.applied_category_filter:
+            previous_round = self.object.get_previous_in_order()
+            if previous_round:
+                try:
+                    category = previous_round.categories.filter(tag=self.object.applied_category_filter).get()
+                except PreferenceEntryCategory.DoesNotExist:
+                    raise Http404("Misconfigured preference entry round")
+                filtered_preferences = self.registration.preferences.filter(category=category, is_deleted=False)
+                class_sections = class_sections.filter(
+                    id__in=filtered_preferences.values("class_section_id").distinct()
+                )
+        class_sections = class_sections.annotate(
+            user_preference=Subquery(
+                self.registration.preferences.filter(
+                    class_section_id=OuterRef('id'), category__preference_entry_round=self.object, is_deleted=False
+                ).values("category_id")[:1]
+            )
+        )
+        return class_sections
+
+    def get_courses(self, class_sections):
+        return Course.objects.filter(id__in=class_sections.values("course_id").distinct()).annotate(
+            user_preference=Subquery(self.registration.preferences.filter(
+                class_section__course_id=OuterRef('id'), category__preference_entry_round=self.object,
+                is_deleted=False
+            ).values("category_id")[:1])
+        )
 
 
 class RegistrationStepCompleteView(SingleObjectMixin, View):

@@ -61,18 +61,18 @@
       }
     }
     const removeCategoryFromCourse = (courseId, category) => {
-      courseCategories[courseId] = undefined
+      courseCategories[courseId] = null
       const btn = document.getElementById(`categories-${courseId}`)
       btn.setAttribute("class", "d-flex")
       const mark = document.getElementById(`show-${courseId}-${category}`)
       mark.setAttribute("class", "d-none")
     }
     const setPostData = () => {
-      const dataInput = document.getElementById("data")
       const postData = Object.entries(courseCategories).map(([key, category]) => {
-        return {class_section: key, category: category}
+        return {class_section: key, category: category, is_deleted: !category}
       })
-      dataInput.setAttribute("value", JSON.stringify(postData.filter(({category}) => {return category})))
+      const dataInput = document.getElementById("data")
+      dataInput.setAttribute("value", JSON.stringify(postData))
     }
   </script>
 {% endblock %}
