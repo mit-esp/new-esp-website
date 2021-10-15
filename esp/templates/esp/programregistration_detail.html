@@ -10,9 +10,12 @@
   <h1>{{ program_stage.program }}: {{ program_stage.name }}</h1>
   <ul>
     {% for step in program_stage.steps.all %}
-      <li><a href="{% url step.step_key registration_id=programregistration.id step_id=step.id %}">
-        {% if step.display_name %}{{ step.display_name }}{% else %}{{ step.get_step_key_display }}{% endif %}
-      </a></li>
+      <li>
+        <a href="{% url step.step_key registration_id=programregistration.id step_id=step.id %}">
+          {% if step.display_name %}{{ step.display_name }}{% else %}{{ step.get_step_key_display }}{% endif %}
+        </a>
+        {% if step.id in completed_steps %}<span class="ms-4 fw-bold text-success">Completed</span>{% endif %}
+      </li>
     {% endfor %}
   </ul>
 {% endwith %}

@@ -9,7 +9,7 @@
   {% endwith %}
 {% else %}
   <select class="form-select mb-3" aria-label="" title="{{ category.help_text }}" onchange="markCourseAsCategory('{{ course.id }}', this.value)">
-  <option>--</option>
+  <option value="">--</option>
   {% for category in round.categories.all %}
       <option value="{{ category.id }}">
         {% if category.pre_add_display_name %}{{ category.pre_add_display_name }}
