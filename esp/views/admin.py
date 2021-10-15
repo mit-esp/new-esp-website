@@ -4,13 +4,16 @@ from django.urls import reverse_lazy
 from django.views.generic import CreateView, FormView, ListView, UpdateView
 from django.views.generic.detail import SingleObjectMixin
 
+from common.constants import PermissionType
 from common.forms import CrispyFormsetHelper
+from esp.auth import PermissionRequiredMixin
 from esp.forms import (CourseForm, ProgramForm, ProgramRegistrationStepFormset,
                        ProgramStageForm)
 from esp.models.program import Course, Program, ProgramStage
 
 
-class ProgramCreateView(CreateView):
+class ProgramCreateView(PermissionRequiredMixin, CreateView):
+    permission = PermissionType.programs_edit
     model = Program
     form_class = ProgramForm
 
@@ -18,7 +21,8 @@ class ProgramCreateView(CreateView):
         return reverse_lazy('create_program_stage', kwargs={"pk": self.object.id})
 
 
-class ProgramUpdateView(UpdateView):
+class ProgramUpdateView(PermissionRequiredMixin, UpdateView):
+    permission = PermissionType.programs_edit
     model = Program
     form_class = ProgramForm
     success_url = reverse_lazy('programs')
@@ -29,7 +33,8 @@ class ProgramUpdateView(UpdateView):
         return form_kwargs
 
 
-class ProgramListView(ListView):
+class ProgramListView(PermissionRequiredMixin, ListView):
+    permission = PermissionType.programs_view_all
     model = Program
 
 
@@ -54,7 +59,8 @@ class ProgramStageFormsetMixin:
         return redirect_link
 
 
-class ProgramStageCreateView(SingleObjectMixin, ProgramStageFormsetMixin, FormView):
+class ProgramStageCreateView(PermissionRequiredMixin, SingleObjectMixin, ProgramStageFormsetMixin, FormView):
+    permission = PermissionType.programs_edit
     model = Program
     form_class = ProgramStageForm
     template_name = "esp/program_stage_form.html"
@@ -79,7 +85,8 @@ class ProgramStageCreateView(SingleObjectMixin, ProgramStageFormsetMixin, FormVi
         return redirect(self.get_success_url())
 
 
-class ProgramStageUpdateView(ProgramStageFormsetMixin, UpdateView):
+class ProgramStageUpdateView(PermissionRequiredMixin, ProgramStageFormsetMixin, UpdateView):
+    permission = PermissionType.programs_edit
     model = ProgramStage
     form_class = ProgramStageForm
     context_object_name = "stage"
@@ -93,17 +100,20 @@ class ProgramStageUpdateView(ProgramStageFormsetMixin, UpdateView):
 ###########################################################
 
 
-class CourseCreateView(CreateView):
+class CourseCreateView(PermissionRequiredMixin, CreateView):
+    permission = PermissionType.courses_edit
     model = Course
     form_class = CourseForm
     success_url = reverse_lazy('programs')
 
 
-class CourseUpdateView(UpdateView):
+class CourseUpdateView(PermissionRequiredMixin, UpdateView):
+    permission = PermissionType.courses_edit
     model = Course
     form_class = CourseForm
     success_url = reverse_lazy('programs')
 
 
-class CourseListView(ListView):
+class CourseListView(PermissionRequiredMixin, ListView):
+    permission = PermissionType.courses_view_all
     model = Course

@@ -1,13 +1,16 @@
 import json
 
-from django.db.models import OuterRef, Subquery
+from django.db.models import OuterRef, Q, Subquery
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views.generic.base import TemplateView, View
 from django.views.generic.detail import DetailView, SingleObjectMixin
 
-from esp.models.lottery import PreferenceEntryCategory, PreferenceEntryRound
+from common.constants import PermissionType
+from esp.auth import PermissionRequiredMixin
+from esp.models.preference_matching import (PreferenceEntryCategory,
+                                            PreferenceEntryRound)
 from esp.models.program import ClassSection, Course, Program
 from esp.models.student_registration import (CompletedRegistrationStep,
                                              ProgramRegistration,
@@ -15,8 +18,16 @@ from esp.models.student_registration import (CompletedRegistrationStep,
 from esp.serializers import ClassPreferenceSerializer
 
 
-class ProgramRegistrationCreateView(SingleObjectMixin, View):
+class ProgramRegistrationCreateView(PermissionRequiredMixin, SingleObjectMixin, View):
+    permission = PermissionType.register_for_program
     model = Program
+
+    def get_permission_valid_for_view_filter(self):
+        # Restrict permissions to those associated with this program.
+        return Q(
+            super().get_permission_valid_for_view_filter(),
+            Q(program=self.get_object()) | Q(program__isnull=True),
+        )
 
     def get(self, request, *args, **kwargs):
         program = self.get_object()
@@ -26,7 +37,17 @@ class ProgramRegistrationCreateView(SingleObjectMixin, View):
         return redirect("current_registration_stage", pk=registration.id)
 
 
-class ProgramRegistrationStageView(DetailView):
+class ProgramRegistrationPermissionMixin(PermissionRequiredMixin):
+    permission = PermissionType.register_for_program
+
+    def get_permission_valid_for_view_filter(self):
+        return Q(
+            super().get_permission_valid_for_view_filter(),
+            Q(program=self.get_object().program) | Q(program__isnull=True)
+        )
+
+
+class ProgramRegistrationStageView(ProgramRegistrationPermissionMixin, DetailView):
     model = ProgramRegistration
 
     def get_queryset(self):
@@ -38,7 +59,8 @@ class ProgramRegistrationStageView(DetailView):
         return context
 
 
-class InitiatePreferenceEntryView(DetailView):
+class InitiatePreferenceEntryView(ProgramRegistrationPermissionMixin, DetailView):
+    permission = PermissionType.enter_program_lottery
     model = ProgramRegistration
     pk_url_kwarg = "registration_id"
     template_name = "esp/initiate_preference_entry.html"
@@ -55,7 +77,8 @@ class InitiatePreferenceEntryView(DetailView):
         return context
 
 
-class PreferenceEntryRoundView(DetailView):
+class PreferenceEntryRoundView(ProgramRegistrationPermissionMixin, DetailView):
+    permission = PermissionType.enter_program_lottery
     model = PreferenceEntryRound
     context_object_name = "round"
     slug_url_kwarg = "index"
@@ -148,7 +171,7 @@ class PreferenceEntryRoundView(DetailView):
         )
 
 
-class RegistrationStepCompleteView(SingleObjectMixin, View):
+class RegistrationStepCompleteView(ProgramRegistrationPermissionMixin, SingleObjectMixin, View):
     model = ProgramRegistration
     pk_url_kwarg = "registration_id"
 
@@ -159,7 +182,7 @@ class RegistrationStepCompleteView(SingleObjectMixin, View):
         return redirect("current_registration_stage", pk=registration.id)
 
 
-class RegistrationStepPlaceholderView(TemplateView):
+class RegistrationStepPlaceholderView(ProgramRegistrationPermissionMixin, TemplateView):
     template_name = "esp/registration_step_placeholder.html"
 
     def post(self, request, *args, **kwargs):

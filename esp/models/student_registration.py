@@ -3,7 +3,7 @@ from django.db import models
 from common.constants import USStateEquiv
 from common.models import BaseModel, User
 from esp.constants import HeardAboutVia, RegistrationStep
-from esp.models.lottery import PreferenceEntryCategory
+from esp.models.preference_matching import PreferenceEntryCategory
 from esp.models.program import ClassSection, Program, ProgramStage
 
 

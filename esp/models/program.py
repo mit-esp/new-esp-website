@@ -3,10 +3,10 @@ from django.db.models import Max
 from django.utils import timezone
 
 from common.constants import GradeLevel, Weekday
-from common.models import BaseModel, User
+from common.models import BaseModel, BasePermission, User
 from esp.constants import (CourseDifficulty, CourseRoleType, CourseStatus,
                            ProgramType)
-from esp.models.lottery import PreferenceEntryConfiguration
+from esp.models.preference_matching import PreferenceEntryConfiguration
 
 
 class Program(BaseModel):
@@ -145,3 +145,14 @@ class CourseTag(BaseModel):
 
     def __str__(self):
         return self.tag
+
+
+class Permission(BasePermission):
+    # Add program foreign key to associate permission to a single program. Each view which inherits
+    #   BasePermissionRequiredMixin is responsible for interpreting this data correctly.
+    program = models.ForeignKey(Program, null=True, blank=True, on_delete=models.CASCADE)
+    # Add course foreign key to associate permission to a single course. Each view which inherits
+    #   BasePermissionRequiredMixin is responsible for interpreting this data correctly.
+    course = models.ForeignKey(Course, null=True, blank=True, on_delete=models.CASCADE)
+    # Add course role to limit permission to single course role.
+    course_role = models.CharField(choices=CourseRoleType.choices, null=True, blank=True, max_length=128)

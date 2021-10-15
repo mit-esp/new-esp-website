@@ -1,9 +1,9 @@
 from django.contrib.auth import login
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, TemplateView, UpdateView
 
-from common.constants import UserType
+from common.constants import PermissionType, UserType
+from esp.auth import PermissionRequiredMixin
 from esp.forms import (RegisterUserForm, StudentProfileForm,
                        UpdateStudentProfileForm)
 from esp.models.program import Program
@@ -25,7 +25,8 @@ class RegisterAccountView(CreateView):
         return super().form_valid(form)
 
 
-class StudentProfileCreateView(CreateView):
+class StudentProfileCreateView(PermissionRequiredMixin, CreateView):
+    permission = PermissionType.update_profile
     model = StudentProfile
     form_class = StudentProfileForm
     success_url = reverse_lazy("student_dashboard")
@@ -35,7 +36,8 @@ class StudentProfileCreateView(CreateView):
         return super().form_valid(form)
 
 
-class StudentProfileUpdateView(UpdateView):
+class StudentProfileUpdateView(PermissionRequiredMixin, UpdateView):
+    permission = PermissionType.update_profile
     model = StudentProfile
     form_class = UpdateStudentProfileForm
     success_url = reverse_lazy("student_dashboard")
@@ -57,7 +59,7 @@ class StudentProfileUpdateView(UpdateView):
 ##########################################################
 
 
-class BaseDashboardView(LoginRequiredMixin, TemplateView):
+class BaseDashboardView(PermissionRequiredMixin, TemplateView):
     login_url = reverse_lazy('index')
 
     def get_context_data(self, **kwargs):
@@ -66,14 +68,17 @@ class BaseDashboardView(LoginRequiredMixin, TemplateView):
 
 
 class TeacherDashboardView(BaseDashboardView):
+    permission = PermissionType.teacher_dashboard_view_own
     template_name = 'dashboards/teacher_dashboard.html'
 
 
 class AdminDashboardView(BaseDashboardView):
+    permission = PermissionType.admin_dashboard_view
     template_name = 'dashboards/admin_dashboard.html'
 
 
 class StudentDashboardView(BaseDashboardView):
+    permission = PermissionType.student_dashboard_view_own
     template_name = 'dashboards/student_dashboard.html'
 
     def get_context_data(self, **kwargs):
@@ -90,6 +95,7 @@ class GuardianDashboardView(BaseDashboardView):
 
 
 class VolunteerDashboardView(BaseDashboardView):
+    permission = PermissionType.volunteer_program_dashboard_view
     template_name = 'dashboards/volunteer_dashboard.html'
 
 #######################################################
