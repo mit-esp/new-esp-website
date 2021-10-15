@@ -1,8 +1,9 @@
 from django.core.exceptions import ValidationError
 from rest_framework import serializers
 
-from esp.models import (ClassPreference, ClassSection, Course,
-                        PreferenceEntryCategory)
+from esp.models.program import ClassSection, Course
+from esp.models.student_registration import (ClassPreference,
+                                             PreferenceEntryCategory)
 
 
 class ClassPreferenceSerializer(serializers.ModelSerializer):

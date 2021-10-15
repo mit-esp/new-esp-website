@@ -1,3 +1,5 @@
+from crispy_forms import layout
+from crispy_forms.helper import FormHelper
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.forms import ModelForm, inlineformset_factory
@@ -5,10 +7,9 @@ from django.forms import ModelForm, inlineformset_factory
 from common.constants import UserType
 from common.forms import CrispyFormMixin, HiddenOrderingInputFormset
 from common.models import User
-from crispy_forms import layout
-from crispy_forms.helper import FormHelper
-from esp.models import (Course, Program, ProgramRegistrationStep, ProgramStage,
-                        StudentProfile)
+from esp.models.program import Course, Program, ProgramStage
+from esp.models.student_registration import (ProgramRegistrationStep,
+                                             StudentProfile)
 
 
 class RegisterUserForm(CrispyFormMixin, UserCreationForm):
