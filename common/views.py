@@ -34,11 +34,11 @@ class BasePermissionRequiredMixin(UserPassesTestMixin):
     def get_permission_queryset(self):
         return (
             self.permission_model.objects
-                .filter(self.get_permission_valid_for_view_filter())
+                .filter(self.get_permission_applies_to_view_filter())
                 .filter(self.get_permission_applies_to_user_filter())
         )
 
-    def get_permission_valid_for_view_filter(self):
+    def get_permission_applies_to_view_filter(self):
         # Should return Q object that represents whether a Permission object applies to the current view.
         return Q(
             Q(end_date__gte=timezone.now()) | Q(end_date__isnull=True),

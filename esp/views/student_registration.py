@@ -22,10 +22,10 @@ class ProgramRegistrationCreateView(PermissionRequiredMixin, SingleObjectMixin, 
     permission = PermissionType.register_for_program
     model = Program
 
-    def get_permission_valid_for_view_filter(self):
+    def get_permission_applies_to_view_filter(self):
         # Restrict permissions to those associated with this program.
         return Q(
-            super().get_permission_valid_for_view_filter(),
+            super().get_permission_applies_to_view_filter(),
             Q(program=self.get_object()) | Q(program__isnull=True),
         )
 
@@ -40,9 +40,9 @@ class ProgramRegistrationCreateView(PermissionRequiredMixin, SingleObjectMixin, 
 class ProgramRegistrationPermissionMixin(PermissionRequiredMixin):
     permission = PermissionType.register_for_program
 
-    def get_permission_valid_for_view_filter(self):
+    def get_permission_applies_to_view_filter(self):
         return Q(
-            super().get_permission_valid_for_view_filter(),
+            super().get_permission_applies_to_view_filter(),
             Q(program=self.get_object().program) | Q(program__isnull=True)
         )
 

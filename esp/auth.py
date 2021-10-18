@@ -28,3 +28,8 @@ def give_user_type_permissions(user_type, permissions, start_date=None, end_date
 
 class PermissionRequiredMixin(BasePermissionRequiredMixin):
     permission_model = Permission
+
+
+class AnyPermissionRequiredMixin(BasePermissionRequiredMixin):
+    def get_permission_applies_to_view_filter(self):
+        return
