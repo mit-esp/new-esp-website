@@ -49,5 +49,5 @@ class BasePermissionRequiredMixin(UserPassesTestMixin):
     def get_permission_applies_to_user_filter(self):
         # Should return Q object that represents whether a Permission object applies to the current user.
         return Q(
-            Q(user=self.request.user) | Q(user_type=self.request.user_type),
+            Q(user=self.request.user) | Q(user_type=self.request.user.user_type),
         )

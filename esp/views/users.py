@@ -68,7 +68,7 @@ class BaseDashboardView(PermissionRequiredMixin, TemplateView):
 
 
 class TeacherDashboardView(BaseDashboardView):
-    permission = PermissionType.teacher_dashboard_view_own
+    permission = PermissionType.teacher_dashboard_view
     template_name = 'dashboards/teacher_dashboard.html'
 
 
@@ -78,7 +78,7 @@ class AdminDashboardView(BaseDashboardView):
 
 
 class StudentDashboardView(BaseDashboardView):
-    permission = PermissionType.student_dashboard_view_own
+    permission = PermissionType.student_dashboard_view
     template_name = 'dashboards/student_dashboard.html'
 
     def get_context_data(self, **kwargs):

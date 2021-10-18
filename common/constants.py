@@ -17,20 +17,19 @@ class PermissionType(TextChoices):
     courses_view_all = "view_courses"
     programs_edit = "edit_programs"
     programs_view_all = "view_all_programs"
-    student_dashboard_view_all = "view_all_student_dashboards"
-    teacher_dashboards_view_all = "view_all_teacher_dashboards"
     admin_dashboard_view = "view_admin_dashboard"
 
     # Student actions
-    student_dashboard_view_own = "view_student_dashboard"
+    student_dashboard_view = "view_student_dashboard"
     register_for_program = "register_for_program"
     enter_program_lottery = "enter_lottery"
     update_profile = "update_profile"
     access_formstack = "access_formstack"
 
     # Teacher actions
-    teacher_dashboard_view_own = "view_teacher_dashboard"
+    teacher_dashboard_view = "view_teacher_dashboard"
     teacher_update_profile = "update_teacher_profile"
+    teacher_submit_course = "teacher_submit_course"
     teacher_set_availability = "set_teacher_availability"
 
     # Volunteer actions
