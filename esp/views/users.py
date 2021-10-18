@@ -85,8 +85,16 @@ class StudentDashboardView(BaseDashboardView):
         context = super().get_context_data(**kwargs)
         user_registrations = self.request.user.registrations.all()
         context["registrations"] = user_registrations
-        # TODO: add eligible program logic once student profile model exists
-        context["eligible_programs"] = Program.objects.exclude(id__in=user_registrations.values("program_id"))
+        eligible_programs = Program.objects.exclude(
+            id__in=user_registrations.values("program_id"),
+        )
+        if self.request.user.student_profile:
+            grade_level = self.request.user.student_profile.grade_level()
+            eligible_programs = eligible_programs.exclude(
+                max_grade_level__lt=grade_level,
+                min_grade_level__gt=grade_level,
+            )
+        context["eligible_programs"] = eligible_programs
         return context
 
 

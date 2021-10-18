@@ -1,6 +1,9 @@
-from django.db import models
+from datetime import date
 
-from common.constants import USStateEquiv
+from django.db import models
+from django.utils import timezone
+
+from common.constants import GradeLevel, USStateEquiv
 from common.models import BaseModel, User
 from esp.constants import HeardAboutVia, RegistrationStep
 from esp.models.preference_matching import PreferenceEntryCategory
@@ -83,3 +86,15 @@ class StudentProfile(BaseModel):
     emergency_contact_address_zip = models.CharField(max_length=10)
     emergency_contact_home_phone = models.CharField(max_length=16)
     emergency_contact_cell_phone = models.CharField(max_length=16, null=True, blank=True)
+
+    def grade_level(self):
+        current_date = timezone.now().date()
+        # Assumes graduation on July 1
+        years_until_graduation = int((date(year=int(self.graduation_year), month=7, day=1) - current_date).days/365)
+        return 12 - years_until_graduation
+
+    def get_grade_level_display(self):
+        grade_level = self.grade_level()
+        if grade_level > 12:
+            return "Graduated"
+        return GradeLevel(grade_level).label
