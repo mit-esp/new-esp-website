@@ -7,7 +7,7 @@ from esp.auth import PermissionRequiredMixin
 from esp.forms import (RegisterUserForm, StudentProfileForm,
                        UpdateStudentProfileForm)
 from esp.models.program import Program
-from esp.models.student_registration import StudentProfile
+from esp.models.program_registration import StudentProfile
 
 
 class RegisterAccountView(CreateView):
@@ -88,12 +88,14 @@ class StudentDashboardView(BaseDashboardView):
         eligible_programs = Program.objects.exclude(
             id__in=user_registrations.values("program_id"),
         )
-        if self.request.user.student_profile:
+        try:
             grade_level = self.request.user.student_profile.grade_level()
             eligible_programs = eligible_programs.exclude(
                 max_grade_level__lt=grade_level,
                 min_grade_level__gt=grade_level,
             )
+        except StudentProfile.DoesNotExist:
+            pass
         context["eligible_programs"] = eligible_programs
         return context
 

@@ -1,21 +1,19 @@
 from django.urls import path
 
 from esp.constants import RegistrationStep
-from esp.views.admin import (CourseCreateView, CourseListView,
-                             CourseUpdateView, ProgramCreateView,
-                             ProgramListView, ProgramStageCreateView,
-                             ProgramStageUpdateView, ProgramUpdateView)
-from esp.views.student_registration import (InitiatePreferenceEntryView,
-                                            PreferenceEntryRoundView,
-                                            ProgramRegistrationCreateView,
-                                            ProgramRegistrationStageView,
-                                            RegistrationStepCompleteView,
-                                            RegistrationStepPlaceholderView)
-from esp.views.users import (AdminDashboardView, GuardianDashboardView,
-                             RegisterAccountView, StudentDashboardView,
-                             StudentProfileCreateView,
-                             StudentProfileUpdateView, TeacherDashboardView,
-                             VolunteerDashboardView)
+from esp.views.admin_pages import (CourseCreateView, CourseListView,
+                                   CourseUpdateView, ProgramCreateView,
+                                   ProgramListView, ProgramStageCreateView,
+                                   ProgramStageUpdateView, ProgramUpdateView)
+from esp.views.program_registration_pages import (
+    InitiatePreferenceEntryView, PreferenceEntryRoundView,
+    ProgramRegistrationCreateView, ProgramRegistrationStageView,
+    RegistrationStepCompleteView, RegistrationStepPlaceholderView)
+from esp.views.user_pages import (AdminDashboardView, GuardianDashboardView,
+                                  RegisterAccountView, StudentDashboardView,
+                                  StudentProfileCreateView,
+                                  StudentProfileUpdateView,
+                                  TeacherDashboardView, VolunteerDashboardView)
 
 urlpatterns = [
     # User setup

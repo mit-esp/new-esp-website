@@ -13,7 +13,7 @@ class BaseModel(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
-    is_deleted = models.BooleanField(default=False)
+    is_deleted = models.BooleanField(default=False, editable=False)
     history = HistoricalRecords(inherit=True)
 
     def update(self, update_dict=None, **kwargs):

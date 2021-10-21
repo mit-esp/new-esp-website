@@ -122,3 +122,13 @@ class USStateEquiv(TextChoices):
     WI = "WI", "Wisconsin"
     WV = "WV", "West Virginia"
     WY = "WY", "Wyoming"
+
+
+class ShirtSize(TextChoices):
+    XXS = "XXS"
+    XS = "XS"
+    S = "S"
+    M = "M"
+    L = "L"
+    XL = "XL"
+    XXL = "XXL"

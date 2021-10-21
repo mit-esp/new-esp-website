@@ -33,3 +33,8 @@ class ResourceRequest(BaseModel):
 class ClassroomAvailability(BaseModel):
     classroom = models.ForeignKey(Classroom, related_name="time_slots", on_delete=models.CASCADE)
     time_slot = models.ForeignKey(TimeSlot, related_name="classrooms", on_delete=models.PROTECT)
+
+
+class SchedulingConstraint(BaseModel):
+    course = models.ManyToManyField(Course, related_name="scheduling_constraints")
+    constraint = models.CharField(max_length=256)

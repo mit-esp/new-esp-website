@@ -8,7 +8,7 @@ from common.constants import UserType
 from common.forms import CrispyFormMixin, HiddenOrderingInputFormset
 from common.models import User
 from esp.models.program import Course, Program, ProgramStage
-from esp.models.student_registration import (ProgramRegistrationStep,
+from esp.models.program_registration import (ProgramRegistrationStep,
                                              StudentProfile)
 
 

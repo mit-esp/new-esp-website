@@ -4,15 +4,15 @@ from django.db.models import OuterRef, Q, Subquery
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
+from django.utils import timezone
 from django.views.generic.base import TemplateView, View
 from django.views.generic.detail import DetailView, SingleObjectMixin
 
 from common.constants import PermissionType
 from esp.auth import PermissionRequiredMixin
-from esp.models.preference_matching import (PreferenceEntryCategory,
-                                            PreferenceEntryRound)
-from esp.models.program import ClassSection, Course, Program
-from esp.models.student_registration import (CompletedRegistrationStep,
+from esp.models.program import (ClassSection, Course, PreferenceEntryCategory,
+                                PreferenceEntryRound, Program)
+from esp.models.program_registration import (CompletedRegistrationStep,
                                              ProgramRegistration,
                                              ProgramRegistrationStep)
 from esp.serializers import ClassPreferenceSerializer
@@ -178,7 +178,9 @@ class RegistrationStepCompleteView(ProgramRegistrationPermissionMixin, SingleObj
     def get(self, request, *args, **kwargs):
         registration = self.get_object()
         step = get_object_or_404(ProgramRegistrationStep, id=self.kwargs.get("step_id"))
-        CompletedRegistrationStep.objects.update_or_create(registration=registration, step=step)
+        CompletedRegistrationStep.objects.update_or_create(
+            registration=registration, step=step, defaults={"completed_on": timezone.now()}
+        )
         return redirect("current_registration_stage", pk=registration.id)
 
 

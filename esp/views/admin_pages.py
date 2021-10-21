@@ -6,7 +6,7 @@ from django.views.generic.detail import SingleObjectMixin
 
 from common.constants import PermissionType
 from common.forms import CrispyFormsetHelper
-from esp.auth import PermissionRequiredMixin
+from esp.auth import PermissionRequiredMixin, open_program_to_admins
 from esp.forms import (CourseForm, ProgramForm, ProgramRegistrationStepFormset,
                        ProgramStageForm)
 from esp.models.program import Course, Program, ProgramStage
@@ -16,6 +16,11 @@ class ProgramCreateView(PermissionRequiredMixin, CreateView):
     permission = PermissionType.programs_edit
     model = Program
     form_class = ProgramForm
+
+    def form_valid(self, form):
+        next_link = super().form_valid(form)
+        open_program_to_admins(self.object)
+        return next_link
 
     def get_success_url(self):
         return reverse_lazy('create_program_stage', kwargs={"pk": self.object.id})
@@ -39,16 +44,19 @@ class ProgramListView(PermissionRequiredMixin, ListView):
 
 
 class ProgramStageFormsetMixin:
+    program_stage = None
+
     def get_context_data(self, **kwargs):
         self.object = self.get_object()
         context = super().get_context_data()
-        context["step_formset"] = ProgramRegistrationStepFormset()
+        context["step_formset"] = ProgramRegistrationStepFormset(**self.get_formset_kwargs())
         context["step_formset_helper"] = CrispyFormsetHelper()
         return context
 
     def get_formset_kwargs(self):
         if self.program_stage:
-            return {"instance": self.program_stage.program}
+            return {"instance": self.program_stage}
+        return {}
 
     def post(self, request, *args, **kwargs):
         redirect_link = super().post(request, *args, **kwargs)
@@ -94,8 +102,10 @@ class ProgramStageUpdateView(PermissionRequiredMixin, ProgramStageFormsetMixin, 
     success_url = reverse_lazy("programs")
 
     def get_object(self, queryset=None):
-        self.program_stage = super().get_object(queryset)
+        if not self.program_stage:
+            self.program_stage = super().get_object(queryset)
         return self.program_stage
+
 
 ###########################################################
 

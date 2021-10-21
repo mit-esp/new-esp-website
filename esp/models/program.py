@@ -3,10 +3,19 @@ from django.db.models import Max
 from django.utils import timezone
 
 from common.constants import GradeLevel, Weekday
-from common.models import BaseModel, BasePermission, User
-from esp.constants import (CourseDifficulty, CourseRoleType, CourseStatus,
-                           ProgramType)
-from esp.models.preference_matching import PreferenceEntryConfiguration
+from common.models import BaseModel, BasePermission
+from esp.constants import (CourseDifficulty, CourseStatus, ProgramType,
+                           RegistrationStep)
+
+
+class PreferenceEntryConfiguration(BaseModel):
+    """PreferenceEntryConfiguration represents a set of stages and steps for student class preference entry."""
+    saved_as_preset = models.BooleanField(default=False)
+    name = models.CharField(max_length=512, null=True, blank=True)
+    description = models.TextField(null=True, blank=True)
+
+    def __str__(self):
+        return self.name
 
 
 class Program(BaseModel):
@@ -39,6 +48,7 @@ class Course(BaseModel):
     end_date = models.DateTimeField()
     description = models.TextField()
     max_size = models.IntegerField()
+    duration_minutes = models.IntegerField(default=60)
     prerequisites = models.TextField(default="None", blank=True)
     min_grade_level = models.IntegerField(choices=GradeLevel.choices, default=GradeLevel.seventh)
     max_grade_level = models.IntegerField(choices=GradeLevel.choices, default=GradeLevel.twelfth)
@@ -64,12 +74,6 @@ class Course(BaseModel):
         return cls.objects.aggregate(Max("display_id"))["display_id__max"] + 1
 
 
-class CourseRole(BaseModel):
-    course = models.ForeignKey(Course, related_name="roles", on_delete=models.PROTECT)
-    user = models.ForeignKey(User, related_name="course_roles", on_delete=models.PROTECT)
-    role = models.CharField(choices=CourseRoleType.choices, max_length=32)
-
-
 class TimeSlot(BaseModel):
     program = models.ForeignKey(Program, related_name="time_slots", on_delete=models.PROTECT)
     day = models.IntegerField(choices=Weekday.choices, null=True, blank=True)
@@ -85,6 +89,9 @@ class TimeSlot(BaseModel):
         ordering = ("day", "start_time")
 
 
+#######################
+# Program configuration
+#######################
 class ProgramStage(BaseModel):
     """ProgramStage represents configuration for a program stage, e.g. 'Initiation' or 'Post-Lottery'"""
     program = models.ForeignKey(Program, related_name="stages", on_delete=models.PROTECT)
@@ -107,6 +114,54 @@ class ProgramStage(BaseModel):
             ((self.start_date < timezone.now() < self.end_date) and not self.manually_hidden)
             or self.manually_activated
         )
+
+
+class ProgramRegistrationStep(BaseModel):
+    """ProgramRegistrationStep represents config for a single student interaction step within a program stage."""
+    program_stage = models.ForeignKey(ProgramStage, related_name="steps", on_delete=models.PROTECT)
+    display_name = models.CharField(max_length=512, null=True, blank=True)
+    step_key = models.CharField(choices=RegistrationStep.choices, max_length=256)
+    required_for_stage_completion = models.BooleanField(default=True)
+    description = models.TextField(null=True, blank=True)
+
+    class Meta(BaseModel.Meta):
+        constraints = [
+            models.UniqueConstraint(fields=("program_stage_id", "step_key"), name="unique_program_stage_step")
+        ]
+
+    def __str__(self):
+        return f"{self.program_stage} - {self.display_name or self.get_step_key_display()}"
+
+
+class PreferenceEntryRound(BaseModel):
+    preference_entry_configuration = models.ForeignKey(
+        PreferenceEntryConfiguration, on_delete=models.PROTECT, related_name="rounds"
+    )
+    title = models.CharField(max_length=512, null=True, blank=True)
+    help_text = models.TextField()
+    group_sections_by_course = models.BooleanField(default=False)
+    applied_category_filter = models.CharField(max_length=512, null=True, blank=True)
+
+    class Meta(BaseModel.Meta):
+        order_with_respect_to = "preference_entry_configuration_id"
+
+    def __str__(self):
+        return f"{self.title} (Round {self._order})"
+
+
+class PreferenceEntryCategory(BaseModel):
+    preference_entry_round = models.ForeignKey(
+        PreferenceEntryRound, related_name="categories", on_delete=models.PROTECT
+    )
+    tag = models.CharField(max_length=512)
+    pre_add_display_name = models.CharField(max_length=512, null=True, blank=True)
+    post_add_display_name = models.CharField(max_length=512, null=True, blank=True)
+    max_count = models.IntegerField(null=True, blank=True)
+    min_count = models.IntegerField(null=True, blank=True)
+    help_text = models.TextField()
+
+    def __str__(self):
+        return self.tag
 
 
 class Classroom(BaseModel):
@@ -132,7 +187,7 @@ class ClassSection(BaseModel):
 
 
 class ProgramTag(BaseModel):
-    program = models.ForeignKey(Program, on_delete=models.PROTECT, related_name="tags")
+    program = models.ManyToManyField(Program, related_name="tags")
     tag = models.CharField(max_length=256)
 
     def __str__(self):
@@ -140,8 +195,10 @@ class ProgramTag(BaseModel):
 
 
 class CourseTag(BaseModel):
-    course = models.ForeignKey(Course, on_delete=models.PROTECT, related_name="tags")
+    course = models.ManyToManyField(Course, related_name="tags")
     tag = models.CharField(max_length=256)
+    display_name = models.CharField(max_length=256, null=True, blank=True)
+    is_category = models.BooleanField(default=False)
 
     def __str__(self):
         return self.tag
@@ -154,5 +211,3 @@ class Permission(BasePermission):
     # Add course foreign key to associate permission to a single course. Each view which inherits
     #   BasePermissionRequiredMixin is responsible for interpreting this data correctly.
     course = models.ForeignKey(Course, null=True, blank=True, on_delete=models.CASCADE)
-    # Add course role to limit permission to single course role.
-    course_role = models.CharField(choices=CourseRoleType.choices, null=True, blank=True, max_length=128)

@@ -60,3 +60,11 @@ class CourseDifficulty(IntegerChoices):
     easy = 1
     moderate = 2
     challenging = 3
+
+
+class MITAffiliation(TextChoices):
+    undergrad = "undergrad", "Undergraduate Student"
+    grad = "grad", "Graduate Student"
+    postdoc = "postdoc", "Postdoctoral Student"
+    other = "other"
+    none = ""
