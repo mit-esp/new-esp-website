@@ -2,10 +2,10 @@ import uuid
 
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-from django.db.models.functions import Now
 from simple_history.models import HistoricalRecords
 
-from common.constants import PermissionType, UserType
+from common.auth import USER_TYPE_PERMISSIONS
+from common.constants import UserType
 from common.managers import UserManager
 
 
@@ -53,16 +53,5 @@ class User(AbstractUser, BaseModel):
         }
         return dashboard_url_mapping[self.user_type]
 
-
-class BasePermission(BaseModel):
-    # A permission can be assigned to a User or a user type
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="permissions", null=True, blank=True)
-    user_type = models.CharField(choices=UserType.choices, max_length=128, blank=True, null=True)
-
-    permission_type = models.CharField(choices=PermissionType.choices, max_length=128)
-
-    start_date = models.DateTimeField(default=Now, blank=True)
-    end_date = models.DateTimeField(blank=True, null=True)
-
-    class Meta(BaseModel.Meta):
-        abstract = True
+    def has_permission(self, permission):
+        return permission in USER_TYPE_PERMISSIONS[self.user_type]

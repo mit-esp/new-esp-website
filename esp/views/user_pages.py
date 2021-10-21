@@ -3,7 +3,7 @@ from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, TemplateView, UpdateView
 
 from common.constants import PermissionType, UserType
-from esp.auth import PermissionRequiredMixin
+from common.views import PermissionRequiredMixin
 from esp.forms import (RegisterUserForm, StudentProfileForm,
                        UpdateStudentProfileForm)
 from esp.models.program import Program

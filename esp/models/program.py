@@ -3,7 +3,7 @@ from django.db.models import Max
 from django.utils import timezone
 
 from common.constants import GradeLevel, Weekday
-from common.models import BaseModel, BasePermission
+from common.models import BaseModel
 from esp.constants import (CourseDifficulty, CourseStatus, ProgramType,
                            RegistrationStep)
 
@@ -109,7 +109,7 @@ class ProgramStage(BaseModel):
     def __str__(self):
         return f"{self.program}: {self.name}"
 
-    def show_on_dashboard(self):
+    def is_active(self):
         return (
             ((self.start_date < timezone.now() < self.end_date) and not self.manually_hidden)
             or self.manually_activated
@@ -202,12 +202,3 @@ class CourseTag(BaseModel):
 
     def __str__(self):
         return self.tag
-
-
-class Permission(BasePermission):
-    # Add program foreign key to associate permission to a single program. Each view which inherits
-    #   BasePermissionRequiredMixin is responsible for interpreting this data correctly.
-    program = models.ForeignKey(Program, null=True, blank=True, on_delete=models.CASCADE)
-    # Add course foreign key to associate permission to a single course. Each view which inherits
-    #   BasePermissionRequiredMixin is responsible for interpreting this data correctly.
-    course = models.ForeignKey(Course, null=True, blank=True, on_delete=models.CASCADE)

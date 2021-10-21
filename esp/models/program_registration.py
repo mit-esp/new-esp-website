@@ -73,13 +73,15 @@ class ProgramRegistration(BaseModel):
         active_stages = self.program.stages.filter(
             Q(start_date__lte=Now(), end_date__gte=Now(), manually_hidden=False) | Q(manually_activated=True)
         )
+        if not active_stages.exists():
+            return None
         completed_steps = self.completed_steps.values_list("step_id", flat=True)
         incomplete_stages = active_stages.filter(
             Exists(RegistrationStep.objects
                    .filter(program_stage_id=OuterRef('id'), required_for_stage_completion=True)
                    .exclude(steps__id__in=completed_steps))
         )
-        if incomplete_stages:
+        if incomplete_stages.exists():
             return incomplete_stages.first()
         return active_stages.last()
 

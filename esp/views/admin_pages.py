@@ -6,7 +6,7 @@ from django.views.generic.detail import SingleObjectMixin
 
 from common.constants import PermissionType
 from common.forms import CrispyFormsetHelper
-from esp.auth import PermissionRequiredMixin, open_program_to_admins
+from common.views import PermissionRequiredMixin
 from esp.forms import (CourseForm, ProgramForm, ProgramRegistrationStepFormset,
                        ProgramStageForm)
 from esp.models.program import Course, Program, ProgramStage
@@ -19,7 +19,6 @@ class ProgramCreateView(PermissionRequiredMixin, CreateView):
 
     def form_valid(self, form):
         next_link = super().form_valid(form)
-        open_program_to_admins(self.object)
         return next_link
 
     def get_success_url(self):
