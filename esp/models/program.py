@@ -39,6 +39,15 @@ class Program(BaseModel):
     show_to_volunteers_on = models.DateTimeField()
     hide_from_volunteers_on = models.DateTimeField()
 
+    def show_to_students(self):
+        return self.show_to_students_on < timezone.now() < self.hide_from_students_on
+
+    def show_to_teachers(self):
+        return self.show_to_teachers_on < timezone.now() < self.hide_from_teachers_on
+
+    def show_to_volunteers(self):
+        return self.show_to_volunteers_on < timezone.now() < self.hide_from_volunteers_on
+
     def __str__(self):
         return self.name
 
@@ -113,14 +122,26 @@ class ProgramStage(BaseModel):
     class Meta(BaseModel.Meta):
         order_with_respect_to = "program"
 
-    def __str__(self):
-        return f"{self.program}: {self.name}"
+    def get_next_in_order(self):
+        try:
+            return super().get_next_in_order()
+        except self.DoesNotExist:
+            return None
+
+    def get_previous_in_order(self):
+        try:
+            return super().get_previous_in_order()
+        except self.DoesNotExist:
+            return None
 
     def is_active(self):
         return (
             ((self.start_date < timezone.now() < self.end_date) and not self.manually_hidden)
             or self.manually_activated
         )
+
+    def __str__(self):
+        return f"{self.program}: {self.name}"
 
 
 class ProgramRegistrationStep(BaseModel):
@@ -151,6 +172,13 @@ class PreferenceEntryRound(BaseModel):
 
     class Meta(BaseModel.Meta):
         order_with_respect_to = "program_configuration_id"
+
+    def _get_next_or_previous_in_order(self, is_next):
+        print("getting")
+        try:
+            return super()._get_next_or_previous_in_order(is_next)
+        except self.DoesNotExist:
+            return None
 
     def __str__(self):
         return f"{self.title} (Round {self._order})"

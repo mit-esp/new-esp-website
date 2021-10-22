@@ -39,10 +39,10 @@ class BaseDashboardView(PermissionRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         return context
 
+
 ###################################################################
 # STUDENT PAGES
 ###################################################################
-
 
 class StudentProfileCreateView(PermissionRequiredMixin, CreateView):
     permission = PermissionType.update_profile
@@ -84,12 +84,17 @@ class StudentDashboardView(BaseDashboardView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        user_registrations = self.request.user.registrations.all()
+        user_registrations = self.request.user.registrations.filter(
+            program__show_to_students_on__lte=timezone.now(),
+            program__hide_from_students_on__gt=timezone.now()
+        )
         context["registrations"] = user_registrations
+        print(user_registrations.values("program_id"))
         eligible_programs = Program.objects.exclude(
-            id__in=user_registrations.values("program_id"),
-            show_to_students_on__gte=timezone.now(),
-            hide_from_students_on__lte=timezone.now(),
+            id__in=user_registrations.values("program_id")
+        ).filter(
+            show_to_students_on__lte=timezone.now(),
+            hide_from_students_on__gte=timezone.now(),
         )
         try:
             grade_level = self.request.user.student_profile.grade_level()
@@ -102,10 +107,10 @@ class StudentDashboardView(BaseDashboardView):
         context["eligible_programs"] = eligible_programs
         return context
 
+
 ##########################################################
 # TEACHER PAGES
 ##########################################################
-
 
 class TeacherProfileCreateView(CreateView):
     form_class = TeacherProfileForm
@@ -120,6 +125,7 @@ class TeacherProfileUpdateView(UpdateView):
 class TeacherDashboardView(BaseDashboardView):
     permission = PermissionType.teacher_dashboard_view
     template_name = "teacher/teacher_dashboard.html"
+
 
 #######################################################
 

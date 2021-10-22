@@ -21,6 +21,7 @@ class ClassPreferenceSerializer(serializers.ModelSerializer):
             preference_entry_round_id=self.context["preference_entry_round_id"]
         )
         self.fields["category"].allow_null = True
+        self.fields["is_deleted"].read_only = False
 
     class Meta:
         model = ClassPreference

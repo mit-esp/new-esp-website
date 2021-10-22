@@ -7,7 +7,7 @@ from django.utils import timezone
 
 from common.constants import GradeLevel, ShirtSize, USStateEquiv
 from common.models import BaseModel, User
-from esp.constants import HeardAboutVia, MITAffiliation, RegistrationStep
+from esp.constants import HeardAboutVia, MITAffiliation
 from esp.models.program import (ClassSection, Course, PreferenceEntryCategory,
                                 Program, ProgramRegistrationStep, TimeSlot)
 
@@ -77,9 +77,9 @@ class ProgramRegistration(BaseModel):
             return None
         completed_steps = self.completed_steps.values_list("step_id", flat=True)
         incomplete_stages = active_stages.filter(
-            Exists(RegistrationStep.objects
+            Exists(ProgramRegistrationStep.objects
                    .filter(program_stage_id=OuterRef('id'), required_for_stage_completion=True)
-                   .exclude(steps__id__in=completed_steps))
+                   .exclude(id__in=completed_steps))
         )
         if incomplete_stages.exists():
             return incomplete_stages.first()

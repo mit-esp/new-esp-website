@@ -7,7 +7,11 @@
   <hr/>
   <h2>Active Registrations</h2>
   {% for registration in registrations %}
-    <div>{{ registration.program.name }}: <a href="{% url "current_registration_stage" pk=registration.id %}">{{ registration.program_stage.name }}</a></div>
+      <div>{{ registration.program.name }}:
+        <a href="{% url "current_registration_stage" pk=registration.id %}">
+          {{ registration.get_program_stage.name }}
+        </a>
+      </div>
   {% empty %}No active registrations. See below for eligible programs.
   {% endfor %}
   <hr/>

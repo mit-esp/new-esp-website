@@ -38,10 +38,10 @@ class ProgramRegistrationCreateView(PermissionRequiredMixin, SingleObjectMixin, 
 class ProgramRegistrationStageView(PermissionRequiredMixin, DetailView):
     model = ProgramRegistration
     permission = PermissionType.register_for_program
-    template_name = "student/program_registration_stage_dashboard.html"
+    template_name = "student/program_registration_dashboard.html"
 
     def permission_enabled_for_view(self):
-        return self.get_object().get_current_stage() is not None
+        return self.get_object().get_program_stage() is not None
 
     def get_queryset(self):
         return ProgramRegistration.objects.filter(user_id=self.request.user.id)
@@ -123,9 +123,11 @@ class PreferenceEntryRoundView(PermissionRequiredMixin, DetailView):
         self.registration = get_object_or_404(
             ProgramRegistration, id=self.kwargs["registration_id"], user_id=self.request.user.id
         )
-        return PreferenceEntryRound.objects.filter(
+        queryset = PreferenceEntryRound.objects.filter(
             program_configuration_id=self.registration.program.program_configuration_id,
         )
+        print(queryset)
+        return(queryset)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -151,13 +153,13 @@ class PreferenceEntryRoundView(PermissionRequiredMixin, DetailView):
         })
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        try:
+        if self.object.get_next_in_order():
             return redirect(
                 "preference_entry_round",
                 registration_id=self.registration.id, index=self.object.get_next_in_order()._order,
                 step_id=self.kwargs["step_id"]
             )
-        except PreferenceEntryRound.DoesNotExist:
+        else:
             return redirect(
                 "complete_registration_step",
                 registration_id=self.registration.id, step_id=self.kwargs["step_id"]
