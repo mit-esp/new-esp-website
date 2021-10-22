@@ -4,12 +4,12 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.forms import ModelForm, inlineformset_factory
 
-from common.constants import UserType
+from common.constants import REGISTRATION_USER_TYPE_CHOICES
 from common.forms import CrispyFormMixin, HiddenOrderingInputFormset
 from common.models import User
 from esp.models.program import Course, Program, ProgramStage
 from esp.models.program_registration import (ProgramRegistrationStep,
-                                             StudentProfile)
+                                             StudentProfile, TeacherProfile)
 
 
 class RegisterUserForm(CrispyFormMixin, UserCreationForm):
@@ -24,7 +24,7 @@ class RegisterUserForm(CrispyFormMixin, UserCreationForm):
         label="Phone Number", required=True, max_length=32, help_text="Enter a valid phone number."
     )
     user_type = forms.ChoiceField(
-        choices=UserType.choices, label="Account Type", required=True,
+        choices=REGISTRATION_USER_TYPE_CHOICES, label="Account Type", required=True,
         help_text="What kind of account do you want to create?"
     )
 
@@ -45,7 +45,7 @@ class RegisterUserForm(CrispyFormMixin, UserCreationForm):
 class StudentProfileForm(CrispyFormMixin, ModelForm):
     class Meta:
         model = StudentProfile
-        exclude = ["is_deleted", "user"]
+        exclude = ["user"]
         labels = {
             "heard_about_esp_other_detail": "",
         }
@@ -63,6 +63,14 @@ class UpdateStudentProfileForm(StudentProfileForm):
             layout.Layout(*self.helper.layout[:-3])
         )
         self.helper["graduation_year"].wrap(layout.Field, disabled=True)
+
+
+class TeacherProfileForm(CrispyFormMixin, ModelForm):
+    class Meta:
+        model = TeacherProfile
+        exclude = [
+            "user",
+        ]
 
 
 class ProgramForm(CrispyFormMixin, ModelForm):

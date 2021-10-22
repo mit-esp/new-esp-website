@@ -3,10 +3,19 @@ from django.db.models import IntegerChoices, TextChoices
 
 class UserType(TextChoices):
     admin = "admin"
-    teacher = "teacher"
-    student = "student"
-    guardian = "guardian"
+    teacher = "teacher", "Volunteer Teacher"
+    student = "student", "Student (Grade 7-12)"
+    guardian = "guardian", "Guardian of Student"
     onsite_volunteer = "onsite_volunteer", "On-site Volunteer"
+
+
+# Restrict registration form to non-admin user types
+REGISTRATION_USER_TYPE_CHOICES = [
+    (UserType.student, UserType.student.label),
+    (UserType.teacher, UserType.teacher.label),
+    (UserType.guardian, UserType.guardian.label),
+    (UserType.onsite_volunteer, UserType.onsite_volunteer.label),
+]
 
 
 class PermissionType(TextChoices):

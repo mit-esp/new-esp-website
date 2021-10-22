@@ -25,6 +25,6 @@
   {% if request.user.student_profile %}
     <p><a href="{% url 'update_student_profile' pk=request.user.student_profile.id %}">Update Profile</a></p>
   {% else %}
-    To test student user account management, please log in with a student account.
+    <p><a href="{% url 'create_student_profile' %}">Create a student profile for this account</a></p>
   {% endif %}
 {% endblock %}

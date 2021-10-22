@@ -1,10 +1,10 @@
-{% extends "student_base.html" %}
+{% extends "base/student_base.html" %}
 
 {% block content %}
   <h1>Enter Lottery Preferences</h1>
   <p>
     Classes for this program are assigned via lottery based on students' submitted preferences. There are
-    {{ preference_entry_configuration.rounds.all|length }} rounds of preference entry. In each round, you will
+    {{ program_configuration.rounds.all|length }} rounds of preference entry. In each round, you will
     be able to choose classes to mark as preferred. After you complete all rounds, your preferences will be entered into
     the class lottery.
   </p>

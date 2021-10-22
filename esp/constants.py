@@ -22,11 +22,6 @@ class RegistrationStep(TextChoices):
     complete_surveys = "complete_surveys"
 
 
-REGISTRATION_STEP_TO_URL = {
-    RegistrationStep.lottery_preferences: "preference_entry",
-}
-
-
 class CourseStatus(TextChoices):
     unreviewed = "unreviewed"
     accepted = "accepted"

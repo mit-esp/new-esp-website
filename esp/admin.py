@@ -62,7 +62,7 @@ class PreferenceEntryRoundInline(admin.StackedInline):
     show_change_link = True
 
 
-@admin.register(program.PreferenceEntryConfiguration)
+@admin.register(program.ProgramConfiguration)
 class PreferenceEntryConfigurationAdmin(admin.ModelAdmin):
     inlines = [
         PreferenceEntryRoundInline,

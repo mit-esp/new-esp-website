@@ -8,18 +8,24 @@ from esp.views.admin_pages import (CourseCreateView, CourseListView,
 from esp.views.program_registration_pages import (
     InitiatePreferenceEntryView, PreferenceEntryRoundView,
     ProgramRegistrationCreateView, ProgramRegistrationStageView,
-    RegistrationStepCompleteView, RegistrationStepPlaceholderView)
+    RegistrationStepCompleteView, RegistrationStepPlaceholderView,
+    VerifyStudentProfileView)
 from esp.views.user_pages import (AdminDashboardView, GuardianDashboardView,
                                   RegisterAccountView, StudentDashboardView,
                                   StudentProfileCreateView,
                                   StudentProfileUpdateView,
-                                  TeacherDashboardView, VolunteerDashboardView)
+                                  TeacherDashboardView,
+                                  TeacherProfileCreateView,
+                                  TeacherProfileUpdateView,
+                                  VolunteerDashboardView)
 
 urlpatterns = [
     # User setup
     path('accounts/register', RegisterAccountView.as_view(), name="register_account"),
     path('accounts/student/', StudentProfileCreateView.as_view(), name="create_student_profile"),
     path('accounts/student/update/<uuid:pk>/', StudentProfileUpdateView.as_view(), name="update_student_profile"),
+    path('accounts/teacher/', TeacherProfileCreateView.as_view(), name="create_teacher_profile"),
+    path('accounts/teacher/update/<uuid:pk>/', TeacherProfileUpdateView.as_view(), name="update_teacher_profile"),
 
     # Dashboards
     path('dashboard/admin/', AdminDashboardView.as_view(), name="admin_dashboard"),
@@ -55,7 +61,7 @@ urlpatterns = [
     #   stage that includes that step.
     path(
         'programs/registration/<uuid:registration_id>/verify_profile/<uuid:step_id>/',
-        RegistrationStepPlaceholderView.as_view(), name=RegistrationStep.verify_profile
+        VerifyStudentProfileView.as_view(), name=RegistrationStep.verify_profile
     ),
     path(
         'programs/registration/<uuid:registration_id>/waivers/<uuid:step_id>/',

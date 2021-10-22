@@ -1,4 +1,4 @@
-{% extends "student_base.html" %}
+{% extends "base/student_base.html" %}
 
 {% block title %}Enter Class Preferences{% endblock %}
 
@@ -21,7 +21,7 @@
           <td>{% for section in section_list %}
             {{ section.user_preferences }}
             <p>{{ section.course.name }}</p>
-              {% include "components/add_class_preference_input.html" with course=section %}
+              {% include "student/components/add_class_preference_input.html" with course=section %}
           {% endfor %}</td>
         {% endfor %}
       </tr>
@@ -32,7 +32,7 @@
     {% for course in courses %}
       <div class="d-flex mb-3 w-50 justify-content-between">
         ESP {{ course.display_id }}: {{ course.name }}
-        {% include "components/add_class_preference_input.html" %}
+        {% include "student/components/add_class_preference_input.html" %}
       </div>
     {% endfor %}
   {% endif %}

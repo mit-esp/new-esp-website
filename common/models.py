@@ -11,6 +11,8 @@ from common.managers import UserManager
 
 class BaseModel(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    # created_on and updated_on are intended only for database audits.
+    # Timestamps used in business logic should be added explicitly.
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
     is_deleted = models.BooleanField(default=False, editable=False)
