@@ -8,8 +8,8 @@ from esp.constants import (CourseDifficulty, CourseStatus, ProgramType,
                            RegistrationStep)
 
 
-class PreferenceEntryConfiguration(BaseModel):
-    """PreferenceEntryConfiguration represents a set of stages and steps for student class preference entry."""
+class ProgramConfiguration(BaseModel):
+    """ProgramConfiguration represents a set of stages and steps for student class preference entry."""
     saved_as_preset = models.BooleanField(default=False)
     name = models.CharField(max_length=512, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
@@ -20,8 +20,8 @@ class PreferenceEntryConfiguration(BaseModel):
 
 class Program(BaseModel):
     """Program represents an ESP program instance, e.g. Splash 2021"""
-    preference_entry_configuration = models.ForeignKey(
-        PreferenceEntryConfiguration, on_delete=models.PROTECT, related_name="+", null=True
+    program_configuration = models.ForeignKey(
+        ProgramConfiguration, on_delete=models.PROTECT, related_name="+", null=True
     )
     name = models.CharField(max_length=512)
     program_type = models.CharField(choices=ProgramType.choices, max_length=128, null=True, blank=True)
@@ -31,6 +31,13 @@ class Program(BaseModel):
     max_grade_level = models.IntegerField(choices=GradeLevel.choices, default=12)
     description = models.TextField(null=True)
     notes = models.TextField(null=True, blank=True)
+
+    show_to_students_on = models.DateTimeField()
+    hide_from_students_on = models.DateTimeField()
+    show_to_teachers_on = models.DateTimeField()
+    hide_from_teachers_on = models.DateTimeField()
+    show_to_volunteers_on = models.DateTimeField()
+    hide_from_volunteers_on = models.DateTimeField()
 
     def __str__(self):
         return self.name
@@ -134,8 +141,8 @@ class ProgramRegistrationStep(BaseModel):
 
 
 class PreferenceEntryRound(BaseModel):
-    preference_entry_configuration = models.ForeignKey(
-        PreferenceEntryConfiguration, on_delete=models.PROTECT, related_name="rounds"
+    program_configuration = models.ForeignKey(
+        ProgramConfiguration, on_delete=models.PROTECT, related_name="rounds"
     )
     title = models.CharField(max_length=512, null=True, blank=True)
     help_text = models.TextField()
@@ -143,7 +150,7 @@ class PreferenceEntryRound(BaseModel):
     applied_category_filter = models.CharField(max_length=512, null=True, blank=True)
 
     class Meta(BaseModel.Meta):
-        order_with_respect_to = "preference_entry_configuration_id"
+        order_with_respect_to = "program_configuration_id"
 
     def __str__(self):
         return f"{self.title} (Round {self._order})"

@@ -118,9 +118,9 @@ class ClassRegistration(BaseModel):
     created_by_lottery = models.BooleanField()
     confirmed_on = models.DateTimeField(null=True)
 
-#######################
-# Teacher Registrations
-#######################
+#####################################################
+# TEACHER REGISTRATIONS
+#####################################################
 
 
 class TeacherProfile(BaseModel):
