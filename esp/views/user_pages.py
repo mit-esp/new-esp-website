@@ -45,7 +45,7 @@ class BaseDashboardView(PermissionRequiredMixin, TemplateView):
 ###################################################################
 
 class StudentProfileCreateView(PermissionRequiredMixin, CreateView):
-    permission = PermissionType.update_profile
+    permission = PermissionType.student_create_profile
     model = StudentProfile
     form_class = StudentProfileForm
     template_name = "student/student_profile_create_form.html"
@@ -103,7 +103,7 @@ class StudentDashboardView(BaseDashboardView):
                 min_grade_level__gt=grade_level,
             )
         except StudentProfile.DoesNotExist:
-            pass
+            eligible_programs = None
         context["eligible_programs"] = eligible_programs
         return context
 
@@ -112,12 +112,14 @@ class StudentDashboardView(BaseDashboardView):
 # TEACHER PAGES
 ##########################################################
 
-class TeacherProfileCreateView(CreateView):
+class TeacherProfileCreateView(PermissionRequiredMixin, CreateView):
+    permission = PermissionType.teacher_create_profile
     form_class = TeacherProfileForm
     template_name = "teacher/teacher_profile_create_form.html"
 
 
-class TeacherProfileUpdateView(UpdateView):
+class TeacherProfileUpdateView(PermissionRequiredMixin, UpdateView):
+    permission = PermissionType.teacher_update_profile
     form_class = TeacherProfileForm
     template_name = "teacher/teacher_profile_update_form.html"
 

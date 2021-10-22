@@ -58,11 +58,11 @@ class UpdateStudentProfileForm(StudentProfileForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields["graduation_year"].disabled = True
         self.helper.layout = layout.Layout(
             layout.Layout(*self.helper.layout[-3:]),
             layout.Layout(*self.helper.layout[:-3])
         )
-        self.helper["graduation_year"].wrap(layout.Field, disabled=True)
 
 
 class TeacherProfileForm(CrispyFormMixin, ModelForm):

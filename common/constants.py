@@ -32,11 +32,13 @@ class PermissionType(TextChoices):
     student_dashboard_view = "view_student_dashboard"
     register_for_program = "register_for_program"
     enter_program_lottery = "enter_lottery"
+    student_create_profile = "create_student_profile"
     update_profile = "update_profile"
     access_formstack = "access_formstack"
 
     # Teacher actions
     teacher_dashboard_view = "view_teacher_dashboard"
+    teacher_create_profile = "create_teacher_profile"
     teacher_update_profile = "update_teacher_profile"
     teacher_submit_course = "teacher_submit_course"
     teacher_set_availability = "set_teacher_availability"

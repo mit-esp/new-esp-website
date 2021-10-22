@@ -80,12 +80,27 @@ class VerifyStudentProfileView(RegistrationStepBaseView, FormView):
     form_class = UpdateStudentProfileForm
     template_name = "student/verify_profile.html"
 
-    def get_form_kwargs(self):
+    def dispatch(self, *args, **kwargs):
+        self.object = self.get_object()
+        return super().dispatch(*args, *kwargs)
+
+    def get_initial(self):
         return {
-            "instance": self.get_object().user.student_profile,
+            "first_name": self.object.user.first_name,
+            "last_name": self.object.user.last_name,
+            "email": self.object.user.email,
         }
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["instance"] = self.object.user.student_profile
+        return kwargs
+
     def form_valid(self, form):
+        self.get_object().user.update(
+            first_name=form.cleaned_data["first_name"], last_name=form.cleaned_data["last_name"],
+            email=form.cleaned_data["email"]
+        )
         form.save()
         return super().form_valid(form)
 
