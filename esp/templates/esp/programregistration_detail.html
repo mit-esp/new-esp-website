@@ -1,9 +1,9 @@
 {% extends "student_base.html" %}
 
-{% block title %}{{ programregistration.program }} ({{ programregistration.program_stage.name }}){% endblock %}
+{% block title %}{{ programregistration.program }} ({{ programregistration.get_program_stage.name }}){% endblock %}
 
 {% block content %}
-{% with program_stage=programregistration.program_stage %}
+{% with program_stage=programregistration.get_program_stage %}
   <div class="my-3">
     <a href="{% url 'student_dashboard' %}" class="btn btn-secondary">Return to dashboard</a>
   </div>

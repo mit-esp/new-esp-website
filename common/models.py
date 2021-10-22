@@ -2,17 +2,18 @@ import uuid
 
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from simple_history.models import HistoricalRecords
 
+from common.auth import USER_TYPE_PERMISSIONS
 from common.constants import UserType
 from common.managers import UserManager
-from simple_history.models import HistoricalRecords
 
 
 class BaseModel(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
-    is_deleted = models.BooleanField(default=False)
+    is_deleted = models.BooleanField(default=False, editable=False)
     history = HistoricalRecords(inherit=True)
 
     def update(self, update_dict=None, **kwargs):
@@ -51,3 +52,6 @@ class User(AbstractUser, BaseModel):
             UserType.onsite_volunteer: "volunteer_dashboard",
         }
         return dashboard_url_mapping[self.user_type]
+
+    def has_permission(self, permission):
+        return permission in USER_TYPE_PERMISSIONS[self.user_type]

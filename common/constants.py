@@ -11,14 +11,30 @@ class UserType(TextChoices):
 
 class PermissionType(TextChoices):
     # WIP: permissions list TBD
-    view_courses = "view_courses"
-    edit_courses = "edit_courses"
-    view_all_programs = "view_all_programs"
-    edit_programs = "edit_programs"
-    view_student_dashboard = "view_student_dashboard"
-    view_all_student_dashboards = "view_all_student_dashboards"
-    view_teacher_dashboard = "view_teacher_dashboard"
-    view_all_teacher_dashboards = "view_all_teacher_dashboards"
+
+    # Admin actions
+    courses_edit = "edit_courses"
+    courses_view_all = "view_courses"
+    programs_edit = "edit_programs"
+    programs_view_all = "view_all_programs"
+    admin_dashboard_view = "view_admin_dashboard"
+
+    # Student actions
+    student_dashboard_view = "view_student_dashboard"
+    register_for_program = "register_for_program"
+    enter_program_lottery = "enter_lottery"
+    update_profile = "update_profile"
+    access_formstack = "access_formstack"
+
+    # Teacher actions
+    teacher_dashboard_view = "view_teacher_dashboard"
+    teacher_update_profile = "update_teacher_profile"
+    teacher_submit_course = "teacher_submit_course"
+    teacher_set_availability = "set_teacher_availability"
+
+    # Volunteer actions
+    volunteer_program_dashboard_view = "view_volunteer_dashboard"
+    volunteer_program_signup = "volunteer_program_signup"
 
 
 class GradeLevel(IntegerChoices):
@@ -106,3 +122,13 @@ class USStateEquiv(TextChoices):
     WI = "WI", "Wisconsin"
     WV = "WV", "West Virginia"
     WY = "WY", "Wyoming"
+
+
+class ShirtSize(TextChoices):
+    XXS = "XXS"
+    XS = "XS"
+    S = "S"
+    M = "M"
+    L = "L"
+    XL = "XL"
+    XXL = "XXL"
