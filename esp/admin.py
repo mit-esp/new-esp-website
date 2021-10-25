@@ -36,11 +36,18 @@ class ProgramStageInline(admin.StackedInline):
     show_change_link = True
 
 
+class TimeSlotInline(admin.TabularInline):
+    extra = 0
+    model = program.TimeSlot
+    show_change_link = True
+
+
 @admin.register(program.Program)
 class ProgramAdmin(admin.ModelAdmin):
     search_fields = ("program_type", "name")
     inlines = [
         ProgramStageInline,
+        TimeSlotInline,
     ]
 
 

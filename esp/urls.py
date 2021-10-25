@@ -9,7 +9,7 @@ from esp.views.program_registration_pages import (
     InitiatePreferenceEntryView, PreferenceEntryRoundView,
     ProgramRegistrationCreateView, ProgramRegistrationStageView,
     RegistrationStepCompleteView, RegistrationStepPlaceholderView,
-    VerifyStudentProfileView)
+    StudentAvailabilityView, VerifyStudentProfileView)
 from esp.views.user_pages import (AdminDashboardView, GuardianDashboardView,
                                   RegisterAccountView, StudentDashboardView,
                                   StudentProfileCreateView,
@@ -69,7 +69,7 @@ urlpatterns = [
     ),
     path(
         'programs/registration/<uuid:registration_id>/availability/<uuid:step_id>/',
-        RegistrationStepPlaceholderView.as_view(), name=RegistrationStep.time_availability
+        StudentAvailabilityView.as_view(), name=RegistrationStep.time_availability
     ),
     path(
         'programs/registration/<uuid:registration_id>/preferences/<uuid:step_id>/',

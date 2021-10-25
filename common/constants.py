@@ -27,25 +27,26 @@ class PermissionType(TextChoices):
     programs_edit = "edit_programs"
     programs_view_all = "view_all_programs"
     admin_dashboard_view = "view_admin_dashboard"
+    student_registrations_edit_all = "student_registrations_view_all"
+    teacher_registrations_edit_all = "teacher_registrations_edit_all"
+    student_profiles_edit_all = "student_profiles_edit_all"
+    teacher_profiles_edit_all = "teacher_profiles_edit_all"
 
     # Student actions
-    student_dashboard_view = "view_student_dashboard"
-    register_for_program = "register_for_program"
-    enter_program_lottery = "enter_lottery"
     student_create_profile = "create_student_profile"
-    update_profile = "update_profile"
-    access_formstack = "access_formstack"
+    student_dashboard_view = "view_student_dashboard"
+    student_register_for_program = "student_register_for_program"
+    student_update_profile = "student_update_profile"
 
     # Teacher actions
     teacher_dashboard_view = "view_teacher_dashboard"
     teacher_create_profile = "create_teacher_profile"
     teacher_update_profile = "update_teacher_profile"
-    teacher_submit_course = "teacher_submit_course"
-    teacher_set_availability = "set_teacher_availability"
+    teacher_register_for_program = "teacher_register_for_program"
 
     # Volunteer actions
     volunteer_program_dashboard_view = "view_volunteer_dashboard"
-    volunteer_program_signup = "volunteer_program_signup"
+    volunteer_register_for_program = "volunteer_register_for_program"
 
 
 class GradeLevel(IntegerChoices):

@@ -68,11 +68,13 @@ class ProgramRegistration(BaseModel):
     """ProgramRegistration represents a user's registration for a program."""
     program = models.ForeignKey(Program, related_name="registrations", on_delete=models.PROTECT)
     user = models.ForeignKey(User, on_delete=models.PROTECT, related_name="registrations")
+    allow_early_registration_after = models.DateTimeField(null=True)  # Overrides deadlines set on program stages
+    allow_late_registration_until = models.DateTimeField(null=True)  # Overrides deadlines set on program stages
 
     def get_program_stage(self):
         active_stages = self.program.stages.filter(
             Q(start_date__lte=Now(), end_date__gte=Now(), manually_hidden=False) | Q(manually_activated=True)
-        )
+        ) if not self.ignore_registration_deadlines() else self.program.stages.all()
         if not active_stages.exists():
             return None
         completed_steps = self.completed_steps.values_list("step_id", flat=True)
@@ -84,6 +86,12 @@ class ProgramRegistration(BaseModel):
         if incomplete_stages.exists():
             return incomplete_stages.first()
         return active_stages.last()
+
+    def ignore_registration_deadlines(self):
+        return (
+                (self.allow_early_registration_after and self.allow_early_registration_after < timezone.now())
+                or (self.allow_late_registration_until and self.allow_late_registration_until > timezone.now())
+        )
 
     def __str__(self):
         return f"{self.program} registration for {self.user}"

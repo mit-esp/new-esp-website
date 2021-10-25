@@ -57,7 +57,7 @@ class StudentProfileCreateView(PermissionRequiredMixin, CreateView):
 
 
 class StudentProfileUpdateView(PermissionRequiredMixin, UpdateView):
-    permission = PermissionType.update_profile
+    permission = PermissionType.student_update_profile
     model = StudentProfile
     form_class = UpdateStudentProfileForm
     template_name = "student/student_profile_update_form.html"

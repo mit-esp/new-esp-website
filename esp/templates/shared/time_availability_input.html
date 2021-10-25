@@ -1,0 +1,18 @@
+<h1>Enter Availability</h1>
+<p>For each time slot of the program, mark whether or not you are available.</p>
+<div class="card col-6">
+  <div class="card-body">
+    <div class="row"><div class="fw-bold">Available</div></div>
+    <button id="select-all-button" class="btn btn-outline-secondary btn-sm my-2" onclick="selectAll()">Mark all available</button>
+    <form method="post">
+      {% csrf_token %}
+      {% for slot in time_slots %}
+        <div class="form-check form-switch">
+          <input type="checkbox" class="form-check-input col-2" name="{{ slot.id }}" id="availability-{{ slot.id }}" {% if slot.id in availabilities %}checked{% endif %}>
+          <label class="form-check-label ms-5" for="availability-{{ slot.id }}">{{ slot }}</label>
+        </div>
+      {% endfor %}
+      <input type="submit" value="Submit" class="btn btn-primary btn-sm mt-3">
+    </form>
+  </div>
+</div>
