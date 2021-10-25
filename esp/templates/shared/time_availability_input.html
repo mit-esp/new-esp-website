@@ -1,9 +1,9 @@
 <h1>Enter Availability</h1>
-<p>For each time slot of the program, mark whether or not you are available.</p>
-<div class="card col-6">
+<div class="card col-md-6">
   <div class="card-body">
+    <p>For each time slot of the program, mark whether or not you are available.</p>
+    <button id="select-all-button" class="btn btn-outline-secondary btn-sm mb-3" onclick="selectAll()">Mark all available</button>
     <div class="row"><div class="fw-bold">Available</div></div>
-    <button id="select-all-button" class="btn btn-outline-secondary btn-sm my-2" onclick="selectAll()">Mark all available</button>
     <form method="post">
       {% csrf_token %}
       {% for slot in time_slots %}
