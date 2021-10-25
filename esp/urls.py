@@ -6,10 +6,12 @@ from esp.views.admin_pages import (CourseCreateView, CourseListView,
                                    ProgramListView, ProgramStageCreateView,
                                    ProgramStageUpdateView, ProgramUpdateView)
 from esp.views.program_registration_pages import (
-    InitiatePreferenceEntryView, PreferenceEntryRoundView,
-    ProgramRegistrationCreateView, ProgramRegistrationStageView,
-    RegistrationStepCompleteView, RegistrationStepPlaceholderView,
-    StudentAvailabilityView, VerifyStudentProfileView)
+    CompleteSurveysView, ConfirmRegistrationSubmissionView,
+    EditAssignedCoursesView, InitiatePreferenceEntryView, PayProgramFeesView,
+    PreferenceEntryRoundView, ProgramRegistrationCreateView,
+    ProgramRegistrationStageView, RegistrationStepCompleteView,
+    StudentAvailabilityView, SubmitWaiversView, VerifyStudentProfileView,
+    ViewAssignedCoursesView)
 from esp.views.user_pages import (AdminDashboardView, GuardianDashboardView,
                                   RegisterAccountView, StudentDashboardView,
                                   StudentProfileCreateView,
@@ -65,7 +67,7 @@ urlpatterns = [
     ),
     path(
         'programs/registration/<uuid:registration_id>/waivers/<uuid:step_id>/',
-        RegistrationStepPlaceholderView.as_view(), name=RegistrationStep.submit_waivers
+        SubmitWaiversView.as_view(), name=RegistrationStep.submit_waivers
     ),
     path(
         'programs/registration/<uuid:registration_id>/availability/<uuid:step_id>/',
@@ -77,27 +79,23 @@ urlpatterns = [
     ),
     path(
         'programs/registration/<uuid:registration_id>/submit/<uuid:step_id>/',
-        RegistrationStepPlaceholderView.as_view(), name=RegistrationStep.submit_registration
+        ConfirmRegistrationSubmissionView.as_view(), name=RegistrationStep.submit_registration
     ),
     path(
         'programs/registration/<uuid:registration_id>/lottery_results/<uuid:step_id>/',
-        RegistrationStepPlaceholderView.as_view(), name=RegistrationStep.view_assigned_courses
+        ViewAssignedCoursesView.as_view(), name=RegistrationStep.view_assigned_courses
     ),
     path(
         'programs/registration/<uuid:registration_id>/edit_classes/<uuid:step_id>/',
-        RegistrationStepPlaceholderView.as_view(), name=RegistrationStep.edit_assigned_courses
+        EditAssignedCoursesView.as_view(), name=RegistrationStep.edit_assigned_courses
     ),
     path(
         'programs/registration/<uuid:registration_id>/fees/<uuid:step_id>/',
-        RegistrationStepPlaceholderView.as_view(), name=RegistrationStep.pay_program_fees
-    ),
-    path(
-        'programs/registration/<uuid:registration_id>/check_in/<uuid:step_id>/',
-        RegistrationStepPlaceholderView.as_view(), name=RegistrationStep.check_in
+        PayProgramFeesView.as_view(), name=RegistrationStep.pay_program_fees
     ),
     path(
         'programs/registration/<uuid:registration_id>/surveys/<uuid:step_id>/',
-        RegistrationStepPlaceholderView.as_view(), name=RegistrationStep.complete_surveys
+        CompleteSurveysView.as_view(), name=RegistrationStep.complete_surveys
     ),
 
     # Registration step additional views

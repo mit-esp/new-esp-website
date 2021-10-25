@@ -56,6 +56,11 @@ class ProgramRegistrationStageView(PermissionRequiredMixin, DetailView):
         return context
 
 
+######################################################################
+# REGISTRATION STEP INITIAL HANDLERS
+######################################################################
+
+
 class RegistrationStepBaseView(PermissionRequiredMixin, DetailView):
     permission = PermissionType.student_register_for_program
     model = ProgramRegistration
@@ -113,7 +118,13 @@ class VerifyStudentProfileView(RegistrationStepBaseView, FormView):
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse_lazy("current_registration_stage", kwargs={"pk": self.object})
+        return reverse_lazy(
+            "complete_registration_step", kwargs={"registration_id": self.object.id, "step_id": self.kwargs["step_id"]}
+        )
+
+
+class SubmitWaiversView(RegistrationStepPlaceholderView):
+    pass
 
 
 class StudentAvailabilityView(RegistrationStepBaseView):
@@ -135,6 +146,7 @@ class StudentAvailabilityView(RegistrationStepBaseView):
                     time_slot=time_slot, registration=registration
                 )
             else:
+                # TODO: warn if conflicts with assigned classes
                 StudentAvailability.objects.filter(time_slot=time_slot, registration=registration).delete()
         return redirect("complete_registration_step", registration_id=registration.id, step_id=kwargs["step_id"])
 
@@ -152,6 +164,31 @@ class InitiatePreferenceEntryView(RegistrationStepBaseView):
         context["program_configuration"] = program.program_configuration
         context["step_id"] = self.kwargs["step_id"]
         return context
+
+
+class ConfirmRegistrationSubmissionView(RegistrationStepPlaceholderView):
+    pass
+
+
+class ViewAssignedCoursesView(RegistrationStepPlaceholderView):
+    pass
+
+
+class EditAssignedCoursesView(RegistrationStepPlaceholderView):
+    pass
+
+
+class PayProgramFeesView(RegistrationStepPlaceholderView):
+    pass
+
+
+class CompleteSurveysView(RegistrationStepPlaceholderView):
+    pass
+
+
+#####################################################################
+# REGISTRATION STEP ADDITIONAL VIEWS
+#####################################################################
 
 
 class PreferenceEntryRoundView(PermissionRequiredMixin, DetailView):
