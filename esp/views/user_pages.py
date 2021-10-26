@@ -89,7 +89,6 @@ class StudentDashboardView(BaseDashboardView):
             program__hide_from_students_on__gt=timezone.now()
         )
         context["registrations"] = user_registrations
-        print(user_registrations.values("program_id"))
         eligible_programs = Program.objects.exclude(
             id__in=user_registrations.values("program_id")
         ).filter(

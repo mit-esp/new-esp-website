@@ -8,8 +8,8 @@ class ProgramType(TextChoices):
     cascade = "cascade"
 
 
-class RegistrationStep(TextChoices):
-    # Edit to add or remove possible registration steps or modify display names
+class StudentRegistrationStepType(TextChoices):
+    # Edit to add or remove possible student registration steps or modify display names
     verify_profile = "verify_profile", "Verify Profile Information"
     submit_waivers = "submit_waivers"
     time_availability = "time_availability"
@@ -21,18 +21,22 @@ class RegistrationStep(TextChoices):
     complete_surveys = "complete_surveys"
 
 
+class TeacherRegistrationStepType(TextChoices):
+    verify_profile = "teacher_verify_profile"
+    submit_waivers = "teacher_submit_waiver"
+    submit_minors_policy_acknowledgement = "teacher_minors_policy"
+    time_availability = "teacher_time_availability"
+    submit_courses = "teacher_submit_courses"
+    edit_courses = "teacher_edit_courses"
+    confirm_course_schedule = "teacher_confirm_course_schedule"
+
+
 class CourseStatus(TextChoices):
     unreviewed = "unreviewed"
     accepted = "accepted"
     rejected = "rejected"
     cancelled = "cancelled"
     hidden = "hidden"
-
-
-class CourseRoleType(TextChoices):
-    teacher = "teacher"
-    observer = "observer"
-    student = "student"
 
 
 class HeardAboutVia(TextChoices):

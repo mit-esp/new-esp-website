@@ -118,7 +118,18 @@ class CourseForm(CrispyFormMixin, ModelForm):
 
     class Meta:
         model = Course
-        fields = ["name", "start_date", "end_date", "description", "notes", "max_size", "prerequisites"]
+        fields = [
+            "name",
+            "description",
+            "max_section_size",
+            "max_sections",
+            "duration_minutes",
+            "prerequisites",
+            "min_grade_level",
+            "max_grade_level",
+            "difficulty",
+            "teacher_notes",
+        ]
         widgets = {
             'start_date': forms.DateInput(attrs={'class': 'datepicker'}),
             'end_date': forms.DateInput(attrs={'class': 'datepicker'}),

@@ -1,0 +1,19 @@
+{% extends "base/teacher_base.html" %}
+
+{% block title %}Registration for {{ registration.program }}{% endblock %}
+
+{% block content %}
+  <div class="my-3">
+    <a href="{% url 'teacher_dashboard' %}" class="btn btn-secondary">Return to dashboard</a>
+  </div>
+  <ul>
+    {% for step in visible_registration_steps.all %}
+      <li>
+        <a href="{% url step.step_key registration_id=programregistration.id step_id=step.id %}">
+          {% if step.display_name %}{{ step.display_name }}{% else %}{{ step.get_step_key_display }}{% endif %}
+        </a>
+        {% if step.id in completed_steps %}<span class="ms-4 fw-bold text-success">Completed</span>{% endif %}
+      </li>
+    {% endfor %}
+  </ul>
+{% endblock %}

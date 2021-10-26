@@ -6,33 +6,45 @@ from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views.generic import FormView
-from django.views.generic.base import TemplateView, View
+from django.views.generic.base import TemplateView
 from django.views.generic.detail import DetailView, SingleObjectMixin
 
 from common.constants import PermissionType
 from common.views import PermissionRequiredMixin
+from esp.constants import StudentRegistrationStepType
 from esp.forms import UpdateStudentProfileForm
 from esp.models.program import (ClassSection, Course, PreferenceEntryCategory,
                                 PreferenceEntryRound, Program)
 from esp.models.program_registration import (CompletedRegistrationStep,
                                              ProgramRegistration,
                                              ProgramRegistrationStep,
-                                             StudentAvailability)
+                                             StudentAvailability,
+                                             TeacherRegistration)
 from esp.serializers import ClassPreferenceSerializer
 
+########################################################
+# STUDENT REGISTRATION GENERAL VIEWS
+########################################################
 
-class ProgramRegistrationCreateView(PermissionRequiredMixin, SingleObjectMixin, View):
+
+class ProgramRegistrationCreateView(PermissionRequiredMixin, SingleObjectMixin, TemplateView):
     permission = PermissionType.student_register_for_program
     model = Program
+    template_name = "student/program_registration_create.html"
 
     def permission_enabled_for_view(self):
-        program = self.get_object()
-        # Assumes first program stage is always initial registration
-        return program.stages.first().is_active()
+        self.object = self.get_object()
+        return self.object.show_to_students()
 
-    def get(self, request, *args, **kwargs):
-        program = self.get_object()
-        registration, _created = ProgramRegistration.objects.get_or_create(program=program, user=self.request.user)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["existing_registrations"] = ProgramRegistration.objects.filter(
+            program=self.object, user=self.request.user
+        )
+        return context
+
+    def post(self, request, *args, **kwargs):
+        registration, _created = ProgramRegistration.objects.get_or_create(program=self.object, user=self.request.user)
         return redirect("current_registration_stage", pk=registration.id)
 
 
@@ -57,7 +69,7 @@ class ProgramRegistrationStageView(PermissionRequiredMixin, DetailView):
 
 
 ######################################################################
-# REGISTRATION STEP INITIAL HANDLERS
+# STUDENT REGISTRATION STEP HANDLERS
 ######################################################################
 
 
@@ -65,11 +77,14 @@ class RegistrationStepBaseView(PermissionRequiredMixin, DetailView):
     permission = PermissionType.student_register_for_program
     model = ProgramRegistration
     pk_url_kwarg = "registration_id"
+    registration_step_key = None
 
     def permission_enabled_for_view(self):
         self.object = self.get_object()
-        registration_step = get_object_or_404(ProgramRegistrationStep, id=self.kwargs["step_id"])
-        return registration_step.program_stage.is_active() or self.object.ignore_registration_deadlines()
+        self.registration_step = get_object_or_404(
+            ProgramRegistrationStep, id=self.kwargs["step_id"], step_key=self.registration_step_key
+        )
+        return self.registration_step.program_stage.is_active() or self.object.ignore_registration_deadlines()
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -84,7 +99,7 @@ class RegistrationStepPlaceholderView(RegistrationStepBaseView, TemplateView):
 
     def post(self, request, *args, **kwargs):
         return redirect(
-            "complete_registration_step", registration_id=self.kwargs["registration_id"], step_id=self.kwargs["step_id"]
+            "complete_registration_step", registration_id=self.object.id, step_id=self.registration_step.id
         )
 
 
@@ -92,10 +107,7 @@ class VerifyStudentProfileView(RegistrationStepBaseView, FormView):
     model = ProgramRegistration
     form_class = UpdateStudentProfileForm
     template_name = "student/verify_profile.html"
-
-    def dispatch(self, *args, **kwargs):
-        self.object = self.get_object()
-        return super().dispatch(*args, *kwargs)
+    registration_step_key = StudentRegistrationStepType.verify_profile
 
     def get_initial(self):
         return {
@@ -119,23 +131,24 @@ class VerifyStudentProfileView(RegistrationStepBaseView, FormView):
 
     def get_success_url(self):
         return reverse_lazy(
-            "complete_registration_step", kwargs={"registration_id": self.object.id, "step_id": self.kwargs["step_id"]}
+            "complete_registration_step",
+            kwargs={"registration_id": self.object.id, "step_id": self.registration_step.id}
         )
 
 
 class SubmitWaiversView(RegistrationStepPlaceholderView):
+    registration_step_key = StudentRegistrationStepType.submit_waivers
     pass
 
 
 class StudentAvailabilityView(RegistrationStepBaseView):
+    registration_step_key = StudentRegistrationStepType.time_availability
     template_name = "student/time_availability.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["time_slots"] = self.object.program.time_slots.all()
-        print(context["time_slots"].values())
         context["availabilities"] = self.object.availabilities.values_list("time_slot_id", flat=True)
-        print(context["availabilities"])
         return context
 
     def post(self, request, *args, **kwargs):
@@ -152,8 +165,7 @@ class StudentAvailabilityView(RegistrationStepBaseView):
 
 
 class InitiatePreferenceEntryView(RegistrationStepBaseView):
-    model = ProgramRegistration
-    pk_url_kwarg = "registration_id"
+    registration_step_key = StudentRegistrationStepType.lottery_preferences
     template_name = "student/initiate_preference_entry.html"
 
     def get_context_data(self, **kwargs):
@@ -162,28 +174,28 @@ class InitiatePreferenceEntryView(RegistrationStepBaseView):
         if not program.program_configuration:
             raise Http404("Program missing configuration")
         context["program_configuration"] = program.program_configuration
-        context["step_id"] = self.kwargs["step_id"]
+        context["step_id"] = self.registration_step.id
         return context
 
 
 class ConfirmRegistrationSubmissionView(RegistrationStepPlaceholderView):
-    pass
+    registration_step_key = StudentRegistrationStepType.submit_registration
 
 
 class ViewAssignedCoursesView(RegistrationStepPlaceholderView):
-    pass
+    registration_step_key = StudentRegistrationStepType.view_assigned_courses
 
 
 class EditAssignedCoursesView(RegistrationStepPlaceholderView):
-    pass
+    registration_step_key = StudentRegistrationStepType.edit_assigned_courses
 
 
 class PayProgramFeesView(RegistrationStepPlaceholderView):
-    pass
+    registration_step_key = StudentRegistrationStepType.pay_program_fees
 
 
 class CompleteSurveysView(RegistrationStepPlaceholderView):
-    pass
+    registration_step_key = StudentRegistrationStepType.complete_surveys
 
 
 #####################################################################
@@ -192,6 +204,7 @@ class CompleteSurveysView(RegistrationStepPlaceholderView):
 
 
 class PreferenceEntryRoundView(PermissionRequiredMixin, DetailView):
+    """View that allows a student to complete one round of preference entry"""
     model = PreferenceEntryRound
     context_object_name = "round"
     slug_url_kwarg = "index"
@@ -199,13 +212,13 @@ class PreferenceEntryRoundView(PermissionRequiredMixin, DetailView):
     template_name = "student/preference_entry_round.html"
 
     def permission_enabled_for_view(self):
-        self.registration = get_object_or_404(ProgramRegistration, id=self.kwargs["registration_id"])
-        if (
-            self.registration.user_id != self.request.user.id
-            and not self.request.user.has_permission(PermissionType.student_registrations_edit_all)
-        ):
-            raise Http404()
-        registration_step = get_object_or_404(ProgramRegistrationStep, id=self.kwargs["step_id"])
+        registration_filters = {"id": self.kwargs["registration_id"]}
+        if not self.request.user.has_permission(PermissionType.student_registrations_edit_all):
+            registration_filters["user_id"] = self.request.user.id
+        self.registration = get_object_or_404(ProgramRegistration, **registration_filters)
+        registration_step = get_object_or_404(
+            ProgramRegistrationStep, id=self.kwargs["step_id"], step_key=StudentRegistrationStepType.lottery_preferences
+        )
         return registration_step.program_stage.is_active() or self.registration.ignore_registration_deadlines()
 
     def get_queryset(self):
@@ -291,11 +304,7 @@ class PreferenceEntryRoundView(PermissionRequiredMixin, DetailView):
         )
 
 
-class RegistrationStepCompleteView(PermissionRequiredMixin, SingleObjectMixin, View):
-    permission = PermissionType.student_register_for_program
-    model = ProgramRegistration
-    pk_url_kwarg = "registration_id"
-
+class RegistrationStepCompleteView(RegistrationStepBaseView):
     def get(self, request, *args, **kwargs):
         registration = self.get_object()
         step = get_object_or_404(ProgramRegistrationStep, id=self.kwargs.get("step_id"))
@@ -303,3 +312,46 @@ class RegistrationStepCompleteView(PermissionRequiredMixin, SingleObjectMixin, V
             registration=registration, step=step, defaults={"completed_on": timezone.now()}
         )
         return redirect("current_registration_stage", pk=registration.id)
+
+
+#############################################################
+# TEACHER REGISTRATION VIEWS
+#############################################################
+
+
+class TeacherProgramRegistrationCreateView(PermissionRequiredMixin, SingleObjectMixin, TemplateView):
+    permission = PermissionType.teacher_register_for_program
+    model = Program
+    template_name = "teacher/program_registration_create.html"
+
+    def permission_enabled_for_view(self):
+        self.object = self.get_object()
+        return self.object.show_to_teachers()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["existing_registrations"] = TeacherRegistration.objects.filter(
+            program=self.object, user=self.request.user
+        )
+        return context
+
+    def post(self, request, *args, **kwargs):
+        registration, _created = TeacherRegistration.objects.get_or_create(program=self.object, user=self.request.user)
+        return redirect("current_registration_stage", pk=registration.id)
+
+
+class TeacherProgramDashboardView(PermissionRequiredMixin, DetailView):
+    permission = PermissionType.teacher_register_for_program
+    model = TeacherRegistration
+    context_object_name = "registration"
+    template_name = "teacher/program_registration_dashboard.html"
+
+    def permission_enabled_for_view(self):
+        registration = self.get_object()
+        return registration.program.show_to_teachers() or registration.ignore_registration_deadlines()
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        if not self.request.user.has_permission(PermissionType.teacher_registrations_edit_all):
+            queryset = queryset.filter(user_id=self.request.user.id)
+        return queryset
