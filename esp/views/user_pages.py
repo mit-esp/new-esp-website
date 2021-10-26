@@ -1,6 +1,6 @@
 from django.contrib.auth import login
+from django.shortcuts import redirect
 from django.urls import reverse, reverse_lazy
-from django.utils import timezone
 from django.views.generic import CreateView, TemplateView, UpdateView
 
 from common.constants import PermissionType, UserType
@@ -8,7 +8,7 @@ from common.views import PermissionRequiredMixin
 from esp.forms import (RegisterUserForm, StudentProfileForm,
                        TeacherProfileForm, UpdateStudentProfileForm)
 from esp.models.program import Program
-from esp.models.program_registration import StudentProfile
+from esp.models.program_registration import StudentProfile, TeacherProfile
 
 ######################################
 # SHARED PAGES
@@ -51,6 +51,11 @@ class StudentProfileCreateView(PermissionRequiredMixin, CreateView):
     template_name = "student/student_profile_create_form.html"
     success_url = reverse_lazy("student_dashboard")
 
+    def get(self, request, *args, **kwargs):
+        if request.user.student_profile:
+            return redirect("update_student_profile", pk=request.user.student_profile.id)
+        return super().get(request, *args, **kwargs)
+
     def form_valid(self, form):
         form.instance.user = self.request.user
         return super().form_valid(form)
@@ -84,16 +89,13 @@ class StudentDashboardView(BaseDashboardView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        user_registrations = self.request.user.registrations.filter(
-            program__show_to_students_on__lte=timezone.now(),
-            program__hide_from_students_on__gt=timezone.now()
-        )
+        active_programs = [program.id for program in Program.objects.all() if program.show_to_students()]
+        user_registrations = self.request.user.registrations.filter(program_id__in=active_programs)
         context["registrations"] = user_registrations
         eligible_programs = Program.objects.exclude(
             id__in=user_registrations.values("program_id")
         ).filter(
-            show_to_students_on__lte=timezone.now(),
-            hide_from_students_on__gte=timezone.now(),
+            id__in=active_programs
         )
         try:
             grade_level = self.request.user.student_profile.grade_level()
@@ -115,10 +117,21 @@ class TeacherProfileCreateView(PermissionRequiredMixin, CreateView):
     permission = PermissionType.teacher_create_profile
     form_class = TeacherProfileForm
     template_name = "teacher/teacher_profile_create_form.html"
+    success_url = reverse_lazy("teacher_dashboard")
+
+    def get(self, request, *args, **kwargs):
+        if request.user.teacher_profile:
+            return redirect("update_teacher_profile", pk=request.user.teacher_profile.id)
+        return super().get(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super().form_valid(form)
 
 
 class TeacherProfileUpdateView(PermissionRequiredMixin, UpdateView):
     permission = PermissionType.teacher_update_profile
+    model = TeacherProfile
     form_class = TeacherProfileForm
     template_name = "teacher/teacher_profile_update_form.html"
 
@@ -126,6 +139,18 @@ class TeacherProfileUpdateView(PermissionRequiredMixin, UpdateView):
 class TeacherDashboardView(BaseDashboardView):
     permission = PermissionType.teacher_dashboard_view
     template_name = "teacher/teacher_dashboard.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        active_programs = [program.id for program in Program.objects.all() if program.show_to_teachers()]
+        user_registrations = self.request.user.registrations.filter(program_id__in=active_programs)
+        context["registrations"] = user_registrations
+        context["eligible_programs"] = Program.objects.exclude(
+            id__in=user_registrations.values("program_id")
+        ).filter(
+            id__in=active_programs
+        )
+        return context
 
 
 #######################################################

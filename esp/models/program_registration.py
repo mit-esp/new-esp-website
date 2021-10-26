@@ -1,7 +1,7 @@
 from datetime import date
 
 from django.db import models
-from django.db.models import Exists, Min, OuterRef, Q
+from django.db.models import Exists, Min, OuterRef
 from django.db.models.functions import Now
 from django.utils import timezone
 
@@ -76,9 +76,10 @@ class ProgramRegistration(BaseModel):
         unique_together = [("program_id", "user_id")]
 
     def get_program_stage(self):
-        active_stages = self.program.stages.filter(
-            Q(start_date__lte=Now(), end_date__gte=Now(), manually_hidden=False) | Q(manually_activated=True)
-        ) if not self.ignore_registration_deadlines() else self.program.stages.all()
+        active_stages = (
+            self.program.stages.filter(start_date__lte=Now(), end_date__gte=Now())
+            if not self.ignore_registration_deadlines() else self.program.stages.all()
+        )
         if not active_stages.exists():
             return None
         completed_steps = self.completed_steps.values_list("step_id", flat=True)

@@ -36,6 +36,8 @@ class Program(BaseModel):
     archive_on = models.DateTimeField()
 
     def show_to_students(self):
+        if not self.stages.exists():
+            return False
         return (
                 self.stages.aggregate(Min("start_date"))["start_date__min"]
                 < timezone.now()
@@ -43,6 +45,8 @@ class Program(BaseModel):
         )
 
     def show_to_teachers(self):
+        if not self.teacher_registration_steps.exists():
+            return False
         return (
             self.teacher_registration_steps.aggregate(Min("access_start_date"))["access_start_date__min"]
             < timezone.now()

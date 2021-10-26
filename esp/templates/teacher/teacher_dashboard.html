@@ -1,3 +1,34 @@
 {% extends "base/teacher_base.html" %}
 
 {% block title %}Dashboard{% endblock %}
+
+{% block content %}
+  <h1>Teacher Dashboard</h1>
+  <hr/>
+  <h2>Active Registrations</h2>
+  {% for registration in registrations %}
+      <div>
+        <a href="{% url "teacher_program_dashboard" pk=registration.id %}">{{ registration.program.name }}</a>
+      </div>
+  {% empty %}<p>No active registrations. See below for eligible programs.</p>
+  {% endfor %}
+  <hr/>
+  <h2>Eligible Programs</h2>
+  {% for program in eligible_programs %}
+    <div>
+      <p><a href="{% url 'create_teacher_registration' pk=program.id %}">Register for {{ program.name }}</a></p>
+      <p>Description: {{ program.description }}</p>
+    </div>
+  {% empty %}<p>There are no additional programs that you are currently eligible for.</p>
+  {% endfor %}
+  <hr/>
+  <h2>Manage account</h2>
+  {% if request.user.teacher_profile %}
+    <p><a href="{% url 'update_teacher_profile' pk=request.user.teacher_profile.id %}">Update Profile</a></p>
+  {% else %}
+    <p>
+      <a href="{% url 'create_teacher_profile' %}">Create a teacher profile for this account.</a>
+      This will enable you to complete the registration workflow.
+    </p>
+  {% endif %}
+{% endblock %}

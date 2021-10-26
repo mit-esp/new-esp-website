@@ -137,10 +137,10 @@ class USStateEquiv(TextChoices):
 
 
 class ShirtSize(TextChoices):
-    XXS = "XXS"
-    XS = "XS"
-    S = "S"
+    XXS = "XXS", "XXS"
+    XS = "XS", "XS"
+    S = "S",
     M = "M"
     L = "L"
-    XL = "XL"
-    XXL = "XXL"
+    XL = "XL", "XL"
+    XXL = "XXL", "XXL"
