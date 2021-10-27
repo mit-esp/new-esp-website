@@ -3,10 +3,10 @@ from django.contrib import admin
 from esp.models import course_scheduling, program, program_registration
 
 admin.site.register(course_scheduling.ClassroomResource)
+admin.site.register(course_scheduling.ClassSection)
 admin.site.register(course_scheduling.ResourceRequest)
 admin.site.register(course_scheduling.ResourceType)
 admin.site.register(program.PreferenceEntryCategory)
-admin.site.register(program.ClassSection)
 admin.site.register(program.Classroom)
 admin.site.register(program.Course)
 admin.site.register(program.CourseTag)

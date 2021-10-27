@@ -132,19 +132,6 @@ class Classroom(BaseModel):
         return self.name
 
 
-class ClassSection(BaseModel):
-    """
-    ClassSection represents a particular enrollment section of a Course, in a specific time slot and place.
-    Programs that meet multiple times still have a single ClassSection for all meetings of the same group of students.
-    """
-    course = models.ForeignKey(Course, related_name="sections", on_delete=models.PROTECT)
-    classroom = models.ForeignKey(Classroom, related_name="sections", on_delete=models.PROTECT, null=True, blank=True)
-    time_slot = models.ForeignKey(TimeSlot, related_name="sections", on_delete=models.PROTECT)
-
-    def __str__(self):
-        return f"{self.course.display_id}: {self.time_slot}"
-
-
 #######################
 # Program configuration
 #######################

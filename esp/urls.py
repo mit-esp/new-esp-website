@@ -5,14 +5,15 @@ from esp.views.admin_pages import (CourseCreateView, CourseListView,
                                    CourseUpdateView, ProgramCreateView,
                                    ProgramListView, ProgramStageCreateView,
                                    ProgramStageUpdateView, ProgramUpdateView)
-from esp.views.program_registration_pages import (
+from esp.views.student_registration_pages import (
     CompleteSurveysView, ConfirmRegistrationSubmissionView,
     EditAssignedCoursesView, InitiatePreferenceEntryView, PayProgramFeesView,
     PreferenceEntryRoundView, ProgramRegistrationCreateView,
     ProgramRegistrationStageView, RegistrationStepCompleteView,
-    StudentAvailabilityView, SubmitWaiversView, TeacherProgramDashboardView,
-    TeacherProgramRegistrationCreateView, VerifyStudentProfileView,
+    StudentAvailabilityView, SubmitWaiversView, VerifyStudentProfileView,
     ViewAssignedCoursesView)
+from esp.views.teacher_registration_pages import (
+    TeacherProgramDashboardView, TeacherProgramRegistrationCreateView)
 from esp.views.user_pages import (AdminDashboardView, GuardianDashboardView,
                                   RegisterAccountView, StudentDashboardView,
                                   StudentProfileCreateView,
