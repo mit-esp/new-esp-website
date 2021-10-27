@@ -1,7 +1,7 @@
 from datetime import date
 
 from django.db import models
-from django.db.models import Exists, Min, OuterRef
+from django.db.models import Exists, Min, OuterRef, Value
 from django.db.models.functions import Now
 from django.utils import timezone
 
@@ -178,15 +178,21 @@ class TeacherRegistration(BaseModel):
         completed_steps = self.completed_steps.values("step_id")
         visible_completed_steps = steps.filter(
             id__in=completed_steps, display_after_completion=True
-        ).annotate(completed=True)
+        ).annotate(completed=Value(True))
         first_incomplete_required_step = steps.exclude(
             id__in=completed_steps
         ).filter(required_for_next_step=True).aggregate(Min("_order"))["_order__min"]
         visible_incomplete_steps = steps.exclude(
             id__in=completed_steps
-        ).filter(_order__lte=first_incomplete_required_step).annotate(completed=False)
+        ).filter(_order__lte=first_incomplete_required_step).annotate(completed=Value(False))
 
         return (visible_completed_steps | visible_incomplete_steps).order_by("_order")
+
+    def has_access_to_step(self, step):
+        return (
+            step.id not in self.completed_steps.values("step_id")
+            or step.allow_changes_after_completion
+        ) and step in self.visible_registration_steps()
 
     def ignore_registration_deadlines(self):
         return (

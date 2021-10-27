@@ -1,7 +1,7 @@
 from django.db import models
 
 from common.models import BaseModel
-from esp.models.program import Classroom, Course, TimeSlot
+from esp.models.program import Classroom, ClassroomTag, Course, TimeSlot
 
 
 class ResourceType(BaseModel):
@@ -32,6 +32,9 @@ class ResourceRequest(BaseModel):
 
 class SchedulingConstraint(BaseModel):
     course = models.ManyToManyField(Course, related_name="scheduling_constraints")
+    required_classroom_tag = models.ForeignKey(
+        ClassroomTag, related_name="scheduling_constraints", on_delete=models.PROTECT, null=True
+    )
     constraint = models.CharField(max_length=256)
 
 

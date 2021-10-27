@@ -7,8 +7,8 @@ from django.views.generic.detail import SingleObjectMixin
 from common.constants import PermissionType
 from common.forms import CrispyFormsetHelper
 from common.views import PermissionRequiredMixin
-from esp.forms import (CourseForm, ProgramForm, ProgramRegistrationStepFormset,
-                       ProgramStageForm)
+from esp.forms import (ProgramForm, ProgramRegistrationStepFormset,
+                       ProgramStageForm, TeacherCourseForm)
 from esp.models.program import Course, Program, ProgramStage
 
 
@@ -112,14 +112,14 @@ class ProgramStageUpdateView(PermissionRequiredMixin, ProgramStageFormsetMixin, 
 class CourseCreateView(PermissionRequiredMixin, CreateView):
     permission = PermissionType.courses_edit
     model = Course
-    form_class = CourseForm
+    form_class = TeacherCourseForm
     success_url = reverse_lazy('programs')
 
 
 class CourseUpdateView(PermissionRequiredMixin, UpdateView):
     permission = PermissionType.courses_edit
     model = Course
-    form_class = CourseForm
+    form_class = TeacherCourseForm
     success_url = reverse_lazy('programs')
 
 

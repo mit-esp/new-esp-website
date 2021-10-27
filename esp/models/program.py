@@ -180,8 +180,11 @@ class ProgramRegistrationStep(BaseModel):
     class Meta(BaseModel.Meta):
         unique_together = [("program_stage_id", "step_key")]
 
+    def get_display_name(self):
+        return self.display_name or self.get_step_key_display()
+
     def __str__(self):
-        return f"{self.program_stage} - {self.display_name or self.get_step_key_display()}"
+        return f"{self.program_stage} - {self.get_display_name()}"
 
 
 class TeacherProgramRegistrationStep(BaseModel):
@@ -217,8 +220,11 @@ class TeacherProgramRegistrationStep(BaseModel):
         except self.DoesNotExist:
             return None
 
+    def get_display_name(self):
+        return self.display_name or self.get_step_key_display()
+
     def __str__(self):
-        return f"{self.program} - {self.display_name or self.get_step_key_display()}"
+        return f"{self.program} - {self.get_display_name()}"
 
 
 class PreferenceEntryRound(BaseModel):
@@ -271,6 +277,14 @@ class CourseTag(BaseModel):
     tag = models.CharField(max_length=256)
     display_name = models.CharField(max_length=256, null=True, blank=True)
     is_category = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.tag
+
+
+class ClassroomTag(BaseModel):
+    classroom = models.ManyToManyField(Classroom, related_name="tags")
+    tag = models.CharField(max_length=256)
 
     def __str__(self):
         return self.tag

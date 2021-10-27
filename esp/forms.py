@@ -73,6 +73,19 @@ class TeacherProfileForm(CrispyFormMixin, ModelForm):
         ]
 
 
+class UpdateTeacherProfileForm(TeacherProfileForm):
+    first_name = forms.CharField()
+    last_name = forms.CharField()
+    email = forms.CharField()
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper.layout = layout.Layout(
+            layout.Layout(*self.helper.layout[-3:]),
+            layout.Layout(*self.helper.layout[:-3])
+        )
+
+
 class ProgramForm(CrispyFormMixin, ModelForm):
     submit_kwargs = {"onclick": "return confirm('Are you sure?')"}
 
@@ -112,7 +125,7 @@ ProgramRegistrationStepFormset = inlineformset_factory(
 )
 
 
-class CourseForm(CrispyFormMixin, ModelForm):
+class TeacherCourseForm(CrispyFormMixin, ModelForm):
     submit_label = "Create Class"
     submit_kwargs = {"onclick": "return confirm('Are you sure?')"}
 

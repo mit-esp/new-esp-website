@@ -1,1 +1,18 @@
 {% extends "base/teacher_base.html" %}
+
+{% block title %}Teach for {{ program }}{% endblock %}
+
+
+{% block content %}
+  {% if existing_registrations %}
+    <p>You are already registered for {{ program }}</p>
+    <a href="{% url 'teacher_program_dashboard' pk=existing_registrations.get.id %}">Go to program dashboard</a>
+  {% else %}
+    <h1>Teach for {{ program }}</h1>
+    <p>{{ program.description }}</p>
+    <form method="post">
+      {% csrf_token %}
+      <input type="submit" class="btn btn-primary" value="Register to teach">
+    </form>
+  {% endif %}
+{% endblock %}

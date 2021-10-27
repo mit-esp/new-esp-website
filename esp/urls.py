@@ -13,7 +13,8 @@ from esp.views.student_registration_pages import (
     StudentAvailabilityView, SubmitWaiversView, VerifyStudentProfileView,
     ViewAssignedCoursesView)
 from esp.views.teacher_registration_pages import (
-    TeacherProgramDashboardView, TeacherProgramRegistrationCreateView)
+    TeacherProgramDashboardView, TeacherProgramRegistrationCreateView,
+    TeacherRegistrationStepRouterView)
 from esp.views.user_pages import (AdminDashboardView, GuardianDashboardView,
                                   RegisterAccountView, StudentDashboardView,
                                   StudentProfileCreateView,
@@ -57,6 +58,10 @@ urlpatterns = [
     path(
         "programs/teach/registration/<uuid:pk>/", TeacherProgramDashboardView.as_view(),
         name="teacher_program_dashboard",
+    ),
+    path(
+        "programs/teach/registration/<uuid:registration_id>/<uuid:step_id>/",
+        TeacherRegistrationStepRouterView.as_view(), name="teacher_registration_step"
     ),
 
     # Student program registration views

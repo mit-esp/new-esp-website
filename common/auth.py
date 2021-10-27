@@ -14,6 +14,7 @@ ADMIN_PERMISSIONS = [
     PermissionType.student_update_profile,
     PermissionType.teacher_create_profile,
     PermissionType.teacher_dashboard_view,
+    PermissionType.teacher_register_for_program,
     PermissionType.teacher_profiles_edit_all,
     PermissionType.teacher_registrations_edit_all,
     PermissionType.teacher_update_profile,

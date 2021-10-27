@@ -143,7 +143,7 @@ class TeacherDashboardView(BaseDashboardView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         active_programs = [program.id for program in Program.objects.all() if program.show_to_teachers()]
-        user_registrations = self.request.user.registrations.filter(program_id__in=active_programs)
+        user_registrations = self.request.user.teacher_registrations.filter(program_id__in=active_programs)
         context["registrations"] = user_registrations
         context["eligible_programs"] = Program.objects.exclude(
             id__in=user_registrations.values("program_id")

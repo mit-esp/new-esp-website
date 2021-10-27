@@ -10,13 +10,13 @@
       <div>
         <a href="{% url "teacher_program_dashboard" pk=registration.id %}">{{ registration.program.name }}</a>
       </div>
-  {% empty %}<p>No active registrations. See below for eligible programs.</p>
+  {% empty %}<p>No active registrations. See below for upcoming programs.</p>
   {% endfor %}
   <hr/>
-  <h2>Eligible Programs</h2>
+  <h2>Upcoming Programs</h2>
   {% for program in eligible_programs %}
     <div>
-      <p><a href="{% url 'create_teacher_registration' pk=program.id %}">Register for {{ program.name }}</a></p>
+      <p><a href="{% url 'create_teacher_registration' pk=program.id %}">Register to teach for {{ program.name }}</a></p>
       <p>Description: {{ program.description }}</p>
     </div>
   {% empty %}<p>There are no additional programs that you are currently eligible for.</p>

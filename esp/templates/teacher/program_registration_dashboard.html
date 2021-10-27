@@ -6,14 +6,14 @@
   <div class="my-3">
     <a href="{% url 'teacher_dashboard' %}" class="btn btn-secondary">Return to dashboard</a>
   </div>
-  <ul>
-    {% for step in visible_registration_steps.all %}
-      <li>
-        <a href="{% url step.step_key registration_id=programregistration.id step_id=step.id %}">
-          {% if step.display_name %}{{ step.display_name }}{% else %}{{ step.get_step_key_display }}{% endif %}
-        </a>
-        {% if step.id in completed_steps %}<span class="ms-4 fw-bold text-success">Completed</span>{% endif %}
-      </li>
+  <h1>Registration for {{ registration.program }}</h1>
+  <p>You </p>
+  <div class="list-group col-md-6">
+    {% for step in registration.visible_registration_steps.all %}
+      <a href="{% url "teacher_registration_step" registration_id=registration.id step_id=step.id %}" class="d-flex list-group-item list-group-item-action {% if step.id in completed_steps and not step.allow_changes_after_completion %}disabled{% endif %}">
+        <span>{{ step.get_display_name }}</span>
+        {% if step.id in completed_steps %}<div class="ms-auto badge bg-success rounded-pill">Completed</div>{% endif %}
+      </a>
     {% endfor %}
-  </ul>
+  </div>
 {% endblock %}

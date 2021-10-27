@@ -104,7 +104,6 @@ class RegistrationStepPlaceholderView(RegistrationStepBaseView, TemplateView):
 
 
 class VerifyStudentProfileView(RegistrationStepBaseView, FormView):
-    model = ProgramRegistration
     form_class = UpdateStudentProfileForm
     template_name = "student/verify_profile.html"
     registration_step_key = StudentRegistrationStepType.verify_profile
