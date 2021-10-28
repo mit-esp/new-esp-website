@@ -1,6 +1,7 @@
 from django.db import models
 
 from common.models import BaseModel
+from esp.constants import ClassroomTagCategory
 from esp.models.program import Classroom, ClassroomTag, Course, TimeSlot
 
 
@@ -31,10 +32,20 @@ class ResourceRequest(BaseModel):
 
 
 class SchedulingConstraint(BaseModel):
+    """Generic model to represent a scheduling constraint, which may specify requirements on classroom tags"""
     course = models.ManyToManyField(Course, related_name="scheduling_constraints")
+    # TODO: If `required_classroom_tag` is set, all classrooms scheduled for this course must have this tag
     required_classroom_tag = models.ForeignKey(
         ClassroomTag, related_name="scheduling_constraints", on_delete=models.PROTECT, null=True
     )
+    # TODO: If `require_all_tags_same_category` is set, all classrooms must have tags in this category that match
+    require_all_tags_same_category = models.CharField(choices=ClassroomTagCategory.choices, null=True, max_length=128)
+    # TODO: If `require_all_tags_different_category` is set, no classrooms may have tags in this category that match
+    require_all_tags_different_category = models.CharField(
+        choices=ClassroomTagCategory.choices, null=True, max_length=128
+    )
+
+    # TODO: Other arbitrary constraint, not handled automatically but displayed on the scheduler interface
     constraint = models.CharField(max_length=256)
 
 

@@ -66,3 +66,17 @@ class MITAffiliation(TextChoices):
     postdoc = "postdoc", "Postdoctoral Student"
     other = "other"
     none = ""
+
+
+class ProgramTagCategory(TextChoices):
+    other = "other"
+
+
+class CourseTagCategory(TextChoices):
+    course_category = "course_category"
+    other = "other"
+
+
+class ClassroomTagCategory(TextChoices):
+    location = "location"
+    other = "other"

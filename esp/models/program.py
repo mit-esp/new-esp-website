@@ -4,8 +4,9 @@ from django.utils import timezone
 
 from common.constants import GradeLevel, Weekday
 from common.models import BaseModel
-from esp.constants import (CourseDifficulty, CourseStatus, ProgramType,
-                           StudentRegistrationStepType,
+from esp.constants import (ClassroomTagCategory, CourseDifficulty,
+                           CourseStatus, CourseTagCategory, ProgramTagCategory,
+                           ProgramType, StudentRegistrationStepType,
                            TeacherRegistrationStepType)
 
 
@@ -66,10 +67,10 @@ class Course(BaseModel):
     It is still referred to as 'class' in urls and on the frontend to match existing terminology.
     """
     program = models.ForeignKey(Program, related_name="courses", on_delete=models.PROTECT)
-    name = models.CharField(max_length=2048)
+    name = models.CharField(max_length=2048, verbose_name="Class title")
     display_id = models.BigIntegerField(null=True, blank=True)
-    start_date = models.DateTimeField(null=True)
-    end_date = models.DateTimeField(null=True)
+    start_date = models.DateTimeField(null=True, blank=True)
+    end_date = models.DateTimeField(null=True, blank=True)
     description = models.TextField(help_text="A description of the class that will be shown to students.")
     max_section_size = models.IntegerField(verbose_name="How many students can a single section include?")
     max_sections = models.IntegerField(verbose_name="How many sections are you willing to teach?")
@@ -265,26 +266,35 @@ class PreferenceEntryCategory(BaseModel):
 
 
 class ProgramTag(BaseModel):
-    program = models.ManyToManyField(Program, related_name="tags")
+    programs = models.ManyToManyField(Program, related_name="tags", blank=True)
     tag = models.CharField(max_length=256)
+    tag_category = models.CharField(
+        choices=ProgramTagCategory.choices, default=ProgramTagCategory.other, max_length=128
+    )
 
     def __str__(self):
         return self.tag
 
 
 class CourseTag(BaseModel):
-    course = models.ManyToManyField(Course, related_name="tags")
+    courses = models.ManyToManyField(Course, related_name="tags", blank=True)
     tag = models.CharField(max_length=256)
     display_name = models.CharField(max_length=256, null=True, blank=True)
-    is_category = models.BooleanField(default=False)
+    tag_category = models.CharField(choices=CourseTagCategory.choices, default=CourseTagCategory.other, max_length=128)
+    editable_by_teachers = models.BooleanField()
+    viewable_by_teachers = models.BooleanField()
+    viewable_by_students = models.BooleanField()
 
     def __str__(self):
         return self.tag
 
 
 class ClassroomTag(BaseModel):
-    classroom = models.ManyToManyField(Classroom, related_name="tags")
+    classrooms = models.ManyToManyField(Classroom, related_name="tags", blank=True)
     tag = models.CharField(max_length=256)
+    tag_category = models.CharField(
+        choices=ClassroomTagCategory.choices, max_length=128, default=ClassroomTagCategory.other
+    )
 
     def __str__(self):
         return self.tag

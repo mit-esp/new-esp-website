@@ -7,7 +7,8 @@ from django.forms import ModelForm, inlineformset_factory
 from common.constants import REGISTRATION_USER_TYPE_CHOICES
 from common.forms import CrispyFormMixin, HiddenOrderingInputFormset
 from common.models import User
-from esp.models.program import Course, Program, ProgramStage
+from esp.constants import CourseTagCategory
+from esp.models.program import Course, CourseTag, Program, ProgramStage
 from esp.models.program_registration import (ProgramRegistrationStep,
                                              StudentProfile, TeacherProfile)
 
@@ -129,6 +130,17 @@ class TeacherCourseForm(CrispyFormMixin, ModelForm):
     submit_label = "Create Class"
     submit_kwargs = {"onclick": "return confirm('Are you sure?')"}
 
+    categories = forms.ModelMultipleChoiceField(
+        queryset=CourseTag.objects.filter(tag_category=CourseTagCategory.course_category),
+        help_text="Hold down “Control”, or “Command” on a Mac, to select more than one."
+    )
+    additional_tags = forms.ModelMultipleChoiceField(
+        queryset=CourseTag.objects.exclude(
+            tag_category=CourseTagCategory.course_category
+        ).filter(editable_by_teachers=True),
+        blank=True,
+    )
+
     class Meta:
         model = Course
         fields = [
@@ -147,3 +159,15 @@ class TeacherCourseForm(CrispyFormMixin, ModelForm):
             'start_date': forms.DateInput(attrs={'class': 'datepicker'}),
             'end_date': forms.DateInput(attrs={'class': 'datepicker'}),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if not self.fields["additional_tags"].queryset.exists():
+            self.fields.pop("additional_tags")
+        self.helper.add_input(layout.Submit("add_another", "Save and add another", css_class="mt-2"))
+
+    def save(self, commit=True):
+        categories = self.cleaned_data.pop("categories")
+        additional_tags = self.cleaned_data.pop("additional_tags", [])
+        instance = super().save(commit)
+        instance.tags.add(*categories, *additional_tags)

@@ -11,6 +11,7 @@ from esp.constants import TeacherRegistrationStepType
 from esp.forms import TeacherCourseForm, UpdateTeacherProfileForm
 from esp.models.program import Program, TeacherProgramRegistrationStep
 from esp.models.program_registration import (CompletedTeacherRegistrationStep,
+                                             CourseTeacher,
                                              TeacherAvailability,
                                              TeacherRegistration)
 
@@ -71,7 +72,7 @@ class TeacherRegistrationStepRouterView(PermissionRequiredMixin, View):
         step_key_to_view = {
             TeacherRegistrationStepType.verify_profile: VerifyTeacherProfileView,
             TeacherRegistrationStepType.time_availability: TeacherAvailabilityView,
-
+            TeacherRegistrationStepType.submit_courses: SubmitCoursesView,
         }
         return step_key_to_view.get(step_key, TeacherRegistrationStepPlaceholderView).as_view()
 
@@ -167,3 +168,15 @@ class TeacherAvailabilityView(TeacherRegistrationStepBaseView):
 class SubmitCoursesView(TeacherRegistrationStepBaseView, FormView):
     form_class = TeacherCourseForm
     template_name = "teacher/submit_course_form.html"
+
+    def form_valid(self, form):
+        form.instance.program = self.object.program
+        form.save()
+        course = form.instance
+        CourseTeacher.objects.create(course=course, teacher_registration=self.object, is_course_creator=True)
+        success_url = self.get_success_url()
+        if form.cleaned_data.get("add_another"):
+            return redirect(
+                "teacher_registration_step", registration_id=self.object.id, step_id=self.registration_step.id
+            )
+        return redirect(success_url)

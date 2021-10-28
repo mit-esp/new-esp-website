@@ -9,7 +9,6 @@ admin.site.register(course_scheduling.ResourceRequest)
 admin.site.register(course_scheduling.ResourceType)
 admin.site.register(course_scheduling.SchedulingConstraint)
 admin.site.register(program.Classroom)
-admin.site.register(program.Course)
 admin.site.register(program.CourseTag)
 admin.site.register(program.PreferenceEntryCategory)
 admin.site.register(program.ProgramRegistrationStep)
@@ -84,3 +83,13 @@ class PreferenceEntryConfigurationAdmin(admin.ModelAdmin):
     inlines = [
         PreferenceEntryRoundInline,
     ]
+
+
+class CourseTagInline(admin.TabularInline):
+    model = program.CourseTag.courses.through
+    extra = 0
+
+
+@admin.register(program.Course)
+class CourseAdmin(admin.ModelAdmin):
+    inlines = [CourseTagInline]
