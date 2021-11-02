@@ -1,4 +1,5 @@
 from django.contrib.auth import login
+from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import redirect
 from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, TemplateView, UpdateView
@@ -28,8 +29,9 @@ class RegisterAccountView(CreateView):
         return reverse(profile_form_url_mapping.get(self.object.user_type, self.object.get_dashboard_url()))
 
     def form_valid(self, form):
-        login(self.request, form.user)
-        return super().form_valid(form)
+        next_link = super().form_valid(form)
+        login(self.request, self.object)
+        return next_link
 
 
 class BaseDashboardView(PermissionRequiredMixin, TemplateView):
@@ -52,9 +54,11 @@ class StudentProfileCreateView(PermissionRequiredMixin, CreateView):
     success_url = reverse_lazy("student_dashboard")
 
     def get(self, request, *args, **kwargs):
-        if request.user.student_profile:
+        # Disallow creation of multiple student profiles
+        try:
             return redirect("update_student_profile", pk=request.user.student_profile.id)
-        return super().get(request, *args, **kwargs)
+        except ObjectDoesNotExist:
+            return super().get(request, *args, **kwargs)
 
     def form_valid(self, form):
         form.instance.user = self.request.user
@@ -120,9 +124,11 @@ class TeacherProfileCreateView(PermissionRequiredMixin, CreateView):
     success_url = reverse_lazy("teacher_dashboard")
 
     def get(self, request, *args, **kwargs):
-        if request.user.teacher_profile:
+        # Disallow creation of multiple teacher profiles
+        try:
             return redirect("update_teacher_profile", pk=request.user.teacher_profile.id)
-        return super().get(request, *args, **kwargs)
+        except ObjectDoesNotExist:
+            return super().get(request, *args, **kwargs)
 
     def form_valid(self, form):
         form.instance.user = self.request.user

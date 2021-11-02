@@ -104,20 +104,20 @@ class Course(BaseModel):
     class Meta:
         unique_together = [("program_id", "display_id")]
 
-    def __str__(self):
-        return f"{self.display_id}: {self.name} ({self.program})"
-
-    def save(self, *args, **kwargs):
-        if not self.display_id:
-            self.display_id = self.get_next_display_id()
-        super().save(*args, **kwargs)
-
     @classmethod
     def get_next_display_id(cls):
         base_display_id = 314
         if not cls.objects.exists():
             return base_display_id
         return cls.objects.aggregate(Max("display_id"))["display_id__max"] + 1
+
+    def save(self, *args, **kwargs):
+        if not self.display_id:
+            self.display_id = self.get_next_display_id()
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.display_id}: {self.name} ({self.program})"
 
 
 class TimeSlot(BaseModel):

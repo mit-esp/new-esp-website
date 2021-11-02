@@ -35,6 +35,7 @@ TEACHER_PERMISSIONS = [
     PermissionType.teacher_create_profile,
     PermissionType.teacher_update_profile,
     PermissionType.teacher_dashboard_view,
+    PermissionType.teacher_register_for_program,
     PermissionType.teacher_edit_own_courses,
 ]
 

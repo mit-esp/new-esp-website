@@ -246,5 +246,15 @@ class AddCoTeacherView(PermissionRequiredMixin, SingleObjectMixin, FormView):
         kwargs["course"] = self.get_object()
         return kwargs
 
+    def get_success_url(self):
+        teacher_registration = self.request.user.teacher_registrations.filter(program_id=self.get_object().program_id)
+        if teacher_registration.exists():
+            teacher_registration = teacher_registration.get()
+            return reverse("teacher_program_dashboard", kwargs={"pk": teacher_registration.id})
+        return reverse("teacher_dashboard")
+
     def form_valid(self, form):
-        CourseTeacher.objects.create(course=self.get_object(), teacher_registration=form.cleaned_data["teacher"])
+        CourseTeacher.objects.get_or_create(
+            course=self.get_object(), teacher_registration=form.cleaned_data["teacher"], is_course_creator=False
+        )
+        return super().form_valid(form)

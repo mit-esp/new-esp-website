@@ -24,12 +24,19 @@
     {% for course_registration in registration.courses.all %}
       <div class="list-group-item d-flex flex-column">
         <div class="list-group-item-heading d-flex">
-          <span>{{ course_registration.course.name }}</span>
+          <span class="card-title fw-bold">{{ course_registration.course.name }}</span>
           <div class="ms-auto me-2"><a href="{% url 'teacher_edit_course' pk=course_registration.course_id %}">Edit Course</a></div>
           <div><a href="{% url 'add_coteacher' pk=course_registration.course_id %}">Add a co-teacher</a></div>
         </div>
         <div class="list-group-item-text">
-          Status: {{ course_registration.course.status }}
+          <div>Status: {{ course_registration.course.get_status_display }}</div>
+          <div>
+            (Co-)Teachers:
+            {% for teacher in course_registration.course.teachers.all %}
+              {{ teacher.teacher_registration.user.first_name }} {{ teacher.teacher_registration.user.last_name }}
+              {% if not forloop.last %}, {% endif %}
+            {% endfor %}
+          </div>
         </div>
       </div>
     {% endfor %}
