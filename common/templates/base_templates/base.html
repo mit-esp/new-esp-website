@@ -18,7 +18,7 @@
       </a>
     </div>
     {% if user.is_authenticated %}
-      <p class="nav-item">Logged in as {{ user }}</p>
+      <a class="nav-item dropdown" href="#" id="userMenuDropdown">Logged in as {{ user }}</a>
       <form method="post" action="{% url "logout" %}" class="nav-item">
         {% csrf_token %}
         <button type="submit" class="btn btn-default">Log Out</button>

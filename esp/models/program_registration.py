@@ -8,7 +8,7 @@ from django.utils import timezone
 from common.constants import GradeLevel, ShirtSize, USStateEquiv
 from common.models import BaseModel, User
 from esp.constants import HeardAboutVia, MITAffiliation
-from esp.models.course_scheduling import ClassSection
+from esp.models.course_scheduling import CourseSection
 from esp.models.program import (Course, PreferenceEntryCategory, Program,
                                 ProgramRegistrationStep,
                                 TeacherProgramRegistrationStep, TimeSlot)
@@ -117,7 +117,7 @@ class StudentAvailability(BaseModel):
 class ClassPreference(BaseModel):
     """ClassPreference represents a preference entry category that a user has applied to a class section."""
     registration = models.ForeignKey(ProgramRegistration, related_name="preferences", on_delete=models.PROTECT)
-    class_section = models.ForeignKey(ClassSection, related_name="preferences", on_delete=models.PROTECT)
+    course_section = models.ForeignKey(CourseSection, related_name="preferences", on_delete=models.PROTECT)
     category = models.ForeignKey(PreferenceEntryCategory, related_name="preferences", on_delete=models.PROTECT)
 
     def __str__(self):
@@ -125,7 +125,7 @@ class ClassPreference(BaseModel):
 
 
 class ClassRegistration(BaseModel):
-    class_section = models.ForeignKey(ClassSection, related_name="registrations", on_delete=models.PROTECT)
+    course_section = models.ForeignKey(CourseSection, related_name="registrations", on_delete=models.PROTECT)
     program_registration = models.ForeignKey(
         ProgramRegistration, related_name="class_registrations", on_delete=models.PROTECT
     )
@@ -176,17 +176,18 @@ class TeacherRegistration(BaseModel):
         if not self.ignore_registration_deadlines():
             steps = steps.filter(access_start_date__lt=timezone.now(), access_end_date__gt=timezone.now())
         completed_steps = self.completed_steps.values("step_id")
-        visible_completed_steps = steps.filter(
+        visible_steps = steps.filter(
             id__in=completed_steps, display_after_completion=True
         ).annotate(completed=Value(True))
-        first_incomplete_required_step = steps.exclude(
-            id__in=completed_steps
-        ).filter(required_for_next_step=True).aggregate(Min("_order"))["_order__min"]
-        visible_incomplete_steps = steps.exclude(
-            id__in=completed_steps
-        ).filter(_order__lte=first_incomplete_required_step).annotate(completed=Value(False))
-
-        return (visible_completed_steps | visible_incomplete_steps).order_by("_order")
+        if self.completed_steps.count() < steps.count():
+            first_incomplete_required_step = steps.exclude(
+                id__in=completed_steps
+            ).filter(required_for_next_step=True).aggregate(Min("_order"))["_order__min"]
+            visible_incomplete_steps = steps.exclude(
+                id__in=completed_steps
+            ).filter(_order__lte=first_incomplete_required_step).annotate(completed=Value(False))
+            visible_steps = visible_steps | visible_incomplete_steps
+        return visible_steps.order_by("_order")
 
     def has_access_to_step(self, step):
         return (

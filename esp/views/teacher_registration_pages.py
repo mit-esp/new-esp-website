@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.utils import timezone
-from django.views.generic import FormView, TemplateView
+from django.views.generic import FormView, TemplateView, UpdateView
 from django.views.generic.base import View
 from django.views.generic.detail import DetailView, SingleObjectMixin
 
@@ -9,7 +9,7 @@ from common.constants import PermissionType
 from common.views import PermissionRequiredMixin
 from esp.constants import TeacherRegistrationStepType
 from esp.forms import TeacherCourseForm, UpdateTeacherProfileForm
-from esp.models.program import Program, TeacherProgramRegistrationStep
+from esp.models.program import Course, Program, TeacherProgramRegistrationStep
 from esp.models.program_registration import (CompletedTeacherRegistrationStep,
                                              CourseTeacher,
                                              TeacherAvailability,
@@ -169,6 +169,11 @@ class SubmitCoursesView(TeacherRegistrationStepBaseView, FormView):
     form_class = TeacherCourseForm
     template_name = "teacher/submit_course_form.html"
 
+    def get_form_kwargs(self):
+        return {
+            "program": self.object.program,
+        }
+
     def form_valid(self, form):
         form.instance.program = self.object.program
         form.save()
@@ -180,3 +185,9 @@ class SubmitCoursesView(TeacherRegistrationStepBaseView, FormView):
                 "teacher_registration_step", registration_id=self.object.id, step_id=self.registration_step.id
             )
         return redirect(success_url)
+
+
+class EditCourseView(PermissionRequiredMixin, UpdateView):
+    permission = PermissionType.teacher_edit_own_courses
+    model = Course
+    form_class = TeacherCourseForm

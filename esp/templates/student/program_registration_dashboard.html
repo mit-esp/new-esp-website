@@ -8,15 +8,13 @@
     <a href="{% url 'student_dashboard' %}" class="btn btn-secondary">Return to dashboard</a>
   </div>
   <h1>{{ program_stage.program }}: {{ program_stage.name }}</h1>
-  <ul>
+  <div class="list-group col-md-6">
     {% for step in program_stage.steps.all %}
-      <li>
-        <a href="{% url step.step_key registration_id=programregistration.id step_id=step.id %}">
+        <a href="{% url step.step_key registration_id=programregistration.id step_id=step.id %}" class="list-group-item d-flex">
           {% if step.display_name %}{{ step.display_name }}{% else %}{{ step.get_step_key_display }}{% endif %}
+          {% if step.id in completed_steps %}<div class="ms-auto badge bg-success rounded-pill">Completed</div>{% endif %}
         </a>
-        {% if step.id in completed_steps %}<span class="ms-4 fw-bold text-success">Completed</span>{% endif %}
-      </li>
     {% endfor %}
-  </ul>
+  </div>
 {% endwith %}
 {% endblock %}

@@ -13,7 +13,7 @@ from esp.models.program import Course, Program, ProgramStage
 
 
 class ProgramCreateView(PermissionRequiredMixin, CreateView):
-    permission = PermissionType.programs_edit
+    permission = PermissionType.programs_edit_all
     model = Program
     form_class = ProgramForm
 
@@ -26,7 +26,7 @@ class ProgramCreateView(PermissionRequiredMixin, CreateView):
 
 
 class ProgramUpdateView(PermissionRequiredMixin, UpdateView):
-    permission = PermissionType.programs_edit
+    permission = PermissionType.programs_edit_all
     model = Program
     form_class = ProgramForm
     success_url = reverse_lazy('programs')
@@ -67,7 +67,7 @@ class ProgramStageFormsetMixin:
 
 
 class ProgramStageCreateView(PermissionRequiredMixin, SingleObjectMixin, ProgramStageFormsetMixin, FormView):
-    permission = PermissionType.programs_edit
+    permission = PermissionType.programs_edit_all
     model = Program
     form_class = ProgramStageForm
     template_name = "esp/program_stage_form.html"
@@ -93,7 +93,7 @@ class ProgramStageCreateView(PermissionRequiredMixin, SingleObjectMixin, Program
 
 
 class ProgramStageUpdateView(PermissionRequiredMixin, ProgramStageFormsetMixin, UpdateView):
-    permission = PermissionType.programs_edit
+    permission = PermissionType.programs_edit_all
     model = ProgramStage
     form_class = ProgramStageForm
     context_object_name = "stage"
@@ -110,14 +110,14 @@ class ProgramStageUpdateView(PermissionRequiredMixin, ProgramStageFormsetMixin, 
 
 
 class CourseCreateView(PermissionRequiredMixin, CreateView):
-    permission = PermissionType.courses_edit
+    permission = PermissionType.courses_edit_all
     model = Course
     form_class = TeacherCourseForm
     success_url = reverse_lazy('programs')
 
 
 class CourseUpdateView(PermissionRequiredMixin, UpdateView):
-    permission = PermissionType.courses_edit
+    permission = PermissionType.courses_edit_all
     model = Course
     form_class = TeacherCourseForm
     success_url = reverse_lazy('programs')

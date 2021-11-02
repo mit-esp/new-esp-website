@@ -19,12 +19,13 @@ REGISTRATION_USER_TYPE_CHOICES = [
 
 
 class PermissionType(TextChoices):
+    """To add a new permission to a particular user type, modify the permissions lists in common/auth.py"""
     # WIP: permissions list TBD
 
     # Admin actions
-    courses_edit = "edit_courses"
+    courses_edit_all = "edit_courses"
     courses_view_all = "view_courses"
-    programs_edit = "edit_programs"
+    programs_edit_all = "edit_programs"
     programs_view_all = "view_all_programs"
     admin_dashboard_view = "view_admin_dashboard"
     student_registrations_edit_all = "student_registrations_view_all"
@@ -43,6 +44,7 @@ class PermissionType(TextChoices):
     teacher_create_profile = "create_teacher_profile"
     teacher_update_profile = "update_teacher_profile"
     teacher_register_for_program = "teacher_register_for_program"
+    teacher_edit_own_courses = "teacher_edit_own_courses"
 
     # Volunteer actions
     volunteer_program_dashboard_view = "view_volunteer_dashboard"

@@ -27,7 +27,6 @@ class TeacherRegistrationStepType(TextChoices):
     submit_minors_policy_acknowledgement = "teacher_minors_policy"
     time_availability = "teacher_time_availability"
     submit_courses = "teacher_submit_courses"
-    edit_courses = "teacher_edit_courses"
     confirm_course_schedule = "teacher_confirm_course_schedule"
 
 
@@ -79,4 +78,5 @@ class CourseTagCategory(TextChoices):
 
 class ClassroomTagCategory(TextChoices):
     location = "location"
+    resource = "resource"
     other = "other"

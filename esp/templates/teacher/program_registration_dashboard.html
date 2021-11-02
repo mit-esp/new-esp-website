@@ -7,7 +7,7 @@
     <a href="{% url 'teacher_dashboard' %}" class="btn btn-secondary">Return to dashboard</a>
   </div>
   <h1>Registration for {{ registration.program }}</h1>
-  <p>You </p>
+  <p>Complete each of the steps below to register to teach.</p>
   <div class="list-group col-md-6">
     {% for step in registration.visible_registration_steps.all %}
       <a href="{% url "teacher_registration_step" registration_id=registration.id step_id=step.id %}" class="d-flex list-group-item list-group-item-action {% if step.id in completed_steps and not step.allow_changes_after_completion %}disabled{% endif %}">
@@ -16,4 +16,18 @@
       </a>
     {% endfor %}
   </div>
+  {% if registration.courses %}
+    <hr>
+    <h2>Registered Courses</h2>
+    {% for course_registration in registration.courses.all %}
+      <div>
+        <div>{{ course_registration.course.name }}</div>
+        <div>
+          Status: {{ course_registration.course.status }}
+        </div>
+      </div>
+    {% endfor %}
+  {% endif %}
+  <br>
+
 {% endblock %}

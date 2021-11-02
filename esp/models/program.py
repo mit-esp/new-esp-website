@@ -27,12 +27,15 @@ class Program(BaseModel):
     )
     name = models.CharField(max_length=512)
     program_type = models.CharField(choices=ProgramType.choices, max_length=128, null=True, blank=True)
-    start_date = models.DateTimeField()
-    end_date = models.DateTimeField()
     min_grade_level = models.IntegerField(choices=GradeLevel.choices, default=7)
     max_grade_level = models.IntegerField(choices=GradeLevel.choices, default=12)
     description = models.TextField(null=True)
     notes = models.TextField(null=True, blank=True)
+
+    start_date = models.DateTimeField()
+    end_date = models.DateTimeField()
+    number_of_weeks = models.IntegerField()
+    time_block_minutes = models.IntegerField(default=30)
 
     archive_on = models.DateTimeField()
 
@@ -72,12 +75,20 @@ class Course(BaseModel):
     start_date = models.DateTimeField(null=True, blank=True)
     end_date = models.DateTimeField(null=True, blank=True)
     description = models.TextField(help_text="A description of the class that will be shown to students.")
+
     max_section_size = models.IntegerField(verbose_name="How many students can a single section include?")
-    max_sections = models.IntegerField(verbose_name="How many sections are you willing to teach?")
-    duration_minutes = models.IntegerField(
-        default=60, verbose_name="How long (in minutes) should this class be?",
-        help_text="We will attempt to accommodate this within the constraints of the program time blocks."
+    max_sections = models.IntegerField(default=1, verbose_name="How many enrollment sections are you willing to teach?")
+    time_slots_per_session = models.IntegerField(
+        default=2, verbose_name="How many time slots is each session of the class?",
     )
+    number_of_weeks = models.IntegerField(
+        default=1, verbose_name="How many weeks will this class last?"
+    )
+    sessions_per_week = models.IntegerField(
+        default=1, verbose_name="How often will this class meet per week?",
+        help_text="If you would like to meet multiple times per week, please describe why in the comments."
+    )
+
     prerequisites = models.TextField(
         default="None", blank=True, help_text="Describe the recommended prerequisites for this class."
     )
@@ -149,15 +160,9 @@ class ProgramStage(BaseModel):
     class Meta(BaseModel.Meta):
         order_with_respect_to = "program"
 
-    def get_next_in_order(self):
+    def _get_next_or_previous_in_order(self, is_next):
         try:
-            return super().get_next_in_order()
-        except self.DoesNotExist:
-            return None
-
-    def get_previous_in_order(self):
-        try:
-            return super().get_previous_in_order()
+            return super()._get_next_or_previous_in_order(is_next)
         except self.DoesNotExist:
             return None
 
@@ -209,15 +214,9 @@ class TeacherProgramRegistrationStep(BaseModel):
         unique_together = [("program_id", "step_key")]
         order_with_respect_to = "program"
 
-    def get_next_in_order(self):
+    def _get_next_or_previous_in_order(self, is_next):
         try:
-            return super().get_next_in_order()
-        except self.DoesNotExist:
-            return None
-
-    def get_previous_in_order(self):
-        try:
-            return super().get_previous_in_order()
+            return super()._get_next_or_previous_in_order(is_next)
         except self.DoesNotExist:
             return None
 

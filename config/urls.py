@@ -17,13 +17,12 @@ from django.conf.urls import include
 from django.contrib import admin
 from django.http import HttpResponse
 from django.urls import path
-
 from django_ses.views import SESEventWebhookView
 
 urlpatterns = [
     path('', include("common.urls")),
     path('', include("esp.urls")),
-    path('django_admin/', admin.site.urls),
+    path('django_admin/', admin.site.urls, name="django_admin"),
     path("health_check/", lambda request: HttpResponse("ok")),
     path("ses/event-webhook/", SESEventWebhookView.as_view(), name="handle-event-webhook"),
 ]

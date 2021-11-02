@@ -69,7 +69,7 @@
     }
     const setPostData = () => {
       const postData = Object.entries(courseCategories).map(([key, category]) => {
-        return {class_section: key, category: category, is_deleted: !category}
+        return {course_section: key, category: category, is_deleted: !category}
       })
       const dataInput = document.getElementById("data")
       dataInput.setAttribute("value", JSON.stringify(postData))

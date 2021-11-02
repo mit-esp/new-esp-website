@@ -2,12 +2,9 @@ from django.contrib import admin
 
 from esp.models import course_scheduling, program, program_registration
 
-admin.site.register(course_scheduling.ClassSection)
-admin.site.register(course_scheduling.ClassroomResource)
+admin.site.register(course_scheduling.CourseSection)
 admin.site.register(course_scheduling.ClassroomTimeSlot)
-admin.site.register(course_scheduling.ResourceRequest)
-admin.site.register(course_scheduling.ResourceType)
-admin.site.register(course_scheduling.SchedulingConstraint)
+# admin.site.register(course_scheduling.ClassroomConstraint)
 admin.site.register(program.Classroom)
 admin.site.register(program.CourseTag)
 admin.site.register(program.PreferenceEntryCategory)

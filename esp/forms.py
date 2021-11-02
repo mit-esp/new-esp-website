@@ -148,7 +148,9 @@ class TeacherCourseForm(CrispyFormMixin, ModelForm):
             "description",
             "max_section_size",
             "max_sections",
-            "duration_minutes",
+            "time_slots_per_session",
+            "number_of_weeks",
+            "sessions_per_week",
             "prerequisites",
             "min_grade_level",
             "max_grade_level",
@@ -160,11 +162,12 @@ class TeacherCourseForm(CrispyFormMixin, ModelForm):
             'end_date': forms.DateInput(attrs={'class': 'datepicker'}),
         }
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, program=None, **kwargs):
         super().__init__(*args, **kwargs)
         if not self.fields["additional_tags"].queryset.exists():
             self.fields.pop("additional_tags")
         self.helper.add_input(layout.Submit("add_another", "Save and add another", css_class="mt-2"))
+        self.fields["time_slots_per_session"].help_text = f"Time slots are {program.time_block_minutes} minutes long."
 
     def save(self, commit=True):
         categories = self.cleaned_data.pop("categories")

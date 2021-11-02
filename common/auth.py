@@ -2,9 +2,9 @@ from common.constants import PermissionType, UserType
 
 ADMIN_PERMISSIONS = [
     PermissionType.admin_dashboard_view,
-    PermissionType.courses_edit,
+    PermissionType.courses_edit_all,
     PermissionType.courses_view_all,
-    PermissionType.programs_edit,
+    PermissionType.programs_edit_all,
     PermissionType.programs_view_all,
     PermissionType.student_create_profile,
     PermissionType.student_dashboard_view,
@@ -15,6 +15,7 @@ ADMIN_PERMISSIONS = [
     PermissionType.teacher_create_profile,
     PermissionType.teacher_dashboard_view,
     PermissionType.teacher_register_for_program,
+    PermissionType.teacher_edit_own_courses,
     PermissionType.teacher_profiles_edit_all,
     PermissionType.teacher_registrations_edit_all,
     PermissionType.teacher_update_profile,
@@ -34,6 +35,7 @@ TEACHER_PERMISSIONS = [
     PermissionType.teacher_create_profile,
     PermissionType.teacher_update_profile,
     PermissionType.teacher_dashboard_view,
+    PermissionType.teacher_edit_own_courses,
 ]
 
 

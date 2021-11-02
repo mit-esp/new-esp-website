@@ -13,7 +13,7 @@ from common.constants import PermissionType
 from common.views import PermissionRequiredMixin
 from esp.constants import StudentRegistrationStepType
 from esp.forms import UpdateStudentProfileForm
-from esp.models.course_scheduling import ClassSection
+from esp.models.course_scheduling import CourseSection
 from esp.models.program import (Course, PreferenceEntryCategory,
                                 PreferenceEntryRound, Program)
 from esp.models.program_registration import (CompletedRegistrationStep,
@@ -204,6 +204,7 @@ class CompleteSurveysView(RegistrationStepPlaceholderView):
 
 class PreferenceEntryRoundView(PermissionRequiredMixin, DetailView):
     """View that allows a student to complete one round of preference entry"""
+    permission = PermissionType.student_register_for_program
     model = PreferenceEntryRound
     context_object_name = "round"
     slug_url_kwarg = "index"
@@ -229,12 +230,12 @@ class PreferenceEntryRoundView(PermissionRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["registration"] = self.registration
-        class_sections = self.get_class_sections()
+        course_sections = self.get_course_sections()
         if self.object.group_sections_by_course:
-            context["courses"] = self.get_courses(class_sections)
+            context["courses"] = self.get_courses(course_sections)
         else:
             context["time_slots"] = {
-                str(slot): class_sections.filter(time_slot_id=slot.id)
+                str(slot): course_sections.filter(time_slot_id=slot.id)
                 for slot in self.registration.program.time_slots.all()
             }
         context["back_url"] = self.get_back_url()
@@ -272,8 +273,8 @@ class PreferenceEntryRoundView(PermissionRequiredMixin, DetailView):
                 }
             )
 
-    def get_class_sections(self):
-        class_sections = ClassSection.objects.filter(course__program_id=self.registration.program_id)
+    def get_course_sections(self):
+        course_sections = CourseSection.objects.filter(course__program_id=self.registration.program_id)
         if self.object.applied_category_filter:
             previous_round = self.object.get_previous_in_order()
             if previous_round:
@@ -282,22 +283,22 @@ class PreferenceEntryRoundView(PermissionRequiredMixin, DetailView):
                 except PreferenceEntryCategory.DoesNotExist:
                     raise Http404("Misconfigured preference entry round")
                 filtered_preferences = self.registration.preferences.filter(category=category, is_deleted=False)
-                class_sections = class_sections.filter(
-                    id__in=filtered_preferences.values("class_section_id").distinct()
+                course_sections = course_sections.filter(
+                    id__in=filtered_preferences.values("course_section_id").distinct()
                 )
-        class_sections = class_sections.annotate(
+        course_sections = course_sections.annotate(
             user_preference=Subquery(
                 self.registration.preferences.filter(
-                    class_section_id=OuterRef('id'), category__preference_entry_round=self.object, is_deleted=False
+                    course_section_id=OuterRef('id'), category__preference_entry_round=self.object, is_deleted=False
                 ).values("category_id")[:1]
             )
         )
-        return class_sections
+        return course_sections
 
-    def get_courses(self, class_sections):
-        return Course.objects.filter(id__in=class_sections.values("course_id").distinct()).annotate(
+    def get_courses(self, course_sections):
+        return Course.objects.filter(id__in=course_sections.values("course_id").distinct()).annotate(
             user_preference=Subquery(self.registration.preferences.filter(
-                class_section__course_id=OuterRef('id'), category__preference_entry_round=self.object,
+                course_section__course_id=OuterRef('id'), category__preference_entry_round=self.object,
                 is_deleted=False
             ).values("category_id")[:1])
         )
