@@ -4,13 +4,14 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.forms import ModelForm, inlineformset_factory
 
-from common.constants import REGISTRATION_USER_TYPE_CHOICES
+from common.constants import REGISTRATION_USER_TYPE_CHOICES, GradeLevel
 from common.forms import CrispyFormMixin, HiddenOrderingInputFormset
 from common.models import User
 from esp.constants import CourseTagCategory
 from esp.models.program import Course, CourseTag, Program, ProgramStage
 from esp.models.program_registration import (ProgramRegistrationStep,
-                                             StudentProfile, TeacherProfile)
+                                             StudentProfile, TeacherProfile,
+                                             TeacherRegistration)
 
 
 class RegisterUserForm(CrispyFormMixin, UserCreationForm):
@@ -128,7 +129,6 @@ ProgramRegistrationStepFormset = inlineformset_factory(
 
 class TeacherCourseForm(CrispyFormMixin, ModelForm):
     submit_label = "Create Class"
-    submit_kwargs = {"onclick": "return confirm('Are you sure?')"}
 
     categories = forms.ModelMultipleChoiceField(
         queryset=CourseTag.objects.filter(tag_category=CourseTagCategory.course_category),
@@ -162,15 +162,41 @@ class TeacherCourseForm(CrispyFormMixin, ModelForm):
             'end_date': forms.DateInput(attrs={'class': 'datepicker'}),
         }
 
-    def __init__(self, *args, program=None, **kwargs):
+    def __init__(self, *args, is_update=False, program=None, **kwargs):
+        if is_update:
+            self.submit_label = "Update class"
         super().__init__(*args, **kwargs)
         if not self.fields["additional_tags"].queryset.exists():
             self.fields.pop("additional_tags")
-        self.helper.add_input(layout.Submit("add_another", "Save and add another", css_class="mt-2"))
+        if not is_update:
+            self.helper.add_input(layout.Submit("add_another", "Save and add another", css_class="mt-2"))
         self.fields["time_slots_per_session"].help_text = f"Time slots are {program.time_block_minutes} minutes long."
+        program_grade_levels = [
+            choice for choice in GradeLevel.choices if program.max_grade_level >= choice[0] >= program.min_grade_level
+        ]
+        self.fields["min_grade_level"].choices = program_grade_levels
+        self.fields["max_grade_level"].choices = program_grade_levels
 
     def save(self, commit=True):
         categories = self.cleaned_data.pop("categories")
         additional_tags = self.cleaned_data.pop("additional_tags", [])
         instance = super().save(commit)
         instance.tags.add(*categories, *additional_tags)
+
+
+class TeacherRegistrationChoiceField(forms.ModelChoiceField):
+    def label_from_instance(self, obj):
+        return obj.user.__str__()
+
+
+class AddCoTeacherForm(CrispyFormMixin, forms.Form):
+    submit_label = "Add Co-teacher"
+    teacher = TeacherRegistrationChoiceField(queryset=None)
+
+    def __init__(self, *args, course=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["teacher"].queryset = TeacherRegistration.objects.exclude(
+            id__in=course.teachers.values("teacher_registration_id")
+        ).filter(
+            program_id=course.program_id, availabilities__isnull=False
+        ).distinct()

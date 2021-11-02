@@ -7,8 +7,9 @@ from django.views.generic.detail import DetailView, SingleObjectMixin
 
 from common.constants import PermissionType
 from common.views import PermissionRequiredMixin
-from esp.constants import TeacherRegistrationStepType
-from esp.forms import TeacherCourseForm, UpdateTeacherProfileForm
+from esp.constants import CourseTagCategory, TeacherRegistrationStepType
+from esp.forms import (AddCoTeacherForm, TeacherCourseForm,
+                       UpdateTeacherProfileForm)
 from esp.models.program import Course, Program, TeacherProgramRegistrationStep
 from esp.models.program_registration import (CompletedTeacherRegistrationStep,
                                              CourseTeacher,
@@ -170,9 +171,9 @@ class SubmitCoursesView(TeacherRegistrationStepBaseView, FormView):
     template_name = "teacher/submit_course_form.html"
 
     def get_form_kwargs(self):
-        return {
-            "program": self.object.program,
-        }
+        kwargs = super().get_form_kwargs()
+        kwargs["program"] = self.object.program
+        return kwargs
 
     def form_valid(self, form):
         form.instance.program = self.object.program
@@ -187,7 +188,63 @@ class SubmitCoursesView(TeacherRegistrationStepBaseView, FormView):
         return redirect(success_url)
 
 
-class EditCourseView(PermissionRequiredMixin, UpdateView):
+class TeacherEditCourseView(PermissionRequiredMixin, UpdateView):
     permission = PermissionType.teacher_edit_own_courses
     model = Course
     form_class = TeacherCourseForm
+    template_name = "teacher/edit_course_form.html"
+
+    def get_queryset(self):
+        # TODO: Disallow updates after teacher submissions have closed
+        queryset = super().get_queryset()
+        if not self.request.user.has_permission(PermissionType.courses_edit_all):
+            queryset = queryset.filter(
+                teachers__teacher_registration_id__in=self.request.user.teacher_registrations.values("id")
+            )
+        return queryset
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["program"] = self.object.program
+        kwargs["is_update"] = True
+        return kwargs
+
+    def get_initial(self):
+        return {
+            "categories": self.object.tags.filter(tag_category=CourseTagCategory.course_category)
+        }
+
+    def get_success_url(self):
+        teacher_registration = self.request.user.teacher_registrations.filter(program_id=self.get_object().program_id)
+        if teacher_registration.exists():
+            teacher_registration = teacher_registration.get()
+            return reverse("teacher_program_dashboard", kwargs={"pk": teacher_registration.id})
+        return reverse("teacher_dashboard")
+
+
+class AddCoTeacherView(PermissionRequiredMixin, SingleObjectMixin, FormView):
+    permission = PermissionType.teacher_edit_own_courses
+    form_class = AddCoTeacherForm
+    template_name = "teacher/add_coteacher_form.html"
+    model = Course
+
+    def get_queryset(self):
+        # TODO: Disallow updates after teacher submissions have closed
+        queryset = super().get_queryset()
+        if not self.request.user.has_permission(PermissionType.courses_edit_all):
+            queryset = queryset.filter(
+                teachers__teacher_registration_id__in=self.request.user.teacher_registrations.values("id")
+            )
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        self.object = self.get_object()
+        return super().get_context_data()
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["course"] = self.get_object()
+        return kwargs
+
+    def form_valid(self, form):
+        CourseTeacher.objects.create(course=self.get_object(), teacher_registration=form.cleaned_data["teacher"])
