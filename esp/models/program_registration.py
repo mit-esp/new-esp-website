@@ -119,6 +119,7 @@ class ClassPreference(BaseModel):
     registration = models.ForeignKey(ProgramRegistration, related_name="preferences", on_delete=models.PROTECT)
     course_section = models.ForeignKey(CourseSection, related_name="preferences", on_delete=models.PROTECT)
     category = models.ForeignKey(PreferenceEntryCategory, related_name="preferences", on_delete=models.PROTECT)
+    value = models.IntegerField(null=True)
 
     def __str__(self):
         return f"{self.registration} - {self.category} preference"

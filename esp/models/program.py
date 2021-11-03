@@ -104,12 +104,18 @@ class Course(BaseModel):
     class Meta:
         unique_together = [("program_id", "display_id")]
 
-    @classmethod
-    def get_next_display_id(cls):
-        base_display_id = 314
-        if not cls.objects.exists():
+    def get_display_name(self):
+        program_type = self.program.get_program_type_display()
+        program_abbreviation = f"{program_type[0]}{program_type[-1]}".upper() if program_type else "ESP"
+        return f"{program_abbreviation}{self.display_id}: {self.name}"
+
+    def get_next_display_id(self):
+        base_display_id = (self.program.start_date.year % 1000) * 1000
+        if not self.__class__.objects.exists():
             return base_display_id
-        return cls.objects.aggregate(Max("display_id"))["display_id__max"] + 1
+        return self.__class__.objects.filter(
+            program_id=self.program_id
+        ).aggregate(Max("display_id"))["display_id__max"] + 1
 
     def save(self, *args, **kwargs):
         if not self.display_id:
@@ -117,7 +123,7 @@ class Course(BaseModel):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.display_id}: {self.name} ({self.program})"
+        return f"{self.get_display_name()} ({self.program})"
 
 
 class TimeSlot(BaseModel):
@@ -256,9 +262,15 @@ class PreferenceEntryCategory(BaseModel):
     tag = models.CharField(max_length=512)
     pre_add_display_name = models.CharField(max_length=512, null=True, blank=True)
     post_add_display_name = models.CharField(max_length=512, null=True, blank=True)
+    help_text = models.TextField()
+    # TODO: add support for below config
     max_count = models.IntegerField(null=True, blank=True)
     min_count = models.IntegerField(null=True, blank=True)
-    help_text = models.TextField()
+    has_integer_value = models.BooleanField(default=False)
+    max_value = models.IntegerField(null=True, blank=True)
+    min_value = models.IntegerField(null=True, blank=True)
+    max_value_sum = models.IntegerField(null=True, blank=True)
+    min_value_sum = models.IntegerField(null=True, blank=True)
 
     def __str__(self):
         return self.tag
