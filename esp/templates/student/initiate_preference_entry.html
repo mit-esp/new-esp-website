@@ -1,5 +1,11 @@
 {% extends "base/student_base.html" %}
 
+{% block nav %}
+  <div class="my-3">
+    <a href="{% url 'current_registration_stage' pk=programregistration.id %}" class="btn btn-secondary">Return to program dashboard</a>
+  </div>
+{% endblock %}
+
 {% block content %}
   <h1>Enter Lottery Preferences</h1>
   <p>
