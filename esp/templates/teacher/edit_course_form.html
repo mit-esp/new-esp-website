@@ -3,3 +3,9 @@
 {% block title %}Update {{ course.name }}{% endblock %}
 
 {% block form-title %}Update ESP{{ course.display_id }}{% endblock %}
+
+{% block nav %}
+  <div class="my-3">
+    <a href="{% url 'teacher_program_dashboard' pk=registration.id %}" class="btn btn-secondary">Return to program dashboard</a>
+  </div>
+{% endblock %}

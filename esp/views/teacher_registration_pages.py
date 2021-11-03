@@ -74,6 +74,7 @@ class TeacherRegistrationStepRouterView(PermissionRequiredMixin, View):
             TeacherRegistrationStepType.verify_profile: VerifyTeacherProfileView,
             TeacherRegistrationStepType.time_availability: TeacherAvailabilityView,
             TeacherRegistrationStepType.submit_courses: SubmitCoursesView,
+            TeacherRegistrationStepType.confirm_course_schedule: TeacherConfirmScheduleView,
         }
         return step_key_to_view.get(step_key, TeacherRegistrationStepPlaceholderView).as_view()
 
@@ -103,7 +104,10 @@ class TeacherRegistrationStepBaseView(PermissionRequiredMixin, DetailView):
             registration=self.object, step=self.registration_step, defaults={"completed_on": timezone.now()}
         )
         next_step = self.registration_step.get_next_in_order()
-        if next_step and self.object.has_access_to_step(next_step):
+        if (
+            next_step and self.object.has_access_to_step(next_step)
+            and next_step.id not in self.object.completed_steps.values("step_id")
+        ):
             return reverse(
                 "teacher_registration_step", kwargs={"registration_id": self.object.id, "step_id": next_step.id}
             )
@@ -186,6 +190,16 @@ class SubmitCoursesView(TeacherRegistrationStepBaseView, FormView):
                 "teacher_registration_step", registration_id=self.object.id, step_id=self.registration_step.id
             )
         return redirect(success_url)
+
+
+class TeacherConfirmScheduleView(TeacherRegistrationStepBaseView):
+    template_name = "teacher/confirm_course_schedule.html"
+
+    def post(self, *args, **kwargs):
+        registration = self.get_object()
+        registration.courses.all().update(confirmed_on=timezone.now())
+        # TODO: Send confirmation email
+        return redirect(self.get_success_url())
 
 
 class TeacherEditCourseView(PermissionRequiredMixin, UpdateView):

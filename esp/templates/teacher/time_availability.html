@@ -2,6 +2,12 @@
 
 {% block title %}Enter Time Availability{% endblock %}
 
+{% block nav %}
+  <div class="my-3">
+    <a href="{% url 'teacher_program_dashboard' pk=registration.id %}" class="btn btn-secondary">Return to program dashboard</a>
+  </div>
+{% endblock %}
+
 {% block content %}
   {% include "shared/time_availability_input.html" %}
 {% endblock %}

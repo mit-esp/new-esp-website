@@ -10,3 +10,9 @@
     for inclusion in {{ registration.program }}. You will be able to add co-teachers at a later step.
   </p>
 {% endblock %}
+
+{% block nav %}
+  <div class="my-3">
+    <a href="{% url 'teacher_program_dashboard' pk=registration.id %}" class="btn btn-secondary">Return to program dashboard</a>
+  </div>
+{% endblock %}
