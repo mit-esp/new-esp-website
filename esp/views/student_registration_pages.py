@@ -235,7 +235,7 @@ class PreferenceEntryRoundView(PermissionRequiredMixin, DetailView):
             context["courses"] = self.get_courses(course_sections)
         else:
             context["time_slots"] = {
-                str(slot): course_sections.filter(time_slot_id=slot.id)
+                str(slot): course_sections.filter(time_slots__id=slot.id)
                 for slot in self.registration.program.time_slots.all()
             }
         context["back_url"] = self.get_back_url()

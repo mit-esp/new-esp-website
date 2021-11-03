@@ -33,8 +33,7 @@
           <div>
             (Co-)Teachers:
             {% for teacher in course_registration.course.teachers.all %}
-              {{ teacher.teacher_registration.user.first_name }} {{ teacher.teacher_registration.user.last_name }}
-              {% if not forloop.last %}, {% endif %}
+              {{ teacher.teacher_registration.user.first_name }} {{ teacher.teacher_registration.user.last_name }}{% if not forloop.last %}, {% endif %}
             {% endfor %}
           </div>
         </div>

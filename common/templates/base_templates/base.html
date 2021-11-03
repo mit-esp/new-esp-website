@@ -1,13 +1,15 @@
 {% load static %}
 {% load crispy_forms_tags %}
 {% load sass_tags %}
+{% load auth %}
 
-<html>
+<!doctype html>
+<html lang="en">
   <head>
-      <title>MIT ESP - {% block title %}{% endblock %}</title>
-      <link href="{% static "images/favicon.ico" %}" rel="icon">
-      <link href="{% sass_src 'styles/base.scss' %}" rel="stylesheet">
-      {% block head %}{% endblock %}
+    <title>MIT ESP | {% block title %}{% endblock %}</title>
+    <link href="{% static "images/favicon.ico" %}" rel="icon">
+    <link href="{% sass_src 'styles/base.scss' %}" rel="stylesheet">
+    {% block head %}{% endblock %}
   </head>
   <body>
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -18,11 +20,26 @@
       </a>
     </div>
     {% if user.is_authenticated %}
-      <a class="nav-item dropdown" href="#" id="userMenuDropdown">Logged in as {{ user }}</a>
-      <form method="post" action="{% url "logout" %}" class="nav-item">
-        {% csrf_token %}
-        <button type="submit" class="btn btn-default">Log Out</button>
-      </form>
+      <div class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" id="userMenuDropdown" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <span class="bi-person"></span> {{ user }}
+        </a>
+        <div class="dropdown-menu" aria-labelledby="userMenuDropdown">
+          {% if request.user|has_permission:PermissionType.teacher_dashboard_view %}
+            <a class="dropdown-item" href="{% url 'teacher_dashboard' %}">Teacher dashboard</a>
+          {% endif %}
+          {% if request.user|has_permission:PermissionType.student_dashboard_view %}
+            <a class="dropdown-item" href="{% url 'student_dashboard' %}">Student dashboard</a>
+          {% endif %}
+          {% if request.user.is_staff %}
+            <a class="dropdown-item" href="/django_admin/">Django admin interface</a>
+          {% endif %}
+          <form method="post" action="{% url "logout" %}" class="nav-item">
+            {% csrf_token %}
+            <button type="submit" class="dropdown-item">Log Out</button>
+          </form>
+        </div>
+      </div>
     {% else %}
        <ul class="nav justify-content-end">
           <li class="nav-item">
@@ -47,6 +64,9 @@
       {% block body %}{% endblock %}
     </div>
     {# END_FEATRUE bootstrap_messages #}
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    {% block script %}{% endblock %}
   </body>
-{% block script %}{% endblock %}
 </html>

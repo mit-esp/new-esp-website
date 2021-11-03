@@ -15,16 +15,15 @@
   {% empty %}No active registrations. See below for eligible programs.
   {% endfor %}
   <hr/>
-  {% if eligible_programs %}
-    <h2>Eligible Programs</h2>
-    {% for program in eligible_programs %}
-      <div>
-        <p><a href="{% url 'create_program_registration' pk=program.id %}">Register for {{ program.name }}</a></p>
-        <p>Description: {{ program.description }}</p>
-      </div>
-    {% endfor %}
-    <hr/>
-  {% endif %}
+  <h2>Eligible Programs</h2>
+  {% for program in eligible_programs %}
+    <div>
+      <p><a href="{% url 'create_program_registration' pk=program.id %}">Register for {{ program.name }}</a></p>
+      <p>Description: {{ program.description }}</p>
+    </div>
+  {% empty %}<p>There are no additional programs that you are currently eligible for.</p>
+  {% endfor %}
+  <hr/>
   <h2>Manage account</h2>
   {% if request.user.student_profile %}
     <p><a href="{% url 'update_student_profile' pk=request.user.student_profile.id %}">Update Profile</a></p>
