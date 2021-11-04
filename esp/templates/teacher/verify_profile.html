@@ -1,0 +1,11 @@
+{% extends "base/teacher_single_form_page.html" %}
+
+{% block title %}Verify Profile Info{% endblock %}
+
+{% block form-title %}Verify Profile Information{% endblock %}
+
+{% block nav %}
+  <div class="my-3">
+    <a href="{% url 'teacher_program_dashboard' pk=registration.id %}" class="btn btn-secondary">Return to program dashboard</a>
+  </div>
+{% endblock %}

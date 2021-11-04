@@ -1,0 +1,18 @@
+{% extends "base/teacher_single_form_page.html" %}
+
+{% block title %}Submit Class{% endblock %}
+
+{% block form-title %}Submit a class{% endblock %}
+
+{% block pre-form-text %}
+  <p>
+    Your class will be reviewed by admins, and you will be contacted if it is approved
+    for inclusion in {{ registration.program }}. You will be able to add co-teachers at a later step.
+  </p>
+{% endblock %}
+
+{% block nav %}
+  <div class="my-3">
+    <a href="{% url 'teacher_program_dashboard' pk=registration.id %}" class="btn btn-secondary">Return to program dashboard</a>
+  </div>
+{% endblock %}

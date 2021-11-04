@@ -2,16 +2,15 @@ from django.contrib import admin
 
 from esp.models import course_scheduling, program, program_registration
 
-admin.site.register(course_scheduling.ClassroomResource)
-admin.site.register(course_scheduling.ResourceRequest)
-admin.site.register(course_scheduling.ResourceType)
-admin.site.register(program.PreferenceEntryCategory)
-admin.site.register(program.ClassSection)
+admin.site.register(course_scheduling.CourseSection)
+admin.site.register(course_scheduling.ClassroomTimeSlot)
+# admin.site.register(course_scheduling.ClassroomConstraint)
 admin.site.register(program.Classroom)
-admin.site.register(program.Course)
 admin.site.register(program.CourseTag)
+admin.site.register(program.PreferenceEntryCategory)
 admin.site.register(program.ProgramRegistrationStep)
 admin.site.register(program.ProgramTag)
+admin.site.register(program.TeacherProgramRegistrationStep)
 admin.site.register(program.TimeSlot)
 admin.site.register(program_registration.ClassPreference)
 admin.site.register(program_registration.CompletedRegistrationStep)
@@ -36,11 +35,25 @@ class ProgramStageInline(admin.StackedInline):
     show_change_link = True
 
 
+class TeacherRegistrationStepInline(admin.StackedInline):
+    extra = 0
+    model = program.TeacherProgramRegistrationStep
+    show_change_link = True
+
+
+class TimeSlotInline(admin.TabularInline):
+    extra = 0
+    model = program.TimeSlot
+    show_change_link = True
+
+
 @admin.register(program.Program)
 class ProgramAdmin(admin.ModelAdmin):
     search_fields = ("program_type", "name")
     inlines = [
         ProgramStageInline,
+        TeacherRegistrationStepInline,
+        TimeSlotInline,
     ]
 
 
@@ -62,8 +75,18 @@ class PreferenceEntryRoundInline(admin.StackedInline):
     show_change_link = True
 
 
-@admin.register(program.PreferenceEntryConfiguration)
+@admin.register(program.ProgramConfiguration)
 class PreferenceEntryConfigurationAdmin(admin.ModelAdmin):
     inlines = [
         PreferenceEntryRoundInline,
     ]
+
+
+class CourseTagInline(admin.TabularInline):
+    model = program.CourseTag.courses.through
+    extra = 0
+
+
+@admin.register(program.Course)
+class CourseAdmin(admin.ModelAdmin):
+    inlines = [CourseTagInline]

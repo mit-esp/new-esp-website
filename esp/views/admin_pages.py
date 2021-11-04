@@ -1,19 +1,30 @@
-from django.db.models import Max
+from django.db.models import Count, Max
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, FormView, ListView, UpdateView
+from django.views.generic import (CreateView, FormView, ListView, TemplateView,
+                                  UpdateView)
 from django.views.generic.detail import SingleObjectMixin
 
 from common.constants import PermissionType
 from common.forms import CrispyFormsetHelper
 from common.views import PermissionRequiredMixin
-from esp.forms import (CourseForm, ProgramForm, ProgramRegistrationStepFormset,
-                       ProgramStageForm)
+from esp.forms import (ProgramForm, ProgramRegistrationStepFormset,
+                       ProgramStageForm, TeacherCourseForm)
+from esp.lottery import run_program_lottery
 from esp.models.program import Course, Program, ProgramStage
+######################################
+# ADMIN DASHBOARD
+######################################
+from esp.models.program_registration import ClassRegistration
+
+
+class AdminDashboardView(TemplateView):
+    permission = PermissionType.admin_dashboard_view
+    template_name = 'esp/admin_dashboard.html'
 
 
 class ProgramCreateView(PermissionRequiredMixin, CreateView):
-    permission = PermissionType.programs_edit
+    permission = PermissionType.programs_edit_all
     model = Program
     form_class = ProgramForm
 
@@ -26,7 +37,7 @@ class ProgramCreateView(PermissionRequiredMixin, CreateView):
 
 
 class ProgramUpdateView(PermissionRequiredMixin, UpdateView):
-    permission = PermissionType.programs_edit
+    permission = PermissionType.programs_edit_all
     model = Program
     form_class = ProgramForm
     success_url = reverse_lazy('programs')
@@ -67,7 +78,7 @@ class ProgramStageFormsetMixin:
 
 
 class ProgramStageCreateView(PermissionRequiredMixin, SingleObjectMixin, ProgramStageFormsetMixin, FormView):
-    permission = PermissionType.programs_edit
+    permission = PermissionType.programs_edit_all
     model = Program
     form_class = ProgramStageForm
     template_name = "esp/program_stage_form.html"
@@ -93,7 +104,7 @@ class ProgramStageCreateView(PermissionRequiredMixin, SingleObjectMixin, Program
 
 
 class ProgramStageUpdateView(PermissionRequiredMixin, ProgramStageFormsetMixin, UpdateView):
-    permission = PermissionType.programs_edit
+    permission = PermissionType.programs_edit_all
     model = ProgramStage
     form_class = ProgramStageForm
     context_object_name = "stage"
@@ -106,20 +117,40 @@ class ProgramStageUpdateView(PermissionRequiredMixin, ProgramStageFormsetMixin, 
         return self.program_stage
 
 
+class ProgramLotteryView(PermissionRequiredMixin, SingleObjectMixin, TemplateView):
+    permission = PermissionType.run_program_lottery
+    model = Program
+    template_name = "esp/program_lottery.html"
+
+    def get_context_data(self, **kwargs):
+        self.object = self.get_object()
+        context = super().get_context_data(**kwargs)
+        context["registrations"] = ClassRegistration.objects.filter(
+            course_section__course__program_id=self.object.id
+        ).values(
+            "course_section__course__name", "course_section", "course_section__display_id",
+        ).annotate(count=Count('id')).distinct().order_by('count')
+        return context
+
+    def post(self, request, *args, **kwargs):
+        run_program_lottery(self.get_object())
+        return redirect("program_lottery", pk=self.kwargs["pk"])
+
+
 ###########################################################
 
 
 class CourseCreateView(PermissionRequiredMixin, CreateView):
-    permission = PermissionType.courses_edit
+    permission = PermissionType.courses_edit_all
     model = Course
-    form_class = CourseForm
+    form_class = TeacherCourseForm
     success_url = reverse_lazy('programs')
 
 
 class CourseUpdateView(PermissionRequiredMixin, UpdateView):
-    permission = PermissionType.courses_edit
+    permission = PermissionType.courses_edit_all
     model = Course
-    form_class = CourseForm
+    form_class = TeacherCourseForm
     success_url = reverse_lazy('programs')
 
 

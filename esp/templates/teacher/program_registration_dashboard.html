@@ -1,0 +1,43 @@
+{% extends "base/teacher_base.html" %}
+
+{% block title %}Registration for {{ registration.program }}{% endblock %}
+
+{% block content %}
+  <h1>Registration for {{ registration.program }}</h1>
+  <p>Complete each of the steps below to register to teach. Steps will appear when you are eligible to complete them.</p>
+  <div class="list-group col-md-6">
+    {% for step in registration.visible_registration_steps.all %}
+      <a href="{% url "teacher_registration_step" registration_id=registration.id step_id=step.id %}" class="d-flex list-group-item list-group-item-action {% if step.id in completed_steps and not step.allow_changes_after_completion %}disabled{% endif %}">
+        <span>{{ step.get_display_name }}</span>
+        {% if step.id in completed_steps %}<div class="ms-auto badge bg-success rounded-pill">Completed</div>{% endif %}
+      </a>
+    {% endfor %}
+  </div>
+  {% if registration.courses %}
+    <hr>
+    <h2>Registered Courses</h2>
+    <p>Below is a summary of the courses you have registered to teach for {{ registration.program }}.</p>
+    <div class="list-group col-lg-8">
+    {% for course_registration in registration.courses.all %}
+      <div class="list-group-item d-flex flex-column">
+        <div class="list-group-item-heading d-flex">
+          <span class="card-title fw-bold">{{ course_registration.course.get_display_name }}</span>
+          <div class="ms-auto me-2"><a href="{% url 'teacher_edit_course' pk=course_registration.course_id %}">Edit Course</a></div>
+          <div><a href="{% url 'add_coteacher' pk=course_registration.course_id %}">Add a co-teacher</a></div>
+        </div>
+        <div class="list-group-item-text">
+          <div>Status: {{ course_registration.course.get_status_display }}</div>
+          <div>
+            (Co-)Teachers:
+            {% for teacher in course_registration.course.teachers.all %}
+              <span {% if not teacher.confirmed_on %}class="text-secondary" title="This teacher has not yet confirmed."{% endif %}>{{ teacher.teacher_registration.user.first_name }} {{ teacher.teacher_registration.user.last_name }}{% if not forloop.last %}, {% endif %}</span>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+    </div>
+  {% endif %}
+  <br>
+
+{% endblock %}

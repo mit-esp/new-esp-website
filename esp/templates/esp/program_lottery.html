@@ -1,0 +1,23 @@
+{% extends 'base_templates/base.html' %}
+
+{% block title %}{{ program }} Lottery{% endblock %}
+
+{% block body %}
+  <h1>Program Lottery for {{ program }}</h1>
+  {% if registrations %}
+    <p>Lottery has already been run. Current enrollments are summarized below.</p>
+    <div class="list-group">
+      {% for registration in registrations %}
+        <div class="list-group-item">
+          {{ registration.course_section__course__name }} ({{ registration.course_section__display_id }}):
+          {{ registration.count }} enrollment(s)
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <form method="post">
+      {% csrf_token %}
+      <button class="btn btn-primary" type="submit">Run Lottery</button>
+    </form>
+  {% endif %}
+{% endblock %}

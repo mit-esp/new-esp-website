@@ -1,23 +1,28 @@
 {% extends "base_templates/base.html" %}
 {% load sass_tags %}
+{% load auth %}
+
 {% block title %}Home{% endblock %}
-{% block head %}
-  <link href="{% sass_src 'styles/pages/index.scss' %}" rel="stylesheet">
-{% endblock %}
+
 {% block body %}
  <div class="container">
   {% if not request.user.is_authenticated %}
     <h1>Please log in first.</h1>
   {% else %}
     <h1>Welcome to MIT ESP!</h1>
-    <br>
-    <h3><a href="{% url 'programs' %}">Programs</a></h3>
-    <h3><a href="{% url 'courses' %}">Classes</a></h3>
 
     <h2>Dashboards</h2>
-    <a href="{% url 'teacher_dashboard' %}">Teacher Dashboard</a>
-    <br/>
-    <a href="{% url 'student_dashboard' %}">Student Dashboard</a>
+    {% if request.user|has_permission:PermissionType.teacher_dashboard_view %}
+      <a href="{% url 'teacher_dashboard' %}">Teacher Dashboard</a>
+      <br/>
+    {% endif %}
+    {% if request.user|has_permission:PermissionType.student_dashboard_view %}
+      <a href="{% url 'student_dashboard' %}">Student Dashboard</a>
+      <br/>
+    {% endif %}
+    {% if request.user|has_permission:PermissionType.admin_dashboard_view %}
+      <a href="{% url 'admin_dashboard' %}">Admin Dashboard</a>
+    {% endif %}
     </div>
   {% endif %}
 {% endblock %}

@@ -1,0 +1,12 @@
+{% extends "base_templates/base.html" %}
+
+{% block body %}
+  {% block nav %}
+    <div class="my-3">
+      <a href="{% url 'teacher_dashboard' %}" class="btn btn-secondary">Return to dashboard</a>
+    </div>
+  {% endblock %}
+  <div class="container py-4">
+    {% block content %}{% endblock %}
+  </div>
+{% endblock %}

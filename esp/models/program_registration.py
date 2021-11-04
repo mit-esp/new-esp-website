@@ -1,19 +1,21 @@
 from datetime import date
 
 from django.db import models
-from django.db.models import Exists, OuterRef, Q
+from django.db.models import Exists, Min, OuterRef, Value
 from django.db.models.functions import Now
 from django.utils import timezone
 
 from common.constants import GradeLevel, ShirtSize, USStateEquiv
 from common.models import BaseModel, User
-from esp.constants import HeardAboutVia, MITAffiliation, RegistrationStep
-from esp.models.program import (ClassSection, Course, PreferenceEntryCategory,
-                                Program, ProgramRegistrationStep, TimeSlot)
+from esp.constants import HeardAboutVia, MITAffiliation
+from esp.models.course_scheduling import CourseSection
+from esp.models.program import (Course, PreferenceEntryCategory, Program,
+                                ProgramRegistrationStep,
+                                TeacherProgramRegistrationStep, TimeSlot)
 
-#######################
-# Student Registrations
-#######################
+####################################################
+# STUDENT REGISTRATIONS
+####################################################
 
 
 class StudentProfile(BaseModel):
@@ -68,22 +70,34 @@ class ProgramRegistration(BaseModel):
     """ProgramRegistration represents a user's registration for a program."""
     program = models.ForeignKey(Program, related_name="registrations", on_delete=models.PROTECT)
     user = models.ForeignKey(User, on_delete=models.PROTECT, related_name="registrations")
+    allow_early_registration_after = models.DateTimeField(null=True)  # Overrides deadlines set on program stages
+    allow_late_registration_until = models.DateTimeField(null=True)  # Overrides deadlines set on program stages
+
+    class Meta:
+        unique_together = [("program_id", "user_id")]
 
     def get_program_stage(self):
-        active_stages = self.program.stages.filter(
-            Q(start_date__lte=Now(), end_date__gte=Now(), manually_hidden=False) | Q(manually_activated=True)
+        active_stages = (
+            self.program.stages.filter(start_date__lte=Now(), end_date__gte=Now())
+            if not self.ignore_registration_deadlines() else self.program.stages.all()
         )
         if not active_stages.exists():
             return None
         completed_steps = self.completed_steps.values_list("step_id", flat=True)
         incomplete_stages = active_stages.filter(
-            Exists(RegistrationStep.objects
+            Exists(ProgramRegistrationStep.objects
                    .filter(program_stage_id=OuterRef('id'), required_for_stage_completion=True)
-                   .exclude(steps__id__in=completed_steps))
+                   .exclude(id__in=completed_steps))
         )
         if incomplete_stages.exists():
             return incomplete_stages.first()
         return active_stages.last()
+
+    def ignore_registration_deadlines(self):
+        return (
+                (self.allow_early_registration_after and self.allow_early_registration_after < timezone.now())
+                or (self.allow_late_registration_until and self.allow_late_registration_until > timezone.now())
+        )
 
     def __str__(self):
         return f"{self.program} registration for {self.user}"
@@ -103,24 +117,26 @@ class StudentAvailability(BaseModel):
 class ClassPreference(BaseModel):
     """ClassPreference represents a preference entry category that a user has applied to a class section."""
     registration = models.ForeignKey(ProgramRegistration, related_name="preferences", on_delete=models.PROTECT)
-    class_section = models.ForeignKey(ClassSection, related_name="preferences", on_delete=models.PROTECT)
+    course_section = models.ForeignKey(CourseSection, related_name="preferences", on_delete=models.PROTECT)
     category = models.ForeignKey(PreferenceEntryCategory, related_name="preferences", on_delete=models.PROTECT)
+    value = models.IntegerField(null=True)
 
     def __str__(self):
         return f"{self.registration} - {self.category} preference"
 
 
 class ClassRegistration(BaseModel):
-    class_section = models.ForeignKey(ClassSection, related_name="registrations", on_delete=models.PROTECT)
+    course_section = models.ForeignKey(CourseSection, related_name="registrations", on_delete=models.PROTECT)
     program_registration = models.ForeignKey(
         ProgramRegistration, related_name="class_registrations", on_delete=models.PROTECT
     )
     created_by_lottery = models.BooleanField()
     confirmed_on = models.DateTimeField(null=True)
 
-#######################
-# Teacher Registrations
-#######################
+
+#####################################################
+# TEACHER REGISTRATIONS
+#####################################################
 
 
 class TeacherProfile(BaseModel):
@@ -147,14 +163,57 @@ class TeacherProfile(BaseModel):
 class TeacherRegistration(BaseModel):
     program = models.ForeignKey(Program, related_name="teacher_registrations", on_delete=models.PROTECT)
     user = models.ForeignKey(User, related_name="teacher_registrations", on_delete=models.PROTECT)
+    allow_early_registration_after = models.DateTimeField(null=True)  # Overrides deadlines set on program stages
+    allow_late_registration_until = models.DateTimeField(null=True)  # Overrides deadlines set on program stages
+
+    class Meta:
+        unique_together = [("program_id", "user_id")]
 
     def __str__(self):
-        return f"{self.program} registration for {self.user}"
+        return f"{self.program} teaching registration for {self.user}"
+
+    def visible_registration_steps(self):
+        steps = self.program.teacher_registration_steps.all()
+        if not self.ignore_registration_deadlines():
+            steps = steps.filter(access_start_date__lt=timezone.now(), access_end_date__gt=timezone.now())
+        completed_steps = self.completed_steps.values("step_id")
+        visible_steps = steps.filter(
+            id__in=completed_steps, display_after_completion=True
+        ).annotate(completed=Value(True))
+        if self.completed_steps.count() < steps.count():
+            first_incomplete_required_step = steps.exclude(
+                id__in=completed_steps
+            ).filter(required_for_next_step=True).aggregate(Min("_order"))["_order__min"]
+            visible_incomplete_steps = steps.exclude(
+                id__in=completed_steps
+            ).filter(_order__lte=first_incomplete_required_step).annotate(completed=Value(False))
+            visible_steps = visible_steps | visible_incomplete_steps
+        return visible_steps.order_by("_order")
+
+    def has_access_to_step(self, step):
+        return (
+            step.id not in self.completed_steps.values("step_id")
+            or step.allow_changes_after_completion
+        ) and step in self.visible_registration_steps()
+
+    def ignore_registration_deadlines(self):
+        return (
+            (self.allow_early_registration_after and self.allow_early_registration_after < timezone.now())
+            or (self.allow_late_registration_until and self.allow_late_registration_until > timezone.now())
+        )
+
+
+class CompletedTeacherRegistrationStep(BaseModel):
+    registration = models.ForeignKey(TeacherRegistration, related_name="completed_steps", on_delete=models.PROTECT)
+    step = models.ForeignKey(TeacherProgramRegistrationStep, related_name="registrations", on_delete=models.PROTECT)
+    completed_on = models.DateTimeField()
 
 
 class CourseTeacher(BaseModel):
     course = models.ForeignKey(Course, related_name="teachers", on_delete=models.PROTECT)
     teacher_registration = models.ForeignKey(TeacherRegistration, related_name="courses", on_delete=models.PROTECT)
+    is_course_creator = models.BooleanField()
+    confirmed_on = models.DateTimeField(null=True)
 
 
 class TeacherAvailability(BaseModel):

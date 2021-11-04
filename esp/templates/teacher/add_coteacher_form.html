@@ -1,0 +1,13 @@
+{% extends "base/teacher_single_form_page.html" %}
+
+{% block title %}Add Co-Teacher{% endblock %}
+
+{% block form-title %}Add Co-Teacher for {{ course.name }}{% endblock %}
+
+{% block pre-form-text %}
+  <p>
+    You may select any teacher who has registered for {{ course.program }}
+    and submitted time availabilities from the dropdown.
+    You must know your co-teacher's username in order to select them.
+  </p>
+{% endblock %}

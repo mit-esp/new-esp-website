@@ -8,23 +8,26 @@ class ProgramType(TextChoices):
     cascade = "cascade"
 
 
-class RegistrationStep(TextChoices):
-    # Edit to add or remove possible registration steps or modify display names
+class StudentRegistrationStepType(TextChoices):
+    # Edit to add or remove possible student registration steps or modify display names
     verify_profile = "verify_profile", "Verify Profile Information"
     submit_waivers = "submit_waivers"
     time_availability = "time_availability"
     lottery_preferences = "lottery_preferences"
     submit_registration = "submit_registration"
-    view_assigned_courses = "view_assigned_courses"
+    confirm_assigned_courses = "view_assigned_courses"
     edit_assigned_courses = "edit_assigned_courses"
     pay_program_fees = "pay_program_fees", "Payment"
-    check_in = "check_in"
     complete_surveys = "complete_surveys"
 
 
-REGISTRATION_STEP_TO_URL = {
-    RegistrationStep.lottery_preferences: "preference_entry",
-}
+class TeacherRegistrationStepType(TextChoices):
+    verify_profile = "teacher_verify_profile"
+    submit_waivers = "teacher_submit_waiver"
+    submit_minors_policy_acknowledgement = "teacher_minors_policy"
+    time_availability = "teacher_time_availability"
+    submit_courses = "teacher_submit_courses"
+    confirm_course_schedule = "teacher_confirm_course_schedule"
 
 
 class CourseStatus(TextChoices):
@@ -33,12 +36,6 @@ class CourseStatus(TextChoices):
     rejected = "rejected"
     cancelled = "cancelled"
     hidden = "hidden"
-
-
-class CourseRoleType(TextChoices):
-    teacher = "teacher"
-    observer = "observer"
-    student = "student"
 
 
 class HeardAboutVia(TextChoices):
@@ -68,3 +65,18 @@ class MITAffiliation(TextChoices):
     postdoc = "postdoc", "Postdoctoral Student"
     other = "other"
     none = ""
+
+
+class ProgramTagCategory(TextChoices):
+    other = "other"
+
+
+class CourseTagCategory(TextChoices):
+    course_category = "course_category"
+    other = "other"
+
+
+class ClassroomTagCategory(TextChoices):
+    location = "location"
+    resource = "resource"
+    other = "other"

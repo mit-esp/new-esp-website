@@ -1,0 +1,21 @@
+{% extends "base/teacher_base.html" %}
+
+{% block title %}Confirm Registration{% endblock %}
+
+{% block nav %}
+  <div class="my-3">
+    <a href="{% url 'teacher_program_dashboard' pk=registration.id %}" class="btn btn-secondary">Return to program dashboard</a>
+  </div>
+{% endblock %}
+
+{% block content %}
+  <h1>Confirm your teaching schedule for {{ registration.program }}</h1>
+  <p>Your course schedule is summarized below. Please check for mistakes.</p>
+  {% comment %}
+    TODO: Add registration summary
+  {% endcomment %}
+  <form method="post">
+    {% csrf_token %}
+    <button class="btn btn-primary" type="submit">Confirm Schedule</button>
+  </form>
+{% endblock %}

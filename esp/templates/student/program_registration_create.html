@@ -1,0 +1,20 @@
+{% extends "base/student_base.html" %}
+
+{% block title %}Register for {{ program }}{% endblock %}
+
+
+
+
+{% block content %}
+  {% if existing_registrations %}
+    <p>You are already registered for {{ program }}</p>
+    <a href="{% url 'current_registration_stage' pk=existing_registrations.get.id %}">Go to program dashboard</a>
+  {% else %}
+    <h1>Register for {{ program }}</h1>
+    <p>{{ program.description }}</p>
+    <form method="post">
+      {% csrf_token %}
+      <input type="submit" class="btn btn-primary" value="Register">
+    </form>
+  {% endif %}
+{% endblock %}

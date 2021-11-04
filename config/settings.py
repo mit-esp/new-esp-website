@@ -10,9 +10,8 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 
 import os
 
-from django.contrib.messages import constants as messages
-
 import environ
+from django.contrib.messages import constants as messages
 
 env = environ.Env(
     DEBUG=(bool, False),
@@ -101,6 +100,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "common.context_processors.constants",
             ],
         },
     },
