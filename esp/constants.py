@@ -15,7 +15,7 @@ class StudentRegistrationStepType(TextChoices):
     time_availability = "time_availability"
     lottery_preferences = "lottery_preferences"
     submit_registration = "submit_registration"
-    view_assigned_courses = "view_assigned_courses"
+    confirm_assigned_courses = "view_assigned_courses"
     edit_assigned_courses = "edit_assigned_courses"
     pay_program_fees = "pay_program_fees", "Payment"
     complete_surveys = "complete_surveys"

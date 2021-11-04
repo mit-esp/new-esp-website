@@ -6,6 +6,7 @@ ADMIN_PERMISSIONS = [
     PermissionType.courses_view_all,
     PermissionType.programs_edit_all,
     PermissionType.programs_view_all,
+    PermissionType.run_program_lottery,
     PermissionType.student_create_profile,
     PermissionType.student_dashboard_view,
     PermissionType.student_profiles_edit_all,

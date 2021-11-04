@@ -31,8 +31,8 @@
           {% if request.user|has_permission:PermissionType.student_dashboard_view %}
             <a class="dropdown-item" href="{% url 'student_dashboard' %}">Student dashboard</a>
           {% endif %}
-          {% if request.user.is_staff %}
-            <a class="dropdown-item" href="/django_admin/">Django admin interface</a>
+          {% if request.user|has_permission:PermissionType.admin_dashboard_view %}
+            <a class="dropdown-item" href="{% url 'admin_dashboard' %}">Admin Dashboard</a>
           {% endif %}
           <form method="post" action="{% url "logout" %}" class="nav-item">
             {% csrf_token %}

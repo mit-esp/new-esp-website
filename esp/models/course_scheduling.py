@@ -1,6 +1,7 @@
 from datetime import timedelta
 
 from django.db import models
+from django.db.models import Max
 
 from common.models import BaseModel
 from esp.constants import ClassroomTagCategory
@@ -32,6 +33,17 @@ class CourseSection(BaseModel):
     which will be related to multiple ClassroomTimeSlots.
     """
     course = models.ForeignKey(Course, related_name="sections", on_delete=models.PROTECT)
+    display_id = models.IntegerField()
+
+    def save(self, *args, **kwargs):
+        if not self.display_id:
+            self.display_id = self.get_next_display_id()
+        super().save(*args, **kwargs)
+
+    def get_next_display_id(self):
+        if not self.__class__.objects.filter(course=self.course).exists():
+            return 1
+        return self.__class__.objects.filter(course=self.course).aggregate(max=Max("display_id"))["max"] + 1
 
     def get_section_times(self):
         time_slots = self.time_slots.order_by("time_slot__start_time").values(
@@ -54,7 +66,7 @@ class CourseSection(BaseModel):
         return times
 
     def __str__(self):
-        return f"{self.course.display_id} section"
+        return f"{self.course.get_display_name()}s{self.display_id}"
 
 
 class ClassroomTimeSlot(BaseModel):
@@ -66,3 +78,6 @@ class ClassroomTimeSlot(BaseModel):
     classroom = models.ForeignKey(Classroom, related_name="time_slots", on_delete=models.CASCADE)
     time_slot = models.ForeignKey(TimeSlot, related_name="classrooms", on_delete=models.PROTECT)
     course_section = models.ForeignKey(CourseSection, related_name="time_slots", on_delete=models.PROTECT, null=True)
+
+    def __str__(self):
+        return f"{self.classroom} @ {self.time_slot}: {self.course_section or 'Unassigned'}"

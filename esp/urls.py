@@ -1,22 +1,23 @@
 from django.urls import path
 
 from esp.constants import StudentRegistrationStepType
-from esp.views.admin_pages import (CourseCreateView, CourseListView,
-                                   CourseUpdateView, ProgramCreateView,
-                                   ProgramListView, ProgramStageCreateView,
+from esp.views.admin_pages import (AdminDashboardView, CourseCreateView,
+                                   CourseListView, CourseUpdateView,
+                                   ProgramCreateView, ProgramListView,
+                                   ProgramLotteryView, ProgramStageCreateView,
                                    ProgramStageUpdateView, ProgramUpdateView)
 from esp.views.student_registration_pages import (
-    CompleteSurveysView, ConfirmRegistrationSubmissionView,
-    EditAssignedCoursesView, InitiatePreferenceEntryView, PayProgramFeesView,
-    PreferenceEntryRoundView, ProgramRegistrationCreateView,
-    ProgramRegistrationStageView, RegistrationStepCompleteView,
-    StudentAvailabilityView, SubmitWaiversView, VerifyStudentProfileView,
-    ViewAssignedCoursesView)
+    CompleteSurveysView, ConfirmAssignedCoursesView,
+    ConfirmRegistrationSubmissionView, EditAssignedCoursesView,
+    InitiatePreferenceEntryView, PayProgramFeesView, PreferenceEntryRoundView,
+    ProgramRegistrationCreateView, ProgramRegistrationStageView,
+    RegistrationStepCompleteView, StudentAvailabilityView, SubmitWaiversView,
+    VerifyStudentProfileView)
 from esp.views.teacher_registration_pages import (
     AddCoTeacherView, TeacherEditCourseView, TeacherProgramDashboardView,
     TeacherProgramRegistrationCreateView, TeacherRegistrationStepRouterView)
-from esp.views.user_pages import (AdminDashboardView, GuardianDashboardView,
-                                  RegisterAccountView, StudentDashboardView,
+from esp.views.user_pages import (GuardianDashboardView, RegisterAccountView,
+                                  StudentDashboardView,
                                   StudentProfileCreateView,
                                   StudentProfileUpdateView,
                                   TeacherDashboardView,
@@ -49,6 +50,8 @@ urlpatterns = [
     path('admin/classes/create/', CourseCreateView.as_view(), name='create_course'),
     path('admin/classes/update/<uuid:pk>/', CourseUpdateView.as_view(), name='update_course'),
     path('admin/classes/all/', CourseListView.as_view(), name='courses'),
+
+    path('admin/programs/<uuid:pk>/lottery/', ProgramLotteryView.as_view(), name="program_lottery"),
 
     # Teacher program registration views
     path(
@@ -100,7 +103,7 @@ urlpatterns = [
     ),
     path(
         'programs/registration/<uuid:registration_id>/lottery_results/<uuid:step_id>/',
-        ViewAssignedCoursesView.as_view(), name=StudentRegistrationStepType.view_assigned_courses
+        ConfirmAssignedCoursesView.as_view(), name=StudentRegistrationStepType.confirm_assigned_courses
     ),
     path(
         'programs/registration/<uuid:registration_id>/edit_classes/<uuid:step_id>/',

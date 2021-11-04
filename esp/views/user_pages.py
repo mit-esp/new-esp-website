@@ -34,14 +34,6 @@ class RegisterAccountView(CreateView):
         return next_link
 
 
-class BaseDashboardView(PermissionRequiredMixin, TemplateView):
-    login_url = reverse_lazy('index')
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        return context
-
-
 ###################################################################
 # STUDENT PAGES
 ###################################################################
@@ -87,7 +79,7 @@ class StudentProfileUpdateView(PermissionRequiredMixin, UpdateView):
         return super().form_valid(form)
 
 
-class StudentDashboardView(BaseDashboardView):
+class StudentDashboardView(TemplateView):
     permission = PermissionType.student_dashboard_view
     template_name = 'student/student_dashboard.html'
 
@@ -142,7 +134,7 @@ class TeacherProfileUpdateView(PermissionRequiredMixin, UpdateView):
     template_name = "teacher/teacher_profile_update_form.html"
 
 
-class TeacherDashboardView(BaseDashboardView):
+class TeacherDashboardView(TemplateView):
     permission = PermissionType.teacher_dashboard_view
     template_name = "teacher/teacher_dashboard.html"
 
@@ -162,15 +154,10 @@ class TeacherDashboardView(BaseDashboardView):
 #######################################################
 
 
-class AdminDashboardView(BaseDashboardView):
-    permission = PermissionType.admin_dashboard_view
-    template_name = 'dashboards/admin_dashboard.html'
-
-
-class GuardianDashboardView(BaseDashboardView):
+class GuardianDashboardView(TemplateView):
     template_name = 'dashboards/guardian_dashboard.html'
 
 
-class VolunteerDashboardView(BaseDashboardView):
+class VolunteerDashboardView(TemplateView):
     permission = PermissionType.volunteer_program_dashboard_view
     template_name = 'dashboards/volunteer_dashboard.html'

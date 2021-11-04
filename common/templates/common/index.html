@@ -10,9 +10,6 @@
     <h1>Please log in first.</h1>
   {% else %}
     <h1>Welcome to MIT ESP!</h1>
-    <br>
-    <h3><a href="{% url 'programs' %}">Programs</a></h3>
-    <h3><a href="{% url 'courses' %}">Classes</a></h3>
 
     <h2>Dashboards</h2>
     {% if request.user|has_permission:PermissionType.teacher_dashboard_view %}
@@ -21,10 +18,10 @@
     {% endif %}
     {% if request.user|has_permission:PermissionType.student_dashboard_view %}
       <a href="{% url 'student_dashboard' %}">Student Dashboard</a>
+      <br/>
     {% endif %}
-    {% if request.user.is_staff %}
-      <br><br>
-      <a href="/django_admin/">Django admin interface</a>
+    {% if request.user|has_permission:PermissionType.admin_dashboard_view %}
+      <a href="{% url 'admin_dashboard' %}">Admin Dashboard</a>
     {% endif %}
     </div>
   {% endif %}

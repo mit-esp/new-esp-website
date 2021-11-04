@@ -6,7 +6,7 @@ from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views.generic import FormView
-from django.views.generic.base import TemplateView
+from django.views.generic.base import TemplateView, View
 from django.views.generic.detail import DetailView, SingleObjectMixin
 
 from common.constants import PermissionType
@@ -65,6 +65,7 @@ class ProgramRegistrationStageView(PermissionRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["completed_steps"] = self.object.completed_steps.values_list("step_id", flat=True)
+        context["course_registrations"] = list(self.object.class_registrations.all())
         return context
 
 
@@ -177,16 +178,23 @@ class InitiatePreferenceEntryView(RegistrationStepBaseView):
         return context
 
 
-class ConfirmRegistrationSubmissionView(RegistrationStepPlaceholderView):
+class ConfirmRegistrationSubmissionView(RegistrationStepBaseView):
     registration_step_key = StudentRegistrationStepType.submit_registration
+    template_name = "student/confirm_registration_submission.html"
 
-
-class ViewAssignedCoursesView(RegistrationStepPlaceholderView):
-    registration_step_key = StudentRegistrationStepType.view_assigned_courses
+    def post(self, *args, **kwargs):
+        registration = self.get_object()
+        registration.courses.all().update(confirmed_on=timezone.now())
+        # TODO: Send confirmation email
+        return redirect("complete_registration_step", registration_id=self.object.id, step_id=self.registration_step.id)
 
 
 class EditAssignedCoursesView(RegistrationStepPlaceholderView):
     registration_step_key = StudentRegistrationStepType.edit_assigned_courses
+
+
+class ConfirmAssignedCoursesView(RegistrationStepPlaceholderView):
+    registration_step_key = StudentRegistrationStepType.confirm_assigned_courses
 
 
 class PayProgramFeesView(RegistrationStepPlaceholderView):
@@ -235,7 +243,7 @@ class PreferenceEntryRoundView(PermissionRequiredMixin, DetailView):
             context["courses"] = self.get_courses(course_sections)
         else:
             context["time_slots"] = {
-                str(slot): course_sections.filter(time_slots__id=slot.id)
+                str(slot): course_sections.filter(time_slots__time_slot_id=slot.id)
                 for slot in self.registration.program.time_slots.all()
             }
         context["back_url"] = self.get_back_url()
@@ -304,7 +312,11 @@ class PreferenceEntryRoundView(PermissionRequiredMixin, DetailView):
         )
 
 
-class RegistrationStepCompleteView(RegistrationStepBaseView):
+class RegistrationStepCompleteView(PermissionRequiredMixin, SingleObjectMixin, View):
+    permission = PermissionType.student_register_for_program
+    model = ProgramRegistration
+    pk_url_kwarg = "registration_id"
+
     def get(self, request, *args, **kwargs):
         registration = self.get_object()
         step = get_object_or_404(ProgramRegistrationStep, id=self.kwargs.get("step_id"))
@@ -312,3 +324,9 @@ class RegistrationStepCompleteView(RegistrationStepBaseView):
             registration=registration, step=step, defaults={"completed_on": timezone.now()}
         )
         return redirect("current_registration_stage", pk=registration.id)
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        if not self.request.user.has_permission(PermissionType.student_registrations_edit_all):
+            queryset = queryset.filter(user_id=self.request.user.id)
+        return queryset

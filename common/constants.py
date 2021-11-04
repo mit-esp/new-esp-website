@@ -28,10 +28,11 @@ class PermissionType(TextChoices):
     programs_edit_all = "edit_programs"
     programs_view_all = "view_all_programs"
     admin_dashboard_view = "view_admin_dashboard"
-    student_registrations_edit_all = "student_registrations_view_all"
-    teacher_registrations_edit_all = "teacher_registrations_edit_all"
+    run_program_lottery = "run_program_lottery"
     student_profiles_edit_all = "student_profiles_edit_all"
+    student_registrations_edit_all = "student_registrations_view_all"
     teacher_profiles_edit_all = "teacher_profiles_edit_all"
+    teacher_registrations_edit_all = "teacher_registrations_edit_all"
 
     # Student actions
     student_create_profile = "create_student_profile"

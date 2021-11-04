@@ -1,0 +1,9 @@
+{% extends "base_templates/base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block body %}
+  <h3><a href="{% url 'programs' %}">Manage Programs</a></h3>
+  <h3><a href="{% url 'courses' %}">Manage Classes</a></h3>
+  <h3><a href="/django_admin/">Django admin interface</a></h3>
+{% endblock %}

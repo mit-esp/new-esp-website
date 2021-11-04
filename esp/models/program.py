@@ -111,7 +111,7 @@ class Course(BaseModel):
 
     def get_next_display_id(self):
         base_display_id = (self.program.start_date.year % 1000) * 1000
-        if not self.__class__.objects.exists():
+        if not self.__class__.objects.filter(program_id=self.program_id).exists():
             return base_display_id
         return self.__class__.objects.filter(
             program_id=self.program_id
@@ -128,17 +128,17 @@ class Course(BaseModel):
 
 class TimeSlot(BaseModel):
     program = models.ForeignKey(Program, related_name="time_slots", on_delete=models.PROTECT)
-    day = models.IntegerField(choices=Weekday.choices, null=True, blank=True)
-    start_time = models.TimeField()
-    end_time = models.TimeField()
+    start_datetime = models.DateTimeField()
+    end_datetime = models.DateTimeField()
 
     def __str__(self):
-        start = self.start_time.strftime('%I:%M%p').lstrip('0')
-        end = self.end_time.strftime('%I:%M%p').lstrip('0')
-        return f"{start} - {end}" + (f" ({self.get_day_display()})" if self.day else "")
+        start = self.start_datetime.strftime('%I:%M%p').lstrip('0')
+        end = self.end_datetime.strftime('%I:%M%p').lstrip('0')
+        return f"{start} - {end} ({Weekday(self.start_datetime.weekday()).label})"
 
     class Meta(BaseModel.Meta):
-        ordering = ("day", "start_time")
+        ordering = ["start_datetime"]
+        unique_together = [("program_id", "start_datetime")]
 
 
 class Classroom(BaseModel):
