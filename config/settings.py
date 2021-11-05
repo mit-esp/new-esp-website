@@ -10,8 +10,9 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 
 import os
 
-import environ
 from django.contrib.messages import constants as messages
+
+import environ
 
 env = environ.Env(
     DEBUG=(bool, False),
@@ -39,7 +40,7 @@ LOCALHOST = env("LOCALHOST")
 
 ALLOWED_HOSTS = [env("HOST")]
 if LOCALHOST is True:
-    ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
+    ALLOWED_HOSTS.extend(["127.0.0.1", "localhost"])
 else:
     # If deploying to AWS in the future
     # from ec2_metadata import ec2_metadata
@@ -201,15 +202,10 @@ MESSAGE_TAGS = {
     messages.ERROR: "alert-danger",
 }
 
-if LOCALHOST is True:
-    DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
-    MEDIA_ROOT = "/media/"
-    MEDIA_URL = '/media/'
-else:
-    DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
-    AWS_DEFAULT_ACL = "private"
-    AWS_S3_FILE_OVERWRITE = False
-    AWS_STORAGE_BUCKET_NAME = env("AWS_STORAGE_BUCKET_NAME")
+# TODO: Handle file storage for server
+DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
+MEDIA_ROOT = "/media/"
+MEDIA_URL = '/media/'
 
 
 SENTRY_DSN = env("SENTRY_DSN")
@@ -250,11 +246,10 @@ if LOCALHOST:
     DEFAULT_FROM_EMAIL = "webmaster@localhost"
     RESTRICT_EMAILS = True
 else:
-    EMAIL_BACKEND = "django_ses.SESBackend"
-    AWS_SES_REGION_NAME = env("AWS_SES_REGION_NAME")
-    AWS_SES_REGION_ENDPOINT = env("AWS_SES_REGION_ENDPOINT")
-    AWS_SES_RETURN_PATH = env("DEFAULT_FROM_EMAIL")
-    DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL")
+    # TODO: Add mailman email backend
+    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+    DEFAULT_FROM_EMAIL = "webmaster@localhost"
+    RESTRICT_EMAILS = True
 
 
 SASS_PRECISION = 8  # Bootstrap's sass requires a precision of at least 8 to prevent layout errors
