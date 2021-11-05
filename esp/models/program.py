@@ -37,28 +37,28 @@ class Program(BaseModel):
     number_of_weeks = models.IntegerField()
     time_block_minutes = models.IntegerField(default=30)
 
-    archive_on = models.DateTimeField()
+    archive_on = models.DateTimeField(null=True)
 
     def show_to_students(self):
         if not self.stages.exists():
             return False
-        return (
-                self.stages.aggregate(Min("start_date"))["start_date__min"]
-                < timezone.now()
-                < self.archive_on
-        )
+        if timezone.now() < self.stages.aggregate(Min("start_date"))["start_date__min"]:
+            return False
+        if self.archive_on is not None and self.archive_on < timezone.now():
+            return False
+        return True
 
     def show_to_teachers(self):
         if not self.teacher_registration_steps.exists():
             return False
-        return (
-            self.teacher_registration_steps.aggregate(Min("access_start_date"))["access_start_date__min"]
-            < timezone.now()
-            < self.archive_on
-        )
+        if timezone.now() < self.teacher_registration_steps.aggregate(Min("access_start_date"))["access_start_date__min"]:
+            return False
+        if self.archive_on is not None and self.archive_on < timezone.now():
+            return False
+        return True
 
     def show_to_volunteers(self):
-        return timezone.now() < self.archive_on
+        return self.archive_on is None or timezone.now() < self.archive_on
 
     def __str__(self):
         return self.name
