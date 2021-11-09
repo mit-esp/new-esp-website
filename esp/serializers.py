@@ -1,7 +1,7 @@
 from django.core.exceptions import ValidationError
 from rest_framework import serializers
 
-from esp.models.course_scheduling import CourseSection
+from esp.models.course_scheduling import CourseSection, ClassroomTimeSlot
 from esp.models.program import Course, Classroom, TimeSlot
 from esp.models.program_registration import (ClassPreference,
                                              PreferenceEntryCategory)
@@ -78,8 +78,7 @@ class CourseSectionSerializer(serializers.ModelSerializer):
         fields = (
             "id",
             "course_id",
-            "classroom_id",
-            "time_slot_id",
+            "display_id",
         )
 
 
@@ -94,6 +93,17 @@ class ClassroomSerializer(serializers.ModelSerializer):
         )
 
 
+class ClassroomTimeSlotSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ClassroomTimeSlot
+        fields = (
+            "id",
+            "classroom_id",
+            "time_slot_id",
+            "course_section_id",
+        )
+
+
 class CourseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
@@ -104,9 +114,10 @@ class CourseSerializer(serializers.ModelSerializer):
             "start_date",
             "end_date",
             "description",
-            "max_size",
-            "duration_minutes",
-            "notes",
+            "time_slots_per_session",
+            "sessions_per_week",
+            "admin_notes",
+            "teacher_notes",
         )
 
 class TimeSlotSerializer(serializers.ModelSerializer):
@@ -114,6 +125,6 @@ class TimeSlotSerializer(serializers.ModelSerializer):
         model = TimeSlot
         fields = (
             "id",
-            "day",
-
+            "start_datetime",
+            "end_datetime",
         )

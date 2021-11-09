@@ -6,6 +6,7 @@ from esp.views.admin_pages import (AdminDashboardView, CourseCreateView,
                                    ProgramCreateView, ProgramListView,
                                    ProgramLotteryView, ProgramStageCreateView,
                                    ProgramStageUpdateView, ProgramUpdateView)
+from esp.views.scheduler import ClassroomApiView, CourseApiView, CourseSectionApiView, TimeSlotApiView
 from esp.views.student_registration_pages import (
     CompleteSurveysView, ConfirmAssignedCoursesView,
     ConfirmRegistrationSubmissionView, EditAssignedCoursesView,
@@ -125,5 +126,11 @@ urlpatterns = [
     path(
         'programs/registration/<uuid:registration_id>/step/<uuid:step_id>/complete/',
         RegistrationStepCompleteView.as_view(), name="complete_registration_step",
-    )
+    ),
+
+    # Scheduler
+    path("api/v0/classrooms", ClassroomApiView.as_view(), name="classroom_api"),
+    path("api/v0/courses", CourseApiView.as_view(), name="course_api"),
+    path("api/v0/course-sections", CourseSectionApiView.as_view(), name="course_section_api"),
+    path("api/v0/time-slots", TimeSlotApiView.as_view(), name="time_slot_api"),
 ]
