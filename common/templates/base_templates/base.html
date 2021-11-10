@@ -13,12 +13,11 @@
   </head>
   <body>
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <div class="container">
+    <div class="container-fluid">
       <a class="navbar-brand" href={% block home_link %}"/"{% endblock %}>
         <img  width="40px" height="40px" src="{% static 'images/esp_logo.png' %}" alt="MIT ESP Logo">
         MIT ESP
       </a>
-    </div>
     {% if user.is_authenticated %}
       <div class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" id="userMenuDropdown" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -42,15 +41,16 @@
       </div>
     {% else %}
        <ul class="nav justify-content-end">
-          <li class="nav-item">
+          <li class="nav-item mx-1">
             <a href="{% url 'register_account' %}" class="btn btn-primary navbar-btn">Register</a>
           </li>
-          <li class="nav-item">
+          <li class="nav-item mx-1">
             <a href="{% url 'login' %}" class="btn btn-primary navbar-btn">Log in</a>
           </li>
        </ul>
     {% endif %}
-    </nav>
+    </div>
+  </nav>
     {# START_FEATURE bootstrap_messages #}
     <div class="container">
       {% for message in messages %}
