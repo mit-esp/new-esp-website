@@ -1,9 +1,10 @@
 from django.http import JsonResponse
 from django.views.generic.list import BaseListView
 
-from esp.models.course_scheduling import CourseSection
+from esp.models.course_scheduling import CourseSection, ClassroomTimeSlot
 from esp.models.program import Classroom, Course, TimeSlot
-from esp.serializers import ClassroomSerializer, CourseSerializer, CourseSectionSerializer, TimeSlotSerializer
+from esp.serializers import ClassroomSerializer, CourseSerializer, CourseSectionSerializer, TimeSlotSerializer, \
+    ClassroomTimeSlotSerializer
 
 
 class SerializerResponseMixin:
@@ -22,6 +23,11 @@ class SerializerResponseMixin:
 class ClassroomApiView(SerializerResponseMixin, BaseListView):
     model = Classroom
     serializer_class = ClassroomSerializer
+
+
+class ClassroomTimeSlotApiView(SerializerResponseMixin, BaseListView):
+    model = ClassroomTimeSlot
+    serializer_class = ClassroomTimeSlotSerializer
 
 
 class CourseApiView(SerializerResponseMixin, BaseListView):

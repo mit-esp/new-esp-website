@@ -120,6 +120,7 @@ class CourseSerializer(serializers.ModelSerializer):
             "teacher_notes",
         )
 
+
 class TimeSlotSerializer(serializers.ModelSerializer):
     class Meta:
         model = TimeSlot
