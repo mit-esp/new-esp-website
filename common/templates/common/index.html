@@ -7,21 +7,21 @@
 {% block body %}
  <div class="container">
   {% if not request.user.is_authenticated %}
-    <h1>Please log in first.</h1>
+    <h1 class="py-3">Welcome. Please log in first.</h1>
   {% else %}
-    <h1>Welcome to MIT ESP!</h1>
+    <h1 class="py-3">Welcome to MIT ESP!</h1>
 
     <h2>Dashboards</h2>
-    {% if request.user|has_permission:PermissionType.teacher_dashboard_view %}
-      <a href="{% url 'teacher_dashboard' %}">Teacher Dashboard</a>
+    {% if request.user|has_permission:PermissionType.student_dashboard_view %}
+      <a class="btn btn-primary my-2 px-auto" href="{% url 'student_dashboard' %}">Student Dashboard</a>
       <br/>
     {% endif %}
-    {% if request.user|has_permission:PermissionType.student_dashboard_view %}
-      <a href="{% url 'student_dashboard' %}">Student Dashboard</a>
+    {% if request.user|has_permission:PermissionType.teacher_dashboard_view %}
+      <a class="btn btn-secondary my-2 px-auto" href="{% url 'teacher_dashboard' %}">Teacher Dashboard</a>
       <br/>
     {% endif %}
     {% if request.user|has_permission:PermissionType.admin_dashboard_view %}
-      <a href="{% url 'admin_dashboard' %}">Admin Dashboard</a>
+      <a class="btn btn-success my-2 px-auto" href="{% url 'admin_dashboard' %}">Admin Dashboard</a>
     {% endif %}
     </div>
   {% endif %}

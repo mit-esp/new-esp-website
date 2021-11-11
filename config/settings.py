@@ -38,7 +38,7 @@ DEBUG = env("DEBUG")
 # run with this set to False in production
 LOCALHOST = env("LOCALHOST")
 
-ALLOWED_HOSTS = [env("HOST")]
+ALLOWED_HOSTS = env("HOST").split(",")
 if LOCALHOST is True:
     ALLOWED_HOSTS.extend(["127.0.0.1", "localhost"])
 else:

@@ -23,7 +23,7 @@
         <a class="nav-link dropdown-toggle" id="userMenuDropdown" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           <span class="bi-person"></span> {{ user }}
         </a>
-        <div class="dropdown-menu" aria-labelledby="userMenuDropdown">
+        <div class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenuDropdown">
           {% if request.user|has_permission:PermissionType.teacher_dashboard_view %}
             <a class="dropdown-item" href="{% url 'teacher_dashboard' %}">Teacher dashboard</a>
           {% endif %}

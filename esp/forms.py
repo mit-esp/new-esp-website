@@ -15,7 +15,7 @@ from esp.models.program_registration import (ProgramRegistrationStep,
 
 
 class RegisterUserForm(CrispyFormMixin, UserCreationForm):
-    submit_label = "Create Account"
+    submit_label = "Create New Account"
 
     email = forms.EmailField(
         label="Email Address", required=True, max_length=300, help_text='Enter a valid email address.'

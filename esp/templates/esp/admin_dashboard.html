@@ -3,7 +3,8 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block body %}
-  <h3><a href="{% url 'programs' %}">Manage Programs</a></h3>
-  <h3><a href="{% url 'courses' %}">Manage Classes</a></h3>
-  <h3><a href="/django_admin/">Django admin interface</a></h3>
+  <br>
+  <h3><a class="btn btn-primary my-1 px-auto" href="{% url 'programs' %}">Manage Programs</a></h3>
+  <h3><a class="btn btn-primary my-1 px-auto" href="{% url 'courses' %}">Manage Classes</a></h3>
+  <h3><a class="btn btn-primary my-1 px-auto" href="/django_admin/">Django Admin Interface</a></h3>
 {% endblock %}

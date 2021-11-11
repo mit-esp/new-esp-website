@@ -12,7 +12,7 @@ class CrispyFormMixin(object):
         self.helper = FormHelper(self)
         self.helper.form_method = "POST"
         self.helper.form_action = self.form_action
-        self.helper.add_input(Submit("submit", self.submit_label, css_class="mt-2"))
+        self.helper.add_input(Submit("submit", self.submit_label, css_class="mt-3 w-100"))
 
 
 class HiddenOrderingInputFormset(BaseInlineFormSet):

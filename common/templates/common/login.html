@@ -32,10 +32,10 @@
                   <div class="text-center">
                     <h1 class="h4 text-gray-900 mb-4">Welcome Back!</h1>
                   </div>
-                  <form method="POST">
+                  <form class="d-grid" method="POST">
                     {% csrf_token %}
                     {{form | crispy}}
-                    <button type="submit" class="btn btn-success btn-block">Login</button>
+                    <button type="submit" class="btn btn-success btn-block my-3">Login</button>
                   </form>
                   <hr>
                   <div class="text-center">

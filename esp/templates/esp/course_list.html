@@ -4,7 +4,7 @@
 
 {% block body %}
 <h3>Classes</h3>
-<h4><a href='{% url "create_course" %}'>Create New Class</a></h4>
+<h4><a class="btn btn-success my-2 px-auto" href='{% url "create_course" %}'>Create New Class</a></h4>
 <hr />
 {% for course in object_list %}
     <h5>{{ course.name }}</h5>
