@@ -1,0 +1,87 @@
+.scheduler {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  padding: 8px;
+
+  & .interface-wrapper {
+    display: flex;
+    flex-grow: 1;
+    flex-shrink: 1;
+    gap: 1%;
+    min-height: 0;
+
+    & .calendar {
+      flex-grow: 1;
+      flex-shrink: 1;
+      min-width: 0;
+
+      & .table-responsive {
+        height: 100%;
+        width: 100%;
+
+        & .table {
+          border-collapse: separate;
+          border-spacing: 0;
+
+          & .sticky {
+            background: #ffffff;
+            border-color: #000000;
+            position: sticky;
+
+            &.column {
+              border-right-width: 1px;
+              left: 0;
+              z-index: 1;
+            }
+
+            &.header {
+              border-bottom-width: 1px;
+              top: 0;
+              z-index: 2;
+            }
+          }
+        }
+      }
+    }
+
+    & .courses,
+    & .options {
+      flex-shrink: 0;
+      min-width: 200px;
+      width: 20%;
+    }
+
+    & .courses {
+      & .card {
+        height: 100%;
+        & .card-body {
+          display: flex;
+          flex-direction: column;
+          height: 100%;
+        }
+      }
+      & .course-list {
+        flex-shrink: 1;
+        min-height: 0;
+        overflow-y: scroll;
+        & button {
+          box-shadow: none;
+          margin-bottom: 4px;
+        }
+      }
+    }
+
+    & .options {
+      display: flex;
+      flex-direction: column;
+
+      & .actions.card {
+        margin-bottom: 10px;
+      }
+      & .filters.card {
+        flex-grow: 1;
+      }
+    }
+  }
+}

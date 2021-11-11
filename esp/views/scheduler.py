@@ -1,4 +1,5 @@
 from django.http import JsonResponse
+from django.views.generic import TemplateView
 from django.views.generic.list import BaseListView
 
 from esp.models.course_scheduling import CourseSection, ClassroomTimeSlot
@@ -38,6 +39,11 @@ class CourseApiView(SerializerResponseMixin, BaseListView):
 class CourseSectionApiView(SerializerResponseMixin, BaseListView):
     model = CourseSection
     serializer_class = CourseSectionSerializer
+
+
+class SchedulerView(TemplateView):
+    # TODO: Permissions
+    template_name = "esp/scheduler.html"
 
 
 class TimeSlotApiView(SerializerResponseMixin, BaseListView):

@@ -1,3 +1,5 @@
+from copy import deepcopy
+
 from django.core.exceptions import ValidationError
 from rest_framework import serializers
 
@@ -94,6 +96,8 @@ class ClassroomSerializer(serializers.ModelSerializer):
 
 
 class ClassroomTimeSlotSerializer(serializers.ModelSerializer):
+    course_name = serializers.CharField(source="course_section.course.name")
+
     class Meta:
         model = ClassroomTimeSlot
         fields = (
@@ -101,6 +105,7 @@ class ClassroomTimeSlotSerializer(serializers.ModelSerializer):
             "classroom_id",
             "time_slot_id",
             "course_section_id",
+            "course_name",
         )
 
 

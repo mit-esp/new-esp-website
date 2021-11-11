@@ -205,7 +205,8 @@ MESSAGE_TAGS = {
 }
 
 # TODO: Handle file storage for server
-DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
+if not LOCALHOST:
+    DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
 MEDIA_ROOT = "/media/"
 MEDIA_URL = '/media/'
 

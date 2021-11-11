@@ -1,0 +1,16 @@
+{% extends "base_templates/base.html" %}
+
+{% load sass_tags %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block head %}
+  <link href="{% sass_src 'styles/scheduler.scss' %}" rel="stylesheet">
+{% endblock %}
+
+{% block body %}
+  <iframe
+    src="http://localhost:3000"
+    style="border: none; height: calc(100vh - 66px); left: 0; position: absolute; width: 100vw;"
+  ></iframe>
+{% endblock %}
