@@ -3,9 +3,11 @@ import {Form} from 'react-bootstrap';
 import dayjs from "dayjs";
 
 
-const defaultFilters = {
+const DAYS_OF_WEEK = ['Mondays', 'Tuesdays', 'Wednesdays', 'Thursdays', 'Fridays', 'Saturdays', 'Sundays']
+const DEFAULT_FILTERS = {
   hideUnavailableTimeSlots: true,
   hideFullyScheduledCourses: true,
+  ...Object.fromEntries(DAYS_OF_WEEK.map((dayOfWeek) => [`show${dayOfWeek}`, true]))
 }
 
 
@@ -13,7 +15,7 @@ export default function App() {
   const [classrooms, setClassrooms] = useState([])
   const [classroomTimeSlots, setClassroomTimeSlots] = useState([])
   const [courses, setCourses] = useState([])
-  const [filters, setFilters] = useState(defaultFilters)
+  const [filters, setFilters] = useState(DEFAULT_FILTERS)
   const [selectedCourseId, setSelectedCourseId] = useState(null)
   const [timeSlots, setTimeSlots] = useState([])
 
@@ -130,13 +132,25 @@ export default function App() {
             <div className='card-body'>
               <h5 className='card-title'>Filters</h5>
               <h6>Schedule</h6>
+              <hr />
               <Form.Check
                 checked={filters.hideUnavailableTimeSlots}
                 label='Hide unavailable time slots'
                 onChange={() => toggleFilter('hideUnavailableTimeSlots')}
                 type='checkbox'
               />
+              <small>Days of week</small>
+              {DAYS_OF_WEEK.map((dayOfWeek) => (
+                <Form.Check
+                  checked={filters[`show${dayOfWeek}`]}
+                  label={`Show ${dayOfWeek}`}
+                  onChange={() => toggleFilter(`show${dayOfWeek}`)}
+                  type='checkbox'
+                />
+              ))}
+              <br />
               <h6>Courses</h6>
+              <hr />
               <Form.Check
                 checked={filters.hideFullyScheduledCourses}
                 label='Hide fully scheduled courses'
@@ -209,14 +223,23 @@ export default function App() {
   }
 
   function shouldShowTimeSlot(timeSlot) {
+    // Hide unavailable time slots
     if (filters.hideUnavailableTimeSlots) {
-      // Hide unavailable time slots
       const classroomLookup = classroomTimeSlotLookupTable[timeSlot.id]
       if (classroomLookup === undefined) {
         return false
       }
       if (Object.values(classroomLookup).map((classroomTimeSlot) => !classroomTimeSlot.course_section_id).every((x) => !x)) {
         return false
+      }
+    }
+    // Hide days of week
+    for (const dayOfWeek of DAYS_OF_WEEK) {
+      const filterName = `show${dayOfWeek}`
+      if (!filters[filterName]) {
+        if (dayOfWeek.startsWith(timeSlot.start_datetime.format('dddd'))) {
+          return false
+        }
       }
     }
     return true
