@@ -102,29 +102,32 @@ class ClassroomTimeSlotSerializer(serializers.ModelSerializer):
     class Meta:
         model = ClassroomTimeSlot
         fields = (
-            "id",
             "classroom_id",
-            "time_slot_id",
             "course_id",
             "course_name",
             "course_section_id",
+            "id",
+            "time_slot_id",
         )
 
 
 class CourseSerializer(serializers.ModelSerializer):
+    sections_count = serializers.IntegerField(read_only=True, source='sections.count')
+
     class Meta:
         model = Course
         fields = (
+            "admin_notes",
+            "description",
+            "display_id",
+            "end_date",
             "id",
             "name",
-            "display_id",
-            "start_date",
-            "end_date",
-            "description",
-            "time_slots_per_session",
+            "sections_count",
             "sessions_per_week",
-            "admin_notes",
+            "start_date",
             "teacher_notes",
+            "time_slots_per_session",
         )
 
 

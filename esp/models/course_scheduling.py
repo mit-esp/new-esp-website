@@ -1,7 +1,7 @@
 from datetime import timedelta
 
 from django.db import models
-from django.db.models import Max
+from django.db.models import Max, UniqueConstraint
 
 from common.models import BaseModel
 from esp.constants import ClassroomTagCategory
@@ -78,6 +78,11 @@ class ClassroomTimeSlot(BaseModel):
     classroom = models.ForeignKey(Classroom, related_name="time_slots", on_delete=models.CASCADE)
     time_slot = models.ForeignKey(TimeSlot, related_name="classrooms", on_delete=models.PROTECT)
     course_section = models.ForeignKey(CourseSection, related_name="time_slots", on_delete=models.PROTECT, null=True)
+
+    class Meta:
+        constraints = [
+            UniqueConstraint(fields=["classroom", "time_slot"], name="unique_classroom_time_slot")
+        ]
 
     def __str__(self):
         return f"{self.classroom} @ {self.time_slot}: {self.course_section or 'Unassigned'}"

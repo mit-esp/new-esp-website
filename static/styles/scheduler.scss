@@ -16,6 +16,11 @@
       flex-shrink: 1;
       min-width: 0;
 
+      & td {
+        border-bottom: 1px solid #eeeeee;
+        border-right: 1px solid #eeeeee;
+      }
+
       & .availability {
         &.available {
           background: #ffffff;

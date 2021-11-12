@@ -7,7 +7,7 @@ from esp.factories.course_scheduling_factories import *
 
 program = ProgramFactory()
 courses = [CourseFactory(program=program) for _ in range(random.randint(3, 10))]
-course_sections = [CourseSectionFactory(course=random.choice(courses)) for _ in range(random.randint(5, 20))]
+course_sections = [CourseSectionFactory(course=random.choice(courses)) for _ in range(random.randint(2, 8))]
 time_slot_start = datetime.datetime(2022, 1, 1, 0, 0, 0, tzinfo=pytz.UTC)
 time_slot_interval = datetime.timedelta(minutes=program.time_block_minutes)
 time_slots = [
@@ -23,6 +23,7 @@ classroom_time_slots = [
     ClassroomTimeSlotFactory(
         classroom=classroom,
         time_slot=time_slot,
+        course_section=None,
     )
     for classroom in classrooms
     for time_slot in time_slots

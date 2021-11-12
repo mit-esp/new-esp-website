@@ -1,11 +1,19 @@
 import {useEffect, useMemo, useState} from "react";
+import {Form} from 'react-bootstrap';
 import dayjs from "dayjs";
-import {useTable} from "react-table";
+
+
+const defaultFilters = {
+  hideUnavailableTimeSlots: true,
+  hideFullyScheduledCourses: true,
+}
+
 
 export default function App() {
   const [classrooms, setClassrooms] = useState([])
   const [classroomTimeSlots, setClassroomTimeSlots] = useState([])
   const [courses, setCourses] = useState([])
+  const [filters, setFilters] = useState(defaultFilters)
   const [selectedCourseId, setSelectedCourseId] = useState(null)
   const [timeSlots, setTimeSlots] = useState([])
 
@@ -17,6 +25,7 @@ export default function App() {
       setTimeSlots,
       (timeSlot) => ({
         ...timeSlot,
+        // TODO: This converts to local time; is this appropriate?
         end_datetime: dayjs(timeSlot.end_datetime),
         start_datetime: dayjs(timeSlot.start_datetime),
       })
@@ -34,8 +43,14 @@ export default function App() {
   }, [])
 
   const classroomTimeSlotLookupTable = useMemo(() => (
-    classroomTimeSlots.reduce((acc, cts) => (
-      {...acc, [cts.time_slot_id]: {...acc[cts.time_slot_id], [cts.classroom_id]: cts}}
+    classroomTimeSlots.reduce((accumulator, classroomTimeSlot) => (
+      {
+        ...accumulator,
+        [classroomTimeSlot.time_slot_id]: {
+          ...accumulator[classroomTimeSlot.time_slot_id],
+          [classroomTimeSlot.classroom_id]: classroomTimeSlot,
+        },
+      }
     ), {})
   ), [classroomTimeSlots])
 
@@ -52,11 +67,11 @@ export default function App() {
                 {courses.length
                   ? courses.map((course) => (
                     <button
-                      className={`btn btn-${course.id === selectedCourseId ? 'primary' : 'light'}`}
+                      className={`btn btn-${course.id === selectedCourseId ? 'primary' : 'light'} ${shouldShowCourse(course) ? '' : 'd-none'}`}
                       key={course.id}
                       onClick={() => selectCourse(course.id)}
                     >
-                      {course.name}
+                      {course.name} ({getScheduledSectionsCount(course)}/{course.sections_count})
                     </button>
                   ))
                   : <span>Loading...</span>
@@ -73,7 +88,7 @@ export default function App() {
                   <table className='table'>
                     <thead>
                       <tr>
-                        <th className='sticky column header' scope='col'></th>
+                        <th className='sticky column header' scope='col' />
                         {classrooms.map((classroom) => (
                           <th className='sticky header' key={classroom.id} scope='col'>{classroom.name}</th>
                         ))}
@@ -81,7 +96,7 @@ export default function App() {
                     </thead>
                     <tbody>
                       {timeSlots.map((timeSlot) => (
-                        <tr key={timeSlot.id}>
+                        <tr className={shouldShowTimeSlot(timeSlot) ? '' : 'd-none'} key={timeSlot.id}>
                           <td
                             className='sticky column'
                             dangerouslySetInnerHTML={{__html: timeSlotDisplayHtml(timeSlot)}}
@@ -114,6 +129,20 @@ export default function App() {
           <div className='card filters'>
             <div className='card-body'>
               <h5 className='card-title'>Filters</h5>
+              <h6>Schedule</h6>
+              <Form.Check
+                checked={filters.hideUnavailableTimeSlots}
+                label='Hide unavailable time slots'
+                onChange={() => toggleFilter('hideUnavailableTimeSlots')}
+                type='checkbox'
+              />
+              <h6>Courses</h6>
+              <Form.Check
+                checked={filters.hideFullyScheduledCourses}
+                label='Hide fully scheduled courses'
+                onChange={() => toggleFilter('hideFullyScheduledCourses')}
+                type='checkbox'
+              />
             </div>
           </div>
         </div>
@@ -155,6 +184,12 @@ export default function App() {
     return classNames.join(' ')
   }
 
+  function getScheduledSectionsCount(course) {
+    return classroomTimeSlots.filter((classroomTimeSlot) => (
+      classroomTimeSlot.course_id === course.id
+    )).length
+  }
+
   function selectCourse(courseId) {
     if (selectedCourseId === courseId) {
       setSelectedCourseId(null)
@@ -163,10 +198,38 @@ export default function App() {
     }
   }
 
+  function shouldShowCourse(course) {
+    if (filters.hideFullyScheduledCourses) {
+      // Hide fully scheduled courses
+      if (course.sections_count === getScheduledSectionsCount(course)) {
+        return false
+      }
+    }
+    return true
+  }
+
+  function shouldShowTimeSlot(timeSlot) {
+    if (filters.hideUnavailableTimeSlots) {
+      // Hide unavailable time slots
+      const classroomLookup = classroomTimeSlotLookupTable[timeSlot.id]
+      if (classroomLookup === undefined) {
+        return false
+      }
+      if (Object.values(classroomLookup).map((classroomTimeSlot) => !classroomTimeSlot.course_section_id).every((x) => !x)) {
+        return false
+      }
+    }
+    return true
+  }
+
   function timeSlotDisplayHtml(timeSlot) {
     const dateDisplay = timeSlot.start_datetime.format('ddd MMM D, YYYY')
     const startTimeDisplay = timeSlot.start_datetime.format('h:mma')
     const endTimeDisplay = timeSlot.end_datetime.format('h:mma')
     return `${dateDisplay}<br>${startTimeDisplay} - ${endTimeDisplay}`
+  }
+
+  function toggleFilter(filterName) {
+    setFilters({...filters, [filterName]: !filters[filterName]})
   }
 }
