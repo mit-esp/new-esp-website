@@ -16,7 +16,8 @@ export default function App() {
   const [classroomTimeSlots, setClassroomTimeSlots] = useState([])
   const [courses, setCourses] = useState([])
   const [filters, setFilters] = useState(DEFAULT_FILTERS)
-  const [selectedCourseId, setSelectedCourseId] = useState(null)
+  const [selectedCourse, setSelectedCourse] = useState(null)
+  const [selectedClassroomTimeSlots, setSelectedClassromTimeSlots] = useState([])
   const [timeSlots, setTimeSlots] = useState([])
 
   useEffect(() => {
@@ -44,6 +45,10 @@ export default function App() {
     }
   }, [])
 
+  const classroomById = useMemo(() => (
+    classrooms.reduce((accumulator, classroom) => ({...accumulator, [classroom.id]: classroom}), {})
+  ), [classrooms])
+
   const classroomTimeSlotLookupTable = useMemo(() => (
     classroomTimeSlots.reduce((accumulator, classroomTimeSlot) => (
       {
@@ -55,6 +60,14 @@ export default function App() {
       }
     ), {})
   ), [classroomTimeSlots])
+
+  const timeSlotById = useMemo(() => (
+    timeSlots.reduce((accumulator, timeSlot) => ({...accumulator, [timeSlot.id]: timeSlot}), {})
+  ), [timeSlots])
+
+  const selectedClassroomTimeSlotIds = useMemo(() => (
+    selectedClassroomTimeSlots.map((x) => x.id)
+  ), [selectedClassroomTimeSlots])
 
   return (
     <div className='scheduler'>
@@ -69,9 +82,9 @@ export default function App() {
                 {courses.length
                   ? courses.map((course) => (
                     <button
-                      className={`btn btn-${course.id === selectedCourseId ? 'primary' : 'light'} ${shouldShowCourse(course) ? '' : 'd-none'}`}
+                      className={`btn btn-${course.id === selectedCourse?.id ? 'primary' : 'light'} ${shouldShowCourse(course) ? '' : 'd-none'}`}
                       key={course.id}
-                      onClick={() => selectCourse(course.id)}
+                      onClick={() => selectCourse(course)}
                     >
                       {course.name} ({getScheduledSectionsCount(course)}/{course.sections_count})
                     </button>
@@ -82,7 +95,7 @@ export default function App() {
             </div>
           </div>
         </div>
-        <div className={`calendar ${selectedCourseId === null ? '' : 'course-selected'}`}>
+        <div className={`calendar ${selectedCourse === null ? '' : 'course-selected'}`}>
           <div className='card'>
             {classroomTimeSlots.length || classrooms.length || timeSlots.length
               ? (
@@ -101,12 +114,20 @@ export default function App() {
                         <tr className={shouldShowTimeSlot(timeSlot) ? '' : 'd-none'} key={timeSlot.id}>
                           <td
                             className='sticky column'
-                            dangerouslySetInnerHTML={{__html: timeSlotDisplayHtml(timeSlot)}}
+                            dangerouslySetInnerHTML={{__html: timeSlotDisplay(timeSlot, true)}}
                           />
                           {classrooms.map((classroom) => {
                             const classroomTimeSlot = getClassroomTimeSlot(timeSlot.id, classroom.id)
+                            const available = classroomTimeSlot.id !== undefined && !classroomTimeSlot.course_section_id
                             return (
-                              <td className={getClassroomTimeSlotClassNames(classroomTimeSlot)}>
+                              <td
+                                className={getClassroomTimeSlotClassNames(classroomTimeSlot)}
+                                onClick={
+                                  available && selectedCourse !== null
+                                    ? () => selectClassroomTimeSlot(classroomTimeSlot)
+                                    : null
+                                }
+                              >
                                 {classroomTimeSlot.course_name}
                               </td>
                             )
@@ -124,39 +145,64 @@ export default function App() {
         </div>
         <div className='options'>
           <div className='card actions'>
-            <div className='card-body'>
+            <div className='card-body d-grid'>
               <h5 className='card-title'>Actions</h5>
+              <dl className='mb-0'>
+                <dt>Course</dt>
+                <dd>{selectedCourse === null ? '(None selected)' : `"${selectedCourse.name}"`}</dd>
+                <dt>Pending Actions</dt>
+                <dd>
+                  Schedule for:
+                  <ul className='pending-actions-list'>
+                    {selectedClassroomTimeSlots.map((selectedClassroomTimeSlot) => (
+                      <li>
+                        "{classroomById[selectedClassroomTimeSlot.classroom_id].name}"
+                        <br />
+                        {timeSlotDisplay(timeSlotById[selectedClassroomTimeSlot.time_slot_id])}
+                      </li>
+                    ))}
+                  </ul>
+                </dd>
+              </dl>
+              <button
+                className={`btn btn-success ${selectedClassroomTimeSlots.length === 0 ? 'd-none' : ''}`}
+                onClick={() => alert('Sorry, I\'m not implemented yet :(')}
+              >
+                Submit
+              </button>
             </div>
           </div>
           <div className='card filters'>
             <div className='card-body'>
               <h5 className='card-title'>Filters</h5>
-              <h6>Schedule</h6>
-              <hr />
-              <Form.Check
-                checked={filters.hideUnavailableTimeSlots}
-                label='Hide unavailable time slots'
-                onChange={() => toggleFilter('hideUnavailableTimeSlots')}
-                type='checkbox'
-              />
-              <small>Days of week</small>
-              {DAYS_OF_WEEK.map((dayOfWeek) => (
+              <div className='filters-list'>
+                <h6>Schedule</h6>
+                <hr />
                 <Form.Check
-                  checked={filters[`show${dayOfWeek}`]}
-                  label={`Show ${dayOfWeek}`}
-                  onChange={() => toggleFilter(`show${dayOfWeek}`)}
+                  checked={filters.hideUnavailableTimeSlots}
+                  label='Hide unavailable time slots'
+                  onChange={() => toggleFilter('hideUnavailableTimeSlots')}
                   type='checkbox'
                 />
-              ))}
-              <br />
-              <h6>Courses</h6>
-              <hr />
-              <Form.Check
-                checked={filters.hideFullyScheduledCourses}
-                label='Hide fully scheduled courses'
-                onChange={() => toggleFilter('hideFullyScheduledCourses')}
-                type='checkbox'
-              />
+                <small>Days of week</small>
+                {DAYS_OF_WEEK.map((dayOfWeek) => (
+                  <Form.Check
+                    checked={filters[`show${dayOfWeek}`]}
+                    label={`Show ${dayOfWeek}`}
+                    onChange={() => toggleFilter(`show${dayOfWeek}`)}
+                    type='checkbox'
+                  />
+                ))}
+                <br />
+                <h6>Courses</h6>
+                <hr />
+                <Form.Check
+                  checked={filters.hideFullyScheduledCourses}
+                  label='Hide fully scheduled courses'
+                  onChange={() => toggleFilter('hideFullyScheduledCourses')}
+                  type='checkbox'
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -184,6 +230,8 @@ export default function App() {
     classNames.push('availability')
     if (classroomTimeSlot.id === undefined) {
       classNames.push('unavailable')
+      // If it's unavailable, it shouldn't have any other classes
+      return classNames.join(' ')
     } else if (!classroomTimeSlot.course_section_id) {
       classNames.push('available')
     } else {
@@ -191,8 +239,16 @@ export default function App() {
     }
 
     // Is selected course
-    if (classroomTimeSlot.course_id === selectedCourseId) {
+    if (classroomTimeSlot.course_id === selectedCourse?.id) {
       classNames.push('selected-course')
+    }
+
+    // Interactivity
+    if (selectedCourse !== null) {
+      classNames.push('clickable')
+    }
+    if (selectedClassroomTimeSlotIds.includes(classroomTimeSlot.id)) {
+      classNames.push('selected')
     }
 
     return classNames.join(' ')
@@ -204,11 +260,23 @@ export default function App() {
     )).length
   }
 
-  function selectCourse(courseId) {
-    if (selectedCourseId === courseId) {
-      setSelectedCourseId(null)
+  function selectClassroomTimeSlot(classroomTimeSlot) {
+    if (selectedClassroomTimeSlotIds.includes(classroomTimeSlot.id)) {
+      setSelectedClassromTimeSlots(
+        selectedClassroomTimeSlots.filter(
+          (selectedClassroomTimeSlot) => selectedClassroomTimeSlot.id !== classroomTimeSlot.id
+        )
+      )
     } else {
-      setSelectedCourseId(courseId)
+      setSelectedClassromTimeSlots([...selectedClassroomTimeSlots, classroomTimeSlot])
+    }
+  }
+
+  function selectCourse(course) {
+    if (selectedCourse?.id === course.id) {
+      setSelectedCourse(null)
+    } else {
+      setSelectedCourse(course)
     }
   }
 
@@ -245,11 +313,11 @@ export default function App() {
     return true
   }
 
-  function timeSlotDisplayHtml(timeSlot) {
+  function timeSlotDisplay(timeSlot, html=false) {
     const dateDisplay = timeSlot.start_datetime.format('ddd MMM D, YYYY')
     const startTimeDisplay = timeSlot.start_datetime.format('h:mma')
     const endTimeDisplay = timeSlot.end_datetime.format('h:mma')
-    return `${dateDisplay}<br>${startTimeDisplay} - ${endTimeDisplay}`
+    return `${dateDisplay}${html ? '<br>' : ' '}${startTimeDisplay} - ${endTimeDisplay}`
   }
 
   function toggleFilter(filterName) {

@@ -1,3 +1,6 @@
+@import '_variables.scss';
+
+
 .scheduler {
   display: flex;
   flex-direction: column;
@@ -19,6 +22,16 @@
       & td {
         border-bottom: 1px solid #eeeeee;
         border-right: 1px solid #eeeeee;
+      }
+
+      & .clickable {
+        cursor: pointer;
+        &:hover {
+          background: $light !important;
+        }
+        &.selected {
+          background: $primary !important;
+        }
       }
 
       & .availability {
@@ -102,7 +115,7 @@
       & .course-list {
         flex-shrink: 1;
         min-height: 0;
-        overflow-y: scroll;
+        overflow-y: auto;
         & button {
           box-shadow: none;
           margin-bottom: 4px;
@@ -121,11 +134,33 @@
         border-top-right-radius: 0;
       }
 
-      & .actions.card {
-        margin-bottom: 10px;
+      & .actions {
+        &.card {
+          margin-bottom: 10px;
+        }
+
+        & .pending-actions-list {
+          max-height: 200px;
+          overflow-y: auto;
+        }
       }
-      & .filters.card {
-        flex-grow: 1;
+      & .filters {
+        &.card {
+          flex-grow: 1;
+          flex-shrink: 1;
+          min-height: 0;
+          & .card-body {
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 1;
+            min-height: 0;
+            & .filters-list {
+              flex-shrink: 1;
+              min-height: 0;
+              overflow-y: auto;
+            }
+          }
+        }
       }
     }
   }
