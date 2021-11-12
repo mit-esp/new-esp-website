@@ -96,7 +96,8 @@ class ClassroomSerializer(serializers.ModelSerializer):
 
 
 class ClassroomTimeSlotSerializer(serializers.ModelSerializer):
-    course_name = serializers.CharField(source="course_section.course.name")
+    course_id = serializers.CharField(allow_null=True, source="course_section.course_id")
+    course_name = serializers.CharField(allow_null=True, source="course_section.course.name")
 
     class Meta:
         model = ClassroomTimeSlot
@@ -104,8 +105,9 @@ class ClassroomTimeSlotSerializer(serializers.ModelSerializer):
             "id",
             "classroom_id",
             "time_slot_id",
-            "course_section_id",
+            "course_id",
             "course_name",
+            "course_section_id",
         )
 
 

@@ -29,6 +29,7 @@ class ClassroomApiView(SerializerResponseMixin, BaseListView):
 class ClassroomTimeSlotApiView(SerializerResponseMixin, BaseListView):
     model = ClassroomTimeSlot
     serializer_class = ClassroomTimeSlotSerializer
+    queryset = ClassroomTimeSlot.objects.all().select_related('course_section__course')
 
 
 class CourseApiView(SerializerResponseMixin, BaseListView):
