@@ -180,6 +180,7 @@ export default function App() {
                 <hr />
                 <Form.Check
                   checked={filters.hideUnavailableTimeSlots}
+                  id='filter-hideUnavailableTimeSlots'
                   label='Hide unavailable time slots'
                   onChange={() => toggleFilter('hideUnavailableTimeSlots')}
                   type='checkbox'
@@ -188,6 +189,7 @@ export default function App() {
                 {DAYS_OF_WEEK.map((dayOfWeek) => (
                   <Form.Check
                     checked={filters[`show${dayOfWeek}`]}
+                    id={`filter-show${dayOfWeek}`}
                     label={`Show ${dayOfWeek}`}
                     onChange={() => toggleFilter(`show${dayOfWeek}`)}
                     type='checkbox'
@@ -198,6 +200,7 @@ export default function App() {
                 <hr />
                 <Form.Check
                   checked={filters.hideFullyScheduledCourses}
+                  id='filter-hideFullyScheduledCourses'
                   label='Hide fully scheduled courses'
                   onChange={() => toggleFilter('hideFullyScheduledCourses')}
                   type='checkbox'
