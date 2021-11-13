@@ -1,7 +1,9 @@
+from copy import deepcopy
+
 from django.core.exceptions import ValidationError
 from rest_framework import serializers
 
-from esp.models.course_scheduling import CourseSection
+from esp.models.course_scheduling import CourseSection, ClassroomTimeSlot
 from esp.models.program import Course, Classroom, TimeSlot
 from esp.models.program_registration import (ClassPreference,
                                              PreferenceEntryCategory)
@@ -78,8 +80,7 @@ class CourseSectionSerializer(serializers.ModelSerializer):
         fields = (
             "id",
             "course_id",
-            "classroom_id",
-            "time_slot_id",
+            "display_id",
         )
 
 
@@ -94,26 +95,47 @@ class ClassroomSerializer(serializers.ModelSerializer):
         )
 
 
+class ClassroomTimeSlotSerializer(serializers.ModelSerializer):
+    course_id = serializers.CharField(allow_null=True, source="course_section.course_id")
+    course_name = serializers.CharField(allow_null=True, source="course_section.course.name")
+
+    class Meta:
+        model = ClassroomTimeSlot
+        fields = (
+            "classroom_id",
+            "course_id",
+            "course_name",
+            "course_section_id",
+            "id",
+            "time_slot_id",
+        )
+
+
 class CourseSerializer(serializers.ModelSerializer):
+    sections_count = serializers.IntegerField(read_only=True, source='sections.count')
+
     class Meta:
         model = Course
         fields = (
+            "admin_notes",
+            "description",
+            "display_id",
+            "end_date",
             "id",
             "name",
-            "display_id",
+            "sections_count",
+            "sessions_per_week",
             "start_date",
-            "end_date",
-            "description",
-            "max_size",
-            "duration_minutes",
-            "notes",
+            "teacher_notes",
+            "time_slots_per_session",
         )
+
 
 class TimeSlotSerializer(serializers.ModelSerializer):
     class Meta:
         model = TimeSlot
         fields = (
             "id",
-            "day",
-
+            "start_datetime",
+            "end_datetime",
         )

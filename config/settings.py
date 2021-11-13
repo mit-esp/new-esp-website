@@ -59,7 +59,8 @@ THIRD_PARTY_APPS = [
     "debug_toolbar",
     "crispy_forms",
     "sass_processor",
-    "simple_history"
+    "simple_history",
+    "corsheaders",
 ]
 
 LOCAL_APPS = [
@@ -72,6 +73,7 @@ INSTALLED_APPS = THIRD_PARTY_APPS + LOCAL_APPS
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "common.middleware.MaintenanceModeMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -203,7 +205,8 @@ MESSAGE_TAGS = {
 }
 
 # TODO: Handle file storage for server
-DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
+if not LOCALHOST:
+    DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
 MEDIA_ROOT = "/media/"
 MEDIA_URL = '/media/'
 
@@ -265,3 +268,9 @@ COMPRESS_ROOT = SASS_PROCESSOR_ROOT
 
 
 SIMPLE_HISTORY_HISTORY_ID_USE_UUID = True
+
+
+# CORS
+
+if LOCALHOST:
+    CORS_ALLOW_ALL_ORIGINS = True

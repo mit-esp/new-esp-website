@@ -28,6 +28,7 @@ class CourseFactory(DjangoModelFactory):
     start_date = Faker("date_time", tzinfo=pytz.UTC)
     end_date = Faker("date_time", tzinfo=pytz.UTC)
     max_section_size = Faker("random_int")
+    name = Faker("bs")
 
     class Meta:
         model = Course

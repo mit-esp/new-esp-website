@@ -55,8 +55,9 @@ staticfiles/*
 static/webpack_bundles/
 webpack-stats.json
 docs/_build/
+/build
 
 # Local development
 **/dist/*
 node_modules/
-*.log
+*.log*

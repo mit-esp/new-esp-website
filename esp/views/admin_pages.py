@@ -5,8 +5,9 @@ from django.views.generic import (CreateView, FormView, ListView, TemplateView,
                                   UpdateView)
 from django.views.generic.detail import SingleObjectMixin
 
-from common.constants import PermissionType
+from common.constants import PermissionType, UserType
 from common.forms import CrispyFormsetHelper
+from common.models import User
 from common.views import PermissionRequiredMixin
 from esp.forms import (ProgramForm, ProgramRegistrationStepFormset,
                        ProgramStageForm, TeacherCourseForm)
@@ -21,6 +22,14 @@ from esp.models.program_registration import ClassRegistration
 class AdminDashboardView(TemplateView):
     permission = PermissionType.admin_dashboard_view
     template_name = 'esp/admin_dashboard.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        context["users_count"] = User.objects.count()
+        context["students_count"] = User.objects.filter(user_type=UserType.student).count()
+        context["teachers_count"] = User.objects.filter(user_type=UserType.teacher).count()
+        context["admins_count"] = User.objects.filter(user_type=UserType.admin, is_active=True).count()
+        return context
 
 
 class ProgramCreateView(PermissionRequiredMixin, CreateView):
