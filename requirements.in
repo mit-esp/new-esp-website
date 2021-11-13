@@ -17,7 +17,7 @@ django-simple-history
 
 sentry-sdk
 gunicorn
-
+sentry-sdk
 factory-boy
 
 # Development Convenience

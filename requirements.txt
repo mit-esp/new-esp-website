@@ -6,6 +6,8 @@
 #
 alabaster==0.7.12
     # via sphinx
+appnope==0.1.2
+    # via ipython
 asgiref==3.4.1
     # via django
 babel==2.9.1
