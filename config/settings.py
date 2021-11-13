@@ -215,6 +215,7 @@ SENTRY_DSN = env("SENTRY_DSN")
 if LOCALHOST is False and SENTRY_DSN:
     import sentry_sdk
     from sentry_sdk.integrations.django import DjangoIntegration
+    from sentry_sdk.integrations.logging import ignore_logger
     sentry_sdk.init(
         dsn=env("SENTRY_DSN"),
         integrations=[DjangoIntegration()],
@@ -223,6 +224,8 @@ if LOCALHOST is False and SENTRY_DSN:
         # django.contrib.auth) you may enable sending PII data.
         # send_default_pii=True
     )
+    # Silence "invalid HTTP_HOST" errors
+    ignore_logger("django.security.DisallowedHost")
 
 if LOCALHOST is False:
     SECURE_SSL_REDIRECT = True
