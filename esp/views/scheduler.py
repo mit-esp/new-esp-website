@@ -2,6 +2,8 @@ from django.http import JsonResponse
 from django.views.generic import TemplateView
 from django.views.generic.list import BaseListView
 
+from common.constants import PermissionType
+from common.views import PermissionRequiredMixin
 from esp.models.course_scheduling import CourseSection, ClassroomTimeSlot
 from esp.models.program import Classroom, Course, TimeSlot
 from esp.serializers import ClassroomSerializer, CourseSerializer, CourseSectionSerializer, TimeSlotSerializer, \
@@ -42,8 +44,8 @@ class CourseSectionApiView(SerializerResponseMixin, BaseListView):
     serializer_class = CourseSectionSerializer
 
 
-class SchedulerView(TemplateView):
-    # TODO: Permissions
+class SchedulerView(PermissionRequiredMixin, TemplateView):
+    permission = PermissionType.use_scheduler
     template_name = "esp/scheduler.html"
 
 
