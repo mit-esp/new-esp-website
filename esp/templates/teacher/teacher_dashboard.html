@@ -10,7 +10,7 @@
   <h2>Active Registrations</h2>
   {% for registration in registrations %}
       <div>
-        <a href="{% url "teacher_program_dashboard" pk=registration.id %}">{{ registration.program.name }}</a>
+        <a class="btn btn-success my-2 px-auto" href="{% url "teacher_program_dashboard" pk=registration.id %}">{{ registration.program.name }}</a>
       </div>
   {% empty %}<p>No active registrations. See below for upcoming programs.</p>
   {% endfor %}
@@ -18,7 +18,7 @@
   <h2>Upcoming Programs</h2>
   {% for program in eligible_programs %}
     <div>
-      <p><a href="{% url 'create_teacher_registration' pk=program.id %}">Register to teach for {{ program.name }}</a></p>
+      <p><a class="btn btn-success my-2 px-auto" href="{% url 'create_teacher_registration' pk=program.id %}">Register to teach for {{ program.name }}</a></p>
       <p>Description: {{ program.description }}</p>
     </div>
   {% empty %}<p>There are no additional programs that you are currently eligible for.</p>
@@ -29,7 +29,7 @@
     <p><a href="{% url 'update_teacher_profile' pk=request.user.teacher_profile.id %}">Update Profile</a></p>
   {% else %}
     <p>
-      <a class="btn btn-success my-3 mx-2" href="{% url 'create_teacher_profile' %}">Create a teacher profile for this account</a>
+      <a class="btn btn-success my-2 px-auto" href="{% url 'create_teacher_profile' %}">Create a teacher profile for this account</a>
       This will enable you to complete the registration workflow.
     </p>
   {% endif %}
