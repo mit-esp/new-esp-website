@@ -2,6 +2,7 @@ from django.contrib import admin
 
 from esp.models import course_scheduling, program, program_registration
 
+admin.site.site_header = 'MIT ESP Database Administration'
 admin.site.register(course_scheduling.CourseSection)
 admin.site.register(course_scheduling.ClassroomTimeSlot)
 # admin.site.register(course_scheduling.ClassroomConstraint)
