@@ -30,6 +30,7 @@ class PermissionType(TextChoices):
     admin_dashboard_view = "view_admin_dashboard"
     run_program_lottery = "run_program_lottery"
     use_scheduler = "use_scheduler"
+    send_email = "send_email"
     student_profiles_edit_all = "student_profiles_edit_all"
     student_registrations_edit_all = "student_registrations_view_all"
     teacher_profiles_edit_all = "teacher_profiles_edit_all"

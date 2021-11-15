@@ -1,0 +1,10 @@
+{% extends "base_templates/base.html" %}
+{% load crispy_forms_tags %}
+{% block title %}Send an Email{% endblock %}
+
+{% block body %}
+  <div>
+    <h3>Send an Email</h3>
+    {% crispy form %}
+  </div>
+{% endblock %}

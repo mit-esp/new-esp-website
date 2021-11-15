@@ -10,7 +10,7 @@ from common.forms import CrispyFormsetHelper
 from common.models import User
 from common.views import PermissionRequiredMixin
 from esp.forms import (ProgramForm, ProgramRegistrationStepFormset,
-                       ProgramStageForm, TeacherCourseForm)
+                       ProgramStageForm, TeacherCourseForm, SendEmailForm)
 from esp.lottery import run_program_lottery
 from esp.models.program import Course, Program, ProgramStage
 ######################################
@@ -28,7 +28,8 @@ class AdminDashboardView(TemplateView):
         context["users_count"] = User.objects.count()
         context["students_count"] = User.objects.filter(user_type=UserType.student).count()
         context["teachers_count"] = User.objects.filter(user_type=UserType.teacher).count()
-        context["admins_count"] = User.objects.filter(user_type=UserType.admin, is_active=True).count()
+        context["admins_count"] = User.objects.filter(user_type=UserType.admin,
+                                                      is_active=True).count()
         return context
 
 
@@ -86,7 +87,8 @@ class ProgramStageFormsetMixin:
         return redirect_link
 
 
-class ProgramStageCreateView(PermissionRequiredMixin, SingleObjectMixin, ProgramStageFormsetMixin, FormView):
+class ProgramStageCreateView(PermissionRequiredMixin, SingleObjectMixin, ProgramStageFormsetMixin,
+                             FormView):
     permission = PermissionType.programs_edit_all
     model = Program
     form_class = ProgramStageForm
@@ -144,6 +146,13 @@ class ProgramLotteryView(PermissionRequiredMixin, SingleObjectMixin, TemplateVie
     def post(self, request, *args, **kwargs):
         run_program_lottery(self.get_object())
         return redirect("program_lottery", pk=self.kwargs["pk"])
+
+
+class SendEmailsView(PermissionRequiredMixin, FormView):
+    permission = PermissionType.send_email
+    form_class = SendEmailForm
+    template_name = "esp/send_email.html"
+    pass
 
 
 ###########################################################
