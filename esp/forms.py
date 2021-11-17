@@ -99,8 +99,8 @@ class ProgramForm(CrispyFormMixin, ModelForm):
         model = Program
         fields = ["name", "program_type", "start_date", "end_date", "description", "notes"]
         widgets = {
-            'start_date': forms.DateInput(attrs={'class': 'datepicker'}),
-            'end_date': forms.DateInput(attrs={'class': 'datepicker'}),
+            'start_date': forms.DateInput(attrs={'type': 'date', 'class': 'datepicker'}),
+            'end_date': forms.DateInput(attrs={'type': 'date', 'class': 'datepicker'}),
         }
 
 
@@ -114,8 +114,8 @@ class ProgramStageForm(ModelForm):
         model = ProgramStage
         fields = ("name", "start_date", "end_date", "description")
         widgets = {
-            'start_date': forms.DateInput(attrs={'class': 'datepicker'}),
-            'end_date': forms.DateInput(attrs={'class': 'datepicker'}),
+            'start_date': forms.DateInput(attrs={'type': 'date', 'class': 'datepicker'}),
+            'end_date': forms.DateInput(attrs={'type': 'date', 'class': 'datepicker'}),
         }
 
 
@@ -158,8 +158,8 @@ class TeacherCourseForm(CrispyFormMixin, ModelForm):
             "teacher_notes",
         ]
         widgets = {
-            'start_date': forms.DateInput(attrs={'class': 'datepicker'}),
-            'end_date': forms.DateInput(attrs={'class': 'datepicker'}),
+            'start_date': forms.DateInput(attrs={'type': 'date', 'class': 'datepicker'}),
+            'end_date': forms.DateInput(attrs={'type': 'date', 'class': 'datepicker'}),
         }
 
     def __init__(self, *args, is_update=False, program=None, **kwargs):
