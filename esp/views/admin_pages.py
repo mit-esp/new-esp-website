@@ -1,3 +1,8 @@
+import smtplib
+from email.message import EmailMessage
+
+from django.contrib import messages
+from django.core.exceptions import FieldError
 from django.db.models import Count, Max
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
@@ -152,7 +157,31 @@ class SendEmailsView(PermissionRequiredMixin, FormView):
     permission = PermissionType.send_email
     form_class = SendEmailForm
     template_name = "esp/send_email.html"
-    pass
+    success_url = reverse_lazy('admin_dashboard')
+    mailing_list = None
+
+    def form_valid(self, form):
+        print(form.cleaned_data)
+        try:
+            query = form.cleaned_data['query'].replace(' ', '')
+            kwargs = {}
+            for arg in query.split(','):
+                x, y = arg.split('=')
+                kwargs[x] = y
+            mailing_list = User.objects.filter(**kwargs).values_list('email', flat=True)
+        except (FieldError, ValueError) as e:
+            form.add_error('query', 'Query is not a valid format')
+            return super().form_invalid(form)
+        # send emails to mailing list
+        msg = EmailMessage()
+        msg['Subject'] = form.cleaned_data['subject']
+        # msg['From'] = ???
+        msg['To'] = ', '.join(mailing_list)
+        msg.set_content(form.cleaned_data['body'])
+        # s = smtplib.SMTP('localhost')
+        # s.send_message(msg)
+        # s.quit()
+        return super().form_valid(form)
 
 
 ###########################################################

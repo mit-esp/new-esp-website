@@ -202,17 +202,8 @@ class AddCoTeacherForm(CrispyFormMixin, forms.Form):
         ).distinct()
 
 
-class PickCourseChoiceForm(forms.ModelChoiceField):
-    def label_from_instance(self, obj):
-        return obj.name
-
-
-class SendEmailForm(forms.Form):
-    students = forms.BooleanField(label='Email Students?', required=False)
-    teachers = forms.BooleanField(label='Email Teachers?', required=False)
-    course = PickCourseChoiceForm(queryset=None, required=False)
+class SendEmailForm(CrispyFormMixin, forms.Form):
+    submit_label = "Send"
+    query = forms.CharField(label='Query', widget=forms.TextInput(attrs={'placeholder': 'user_type=teacher, teacher_profile__graduation_year__gte=2022'}))
+    subject = forms.CharField(label='Subject Line')
     body = forms.CharField(label='Email Body', widget=forms.Textarea)
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields["course"].queryset = Course.objects.all().distinct()
