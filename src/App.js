@@ -5,9 +5,10 @@ import dayjs from "dayjs";
 
 const DAYS_OF_WEEK = ['Mondays', 'Tuesdays', 'Wednesdays', 'Thursdays', 'Fridays', 'Saturdays', 'Sundays']
 const DEFAULT_FILTERS = {
-  hideUnavailableTimeSlots: true,
-  hideFullyScheduledCourses: true,
-  ...Object.fromEntries(DAYS_OF_WEEK.map((dayOfWeek) => [`show${dayOfWeek}`, true]))
+  hideUnavailableTimeSlots: false,
+  hideFullyScheduledCourses: false,
+  ...Object.fromEntries(DAYS_OF_WEEK.map((dayOfWeek) => [`show${dayOfWeek}`, true])),
+  courseNameFilter: '',
 }
 
 
@@ -205,6 +206,15 @@ export default function App() {
                   onChange={() => toggleFilter('hideFullyScheduledCourses')}
                   type='checkbox'
                 />
+                <Form.Group className="my-2 mb-3" controlId="filter-courseNameSearch">
+                  <Form.Label>Filter by course name</Form.Label>
+                  <Form.Control
+                    type="text"
+                    placeholder="Enter course name"
+                    onChange={(event) => setCourseNameFilter(event.target.value)}
+                    value={filters.courseNameFilter}
+                  />
+                </Form.Group>
               </div>
             </div>
           </div>
@@ -283,12 +293,19 @@ export default function App() {
     }
   }
 
+  function setCourseNameFilter(courseName) {
+    setFilters({...filters, courseNameFilter: courseName})
+  }
+
   function shouldShowCourse(course) {
     if (filters.hideFullyScheduledCourses) {
       // Hide fully scheduled courses
       if (course.sections_count === getScheduledSectionsCount(course)) {
         return false
       }
+    }
+    if (filters.courseNameFilter !== '' && !course.name.toLowerCase().includes(filters.courseNameFilter.toLowerCase())) {
+      return false
     }
     return true
   }
@@ -314,6 +331,21 @@ export default function App() {
       }
     }
     return true
+  }
+
+  async function submitData() {
+    const data = {"course_id": "","time_slot": selectedClassroomTimeSlots}
+    const response = await fetch(
+      "http://localhost:8000/api/v0/classroom-time-slots/",
+      {
+        body: JSON.stringify(data),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        method: 'POST',
+      }
+    )
+    console.log(response.json())
   }
 
   function timeSlotDisplay(timeSlot, html=false) {
