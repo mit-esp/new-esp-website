@@ -30,6 +30,7 @@ STUDENT_PERMISSIONS = [
     PermissionType.student_create_profile,
     PermissionType.student_dashboard_view,
     PermissionType.student_update_profile,
+    PermissionType.student_register_for_program,
 ]
 
 
