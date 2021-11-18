@@ -336,7 +336,7 @@ export default function App() {
   async function submitData() {
     const data = {"course_id": "","time_slot": selectedClassroomTimeSlots}
     const response = await fetch(
-      `${process.env.REACT_APP_API_BASE_URL}api/v0/classroom-time-slots/`,
+      `${process.env.REACT_APP_API_BASE_URL}/api/v0/classroom-time-slots/`,
       {
         body: JSON.stringify(data),
         headers: {
