@@ -12,6 +12,8 @@ cp config/.env.example config/.env
 
 # Fill in appropriate environment values.
 vim config/.env
+# set top level REACT_APP_API_BASE_URL to backend API base url
+vim .env
 
 # Install backend requirements.
 pip install -r requirements.txt
@@ -22,8 +24,6 @@ npm install
 # Apply migrations and sync database schema.
 python manage.py migrate
 
-# Creates database fixtures.
-python manage.py loaddata --app common fixtures.json
 ```
 
 To run the project:
@@ -63,12 +63,21 @@ Install Postgres:
 sudo yum install -y postgresql-devel
 ```
 
-Deployment commands
+Configure environment variables in `.env` and `config/.env`
+
+Deployment commands:
 ```
+git pull
 pip install --upgrade pip
 pip install -r requirements.txt
-python manage.py migrate --noinput
+npm install
+npm run build
+python manage.py compilescss
 python manage.py collectstatic --noinput --ignore *.scss
+python manage.py migrate --noinput
+
+# restart wsgi process e.g.
+sudo systemctl restart gunicorn
 ```
 
 ### Settings

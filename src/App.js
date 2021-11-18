@@ -37,7 +37,7 @@ export default function App() {
     loadData('/api/v0/classroom-time-slots', setClassroomTimeSlots)
 
     async function loadData(endpoint, setStateFunc, processFunc) {
-      const response = await fetch(`http://localhost:8000${endpoint}`)
+      const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}${endpoint}`)
       let data = (await response.json()).data
       if (processFunc !== undefined) {
         data = data.map((datum) => processFunc(datum))
@@ -336,7 +336,7 @@ export default function App() {
   async function submitData() {
     const data = {"course_id": "","time_slot": selectedClassroomTimeSlots}
     const response = await fetch(
-      "http://localhost:8000/api/v0/classroom-time-slots/",
+      `${process.env.REACT_APP_API_BASE_URL}api/v0/classroom-time-slots/`,
       {
         body: JSON.stringify(data),
         headers: {
