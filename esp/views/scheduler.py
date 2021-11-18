@@ -24,22 +24,26 @@ class SerializerResponseMixin:
 
 
 class ClassroomApiView(SerializerResponseMixin, BaseListView):
+    #todo: protect with auth and admin permissions
     model = Classroom
     serializer_class = ClassroomSerializer
 
 
 class ClassroomTimeSlotApiView(SerializerResponseMixin, BaseListView):
+    #todo: protect with auth and admin permissions
     model = ClassroomTimeSlot
     serializer_class = ClassroomTimeSlotSerializer
     queryset = ClassroomTimeSlot.objects.all().select_related('course_section__course')
 
 
 class CourseApiView(SerializerResponseMixin, BaseListView):
+    #todo: protect with auth and admin permissions
     model = Course
     serializer_class = CourseSerializer
 
 
 class CourseSectionApiView(SerializerResponseMixin, BaseListView):
+    #todo: protect with auth and admin permissions
     model = CourseSection
     serializer_class = CourseSectionSerializer
 
@@ -50,5 +54,6 @@ class SchedulerView(PermissionRequiredMixin, TemplateView):
 
 
 class TimeSlotApiView(SerializerResponseMixin, BaseListView):
+    #todo: protect with auth and admin permissions
     model = TimeSlot
     serializer_class = TimeSlotSerializer

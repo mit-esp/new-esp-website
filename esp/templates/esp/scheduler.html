@@ -14,9 +14,14 @@
     <strong>Warning!</strong> This is an active work-in-progress.
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
   </div>
-
-  <iframe
+{% if LOCALHOST %}
+ <iframe
     src="http://localhost:3000"
     style="border: none; height: calc(100vh - 66px); left: 0; position: absolute; width: 100vw;"
   ></iframe>
+{% else %}
+  <div style="border: none; height: calc(100vh - 66px); left: 0; position: absolute; width: 100vw;">
+    {% include "index.html" %}
+  </div>
+{% endif %}
 {% endblock %}
