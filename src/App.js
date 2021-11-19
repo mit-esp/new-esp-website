@@ -24,10 +24,10 @@ export default function App() {
   const [timeSlots, setTimeSlots] = useState([])
 
   useEffect(() => {
-    loadData('/api/v0/courses', setCourses)
-    loadData('/api/v0/classrooms', setClassrooms)
+    loadData('/api/v0/courses/', setCourses)
+    loadData('/api/v0/classrooms/', setClassrooms)
     loadData(
-      '/api/v0/time-slots',
+      '/api/v0/time-slots/',
       setTimeSlots,
       (timeSlot) => ({
         ...timeSlot,
@@ -36,7 +36,7 @@ export default function App() {
         start_datetime: dayjs(timeSlot.start_datetime),
       })
     )
-    loadData('/api/v0/classroom-time-slots', setClassroomTimeSlots)
+    loadData('/api/v0/classroom-time-slots/', setClassroomTimeSlots)
 
     async function loadData(endpoint, setStateFunc, processFunc) {
       const response = await secureFetch(`${process.env.REACT_APP_API_BASE_URL}${endpoint}`)
@@ -47,7 +47,7 @@ export default function App() {
       setStateFunc(data)
     }
   }, [])
-
+  console.log(courses)
   const classroomById = useMemo(() => (
     classrooms.reduce((accumulator, classroom) => ({...accumulator, [classroom.id]: classroom}), {})
   ), [classrooms])
@@ -85,11 +85,25 @@ export default function App() {
                 {courses.length
                   ? courses.map((course) => (
                     <div
-                      className={`btn btn-${course.id === selectedCourse?.id ? 'primary' : 'light'} mb-2 ${shouldShowCourse(course) ? '' : 'd-none'}`}
+                      className={getCourseClassNames(course)}
                       key={course.id}
                       onClick={() => selectCourse(course)}
                     >
-                      {course.name} ({getScheduledSectionsCount(course)}/{course.sections_count})
+                      <p>{course.name} ({getScheduledSectionsCount(course)}/{course.sections_count})</p>
+                      <div className='d-grid'>
+                        {course.id === selectedCourse?.id
+                          ? course.sections.map((section) => (
+                            <div
+                              className='btn btn-secondary'
+                              key={section.id}
+                              onClick={(event) => event.stopPropagation()}
+                            >
+                              Section {section.display_id}
+                            </div>
+                          ))
+                          : null
+                        }
+                      </div>
                     </div>
                   ))
                   : <span>Loading...</span>
@@ -108,7 +122,13 @@ export default function App() {
                       <tr>
                         <th className='sticky column header' scope='col' />
                         {classrooms.map((classroom) => (
-                          <th className={getClassroomClassNames(classroom)} key={classroom.id} scope='col'>{classroom.name}</th>
+                          <th
+                            className={getClassroomClassNames(classroom, true)}
+                            key={classroom.id}
+                            scope='col'
+                          >
+                            {classroom.name}
+                          </th>
                         ))}
                       </tr>
                     </thead>
@@ -302,6 +322,23 @@ export default function App() {
     return classNames.join(' ')
   }
 
+  function getCourseClassNames(course) {
+    const classNames = []
+    const isSelectedCourse = course.id === selectedCourse?.id
+
+    // General styling
+    classNames.push('btn')
+    classNames.push(`btn-${isSelectedCourse ? 'primary' : 'light'}`)
+    classNames.push('mb-2')
+
+    // Filters
+    if (!shouldShowCourse(course)) {
+      classNames.push('d-none')
+    }
+
+    return classNames.join(' ')
+  }
+
   function getScheduledSectionsCount(course) {
     return classroomTimeSlots.filter((classroomTimeSlot) => (
       classroomTimeSlot.course_id === course.id
@@ -334,6 +371,9 @@ export default function App() {
   }
 
   function shouldShowCourse(course) {
+    if (selectedCourse?.id === course.id) {
+      return true
+    }
     if (filters.hideFullyScheduledCourses) {
       // Hide fully scheduled courses
       if (course.sections_count === getScheduledSectionsCount(course)) {

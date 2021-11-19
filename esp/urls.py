@@ -6,7 +6,7 @@ from esp.views.admin_pages import (AdminDashboardView, CourseCreateView,
                                    ProgramCreateView, ProgramListView,
                                    ProgramLotteryView, ProgramStageCreateView,
                                    ProgramStageUpdateView, ProgramUpdateView)
-from esp.views.scheduler import ClassroomApiView, CourseApiView, CourseSectionApiView, TimeSlotApiView, \
+from esp.views.scheduler import ClassroomApiView, CourseApiView, TimeSlotApiView, \
     ClassroomTimeSlotApiView, SchedulerView
 from esp.views.student_registration_pages import (
     CompleteSurveysView, ConfirmAssignedCoursesView,
@@ -133,7 +133,6 @@ urlpatterns = [
     path("scheduler/", SchedulerView.as_view(), name="scheduler"),  # TODO: make program specific url
     path("api/v0/classrooms/", ClassroomApiView.as_view(), name="classroom_api"),
     path("api/v0/courses/", CourseApiView.as_view(), name="course_api"),
-    path("api/v0/course-sections/", CourseSectionApiView.as_view(), name="course_section_api"),
     path("api/v0/time-slots/", TimeSlotApiView.as_view(), name="time_slot_api"),
     path("api/v0/classroom-time-slots/", ClassroomTimeSlotApiView.as_view(), name="classroom_time_slot_api"),
 ]

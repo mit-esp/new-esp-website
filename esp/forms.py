@@ -2,16 +2,20 @@ from crispy_forms import layout
 from crispy_forms.helper import FormHelper
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
+from django.core.exceptions import ValidationError
+from django.db import transaction
 from django.forms import ModelForm, inlineformset_factory
 
 from common.constants import REGISTRATION_USER_TYPE_CHOICES, GradeLevel
 from common.forms import CrispyFormMixin, HiddenOrderingInputFormset
 from common.models import User
 from esp.constants import CourseTagCategory
+from esp.models.course_scheduling import ClassroomTimeSlot, CourseSection
 from esp.models.program import Course, CourseTag, Program, ProgramStage
 from esp.models.program_registration import (ProgramRegistrationStep,
                                              StudentProfile, TeacherProfile,
                                              TeacherRegistration)
+from esp.serializers import AssignClassroomTimeSlotSerializer
 
 
 class RegisterUserForm(CrispyFormMixin, UserCreationForm):
@@ -200,3 +204,41 @@ class AddCoTeacherForm(CrispyFormMixin, forms.Form):
         ).filter(
             program_id=course.program_id, availabilities__isnull=False
         ).distinct()
+
+
+class AssignClassroomTimeSlotForm(forms.Form):
+    data = forms.JSONField()
+
+    def clean_data(self):
+        """
+        Validate data json structure.
+        """
+        data = self.cleaned_data["data"]
+        serializer = AssignClassroomTimeSlotSerializer(data=data, many=True)
+        if not serializer.is_valid():
+            # Todo: Add sentry notification; this error is not intended for the user
+            raise ValidationError("Sorry, something went wrong")
+        self._validate_ids(ClassroomTimeSlot, 'classroom_time_slot_id', serializer.data)
+        self._validate_ids(CourseSection, 'course_section_id', serializer.data)
+        return serializer.data
+
+    def save(self):
+        """
+        Save ClassroomTimeSlot assignments. This is intentionally not optimized for readability since
+        we don't expect any single call to affect that many ClassroomTimeSlot objects.
+        """
+        with transaction.atomic():
+            for datum in self.cleaned_data["data"]:
+                (
+                    ClassroomTimeSlot
+                        .objects
+                        .filter(id=datum["classroom_time_slot_id"])
+                        .update(course_section_id=datum["course_section_id"])
+                )
+
+    def _validate_ids(self, Model, id_field_name, data):
+        model_ids = [getattr(datum, id_field_name) for datum in data]
+        model_count = Model.objects.filter(id__in=model_ids).count()
+        if len(data) != model_count:
+            # Todo: Add sentry notification; this error is not intended for the user
+            raise ValidationError("Sorry, something went wrong")

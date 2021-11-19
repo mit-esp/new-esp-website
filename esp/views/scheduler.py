@@ -1,8 +1,11 @@
 from django.http import JsonResponse
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView
 from django.views.generic.list import BaseListView
 
 from common.constants import PermissionType
+from common.utils import csrf_exempt_localhost
 from common.views import PermissionRequiredMixin
 from esp.models.course_scheduling import CourseSection, ClassroomTimeSlot
 from esp.models.program import Classroom, Course, TimeSlot
@@ -29,23 +32,22 @@ class ClassroomApiView(SerializerResponseMixin, BaseListView):
     serializer_class = ClassroomSerializer
 
 
+@method_decorator(csrf_exempt_localhost, name="dispatch")
 class ClassroomTimeSlotApiView(SerializerResponseMixin, BaseListView):
     #todo: protect with auth and admin permissions
     model = ClassroomTimeSlot
     serializer_class = ClassroomTimeSlotSerializer
-    queryset = ClassroomTimeSlot.objects.all().select_related('course_section__course')
+    queryset = ClassroomTimeSlot.objects.all().select_related("course_section__course")
+
+    def post(self, *args, **kwargs):
+
+        return JsonResponse({})
 
 
 class CourseApiView(SerializerResponseMixin, BaseListView):
     #todo: protect with auth and admin permissions
     model = Course
     serializer_class = CourseSerializer
-
-
-class CourseSectionApiView(SerializerResponseMixin, BaseListView):
-    #todo: protect with auth and admin permissions
-    model = CourseSection
-    serializer_class = CourseSectionSerializer
 
 
 class SchedulerView(PermissionRequiredMixin, TemplateView):
