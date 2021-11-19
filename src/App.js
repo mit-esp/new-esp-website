@@ -1,6 +1,7 @@
 import {useEffect, useMemo, useState} from "react";
 import {Form} from 'react-bootstrap';
 import dayjs from "dayjs";
+import {secureFetch} from "./utils";
 
 
 const DAYS_OF_WEEK = ['Mondays', 'Tuesdays', 'Wednesdays', 'Thursdays', 'Fridays', 'Saturdays', 'Sundays']
@@ -19,7 +20,7 @@ export default function App() {
   const [courses, setCourses] = useState([])
   const [filters, setFilters] = useState(DEFAULT_FILTERS)
   const [selectedCourse, setSelectedCourse] = useState(null)
-  const [selectedClassroomTimeSlots, setSelectedClassromTimeSlots] = useState([])
+  const [selectedClassroomTimeSlots, setSelectedClassroomTimeSlots] = useState([])
   const [timeSlots, setTimeSlots] = useState([])
 
   useEffect(() => {
@@ -38,7 +39,7 @@ export default function App() {
     loadData('/api/v0/classroom-time-slots', setClassroomTimeSlots)
 
     async function loadData(endpoint, setStateFunc, processFunc) {
-      const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}${endpoint}`)
+      const response = await secureFetch(`${process.env.REACT_APP_API_BASE_URL}${endpoint}`)
       let data = (await response.json()).data
       if (processFunc !== undefined) {
         data = data.map((datum) => processFunc(datum))
@@ -83,13 +84,13 @@ export default function App() {
               <div className='course-list d-grid'>
                 {courses.length
                   ? courses.map((course) => (
-                    <button
-                      className={`btn btn-${course.id === selectedCourse?.id ? 'primary' : 'light'} ${shouldShowCourse(course) ? '' : 'd-none'}`}
+                    <div
+                      className={`btn btn-${course.id === selectedCourse?.id ? 'primary' : 'light'} mb-2 ${shouldShowCourse(course) ? '' : 'd-none'}`}
                       key={course.id}
                       onClick={() => selectCourse(course)}
                     >
                       {course.name} ({getScheduledSectionsCount(course)}/{course.sections_count})
-                    </button>
+                    </div>
                   ))
                   : <span>Loading...</span>
                 }
@@ -309,13 +310,13 @@ export default function App() {
 
   function selectClassroomTimeSlot(classroomTimeSlot) {
     if (selectedClassroomTimeSlotIds.includes(classroomTimeSlot.id)) {
-      setSelectedClassromTimeSlots(
+      setSelectedClassroomTimeSlots(
         selectedClassroomTimeSlots.filter(
           (selectedClassroomTimeSlot) => selectedClassroomTimeSlot.id !== classroomTimeSlot.id
         )
       )
     } else {
-      setSelectedClassromTimeSlots([...selectedClassroomTimeSlots, classroomTimeSlot])
+      setSelectedClassroomTimeSlots([...selectedClassroomTimeSlots, classroomTimeSlot])
     }
   }
 
@@ -325,6 +326,7 @@ export default function App() {
     } else {
       setSelectedCourse(course)
     }
+    setSelectedClassroomTimeSlots([])
   }
 
   function setTextSearchFilter(filterName, filterText) {
@@ -369,7 +371,7 @@ export default function App() {
 
   async function submitData() {
     const data = {"course_id": "","time_slot": selectedClassroomTimeSlots}
-    const response = await fetch(
+    const response = await secureFetch(
       `${process.env.REACT_APP_API_BASE_URL}/api/v0/classroom-time-slots/`,
       {
         body: JSON.stringify(data),
