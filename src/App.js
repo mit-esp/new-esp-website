@@ -5,10 +5,11 @@ import dayjs from "dayjs";
 
 const DAYS_OF_WEEK = ['Mondays', 'Tuesdays', 'Wednesdays', 'Thursdays', 'Fridays', 'Saturdays', 'Sundays']
 const DEFAULT_FILTERS = {
+  classroomNameFilter: '',
+  courseNameFilter: '',
   hideUnavailableTimeSlots: false,
   hideFullyScheduledCourses: false,
   ...Object.fromEntries(DAYS_OF_WEEK.map((dayOfWeek) => [`show${dayOfWeek}`, true])),
-  courseNameFilter: '',
 }
 
 
@@ -106,7 +107,7 @@ export default function App() {
                       <tr>
                         <th className='sticky column header' scope='col' />
                         {classrooms.map((classroom) => (
-                          <th className='sticky header' key={classroom.id} scope='col'>{classroom.name}</th>
+                          <th className={getClassroomClassNames(classroom)} key={classroom.id} scope='col'>{classroom.name}</th>
                         ))}
                       </tr>
                     </thead>
@@ -122,7 +123,7 @@ export default function App() {
                             const available = classroomTimeSlot.id !== undefined && !classroomTimeSlot.course_section_id
                             return (
                               <td
-                                className={getClassroomTimeSlotClassNames(classroomTimeSlot)}
+                                className={getClassroomTimeSlotClassNames(classroomTimeSlot, classroom)}
                                 onClick={
                                   available && selectedCourse !== null
                                     ? () => selectClassroomTimeSlot(classroomTimeSlot)
@@ -138,7 +139,6 @@ export default function App() {
                     </tbody>
                   </table>
                 </div>
-                // <Table columns={columns} data={data} />
               )
               : <div>Loading...</div>
             }
@@ -209,10 +209,22 @@ export default function App() {
                 <Form.Group className="my-2 mb-3" controlId="filter-courseNameSearch">
                   <Form.Label>Filter by course name</Form.Label>
                   <Form.Control
-                    type="text"
+                    onChange={(event) => setTextSearchFilter('courseNameFilter', event.target.value)}
                     placeholder="Enter course name"
-                    onChange={(event) => setCourseNameFilter(event.target.value)}
+                    type="text"
                     value={filters.courseNameFilter}
+                  />
+                </Form.Group>
+                <br />
+                <h6>Classrooms</h6>
+                <hr />
+                <Form.Group className="my-2 mb-3" controlId="filter-classroomNameSearch">
+                  <Form.Label>Filter by classroom name</Form.Label>
+                  <Form.Control
+                    onChange={(event) => setTextSearchFilter('classroomNameFilter', event.target.value)}
+                    placeholder="Enter classroom name"
+                    type="text"
+                    value={filters.classroomNameFilter}
                   />
                 </Form.Group>
               </div>
@@ -222,6 +234,25 @@ export default function App() {
       </div>
     </div>
   )
+
+  function getClassroomClassNames(classroom, header=false) {
+    const classNames = []
+
+    // Sticky headers
+    if (header) {
+      classNames.push('sticky')
+      classNames.push('header')
+    }
+
+    // Classroom search filter
+    if (filters.classroomNameFilter !== '') {
+      if (!classroom.name.toLowerCase().includes(filters.classroomNameFilter.toLowerCase())) {
+        classNames.push('d-none')
+      }
+    }
+
+    return classNames.join(' ')
+  }
 
   function getClassroomTimeSlot(timeSlotId, classroomId) {
     let selector
@@ -236,8 +267,11 @@ export default function App() {
     return selector
   }
 
-  function getClassroomTimeSlotClassNames(classroomTimeSlot) {
+  function getClassroomTimeSlotClassNames(classroomTimeSlot, classroom) {
     const classNames = []
+
+    // Classroom filters
+    classNames.push(getClassroomClassNames(classroom))
 
     // Availability
     classNames.push('availability')
@@ -293,8 +327,8 @@ export default function App() {
     }
   }
 
-  function setCourseNameFilter(courseName) {
-    setFilters({...filters, courseNameFilter: courseName})
+  function setTextSearchFilter(filterName, filterText) {
+    setFilters({...filters, [filterName]: filterText})
   }
 
   function shouldShowCourse(course) {
