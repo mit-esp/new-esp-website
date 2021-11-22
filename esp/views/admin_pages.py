@@ -3,6 +3,7 @@ from email.message import EmailMessage
 
 from django.contrib import messages
 from django.core.exceptions import FieldError
+from django.core.mail import send_mail
 from django.db.models import Count, Max
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
@@ -14,6 +15,7 @@ from common.constants import PermissionType, UserType
 from common.forms import CrispyFormsetHelper
 from common.models import User
 from common.views import PermissionRequiredMixin
+from config.settings import DEFAULT_FROM_EMAIL
 from esp.forms import (ProgramForm, ProgramRegistrationStepFormset,
                        ProgramStageForm, TeacherCourseForm, SendEmailForm)
 from esp.lottery import run_program_lottery
@@ -161,26 +163,27 @@ class SendEmailsView(PermissionRequiredMixin, FormView):
     mailing_list = None
 
     def form_valid(self, form):
-        print(form.cleaned_data)
         try:
             query = form.cleaned_data['query'].replace(' ', '')
             kwargs = {}
             for arg in query.split(','):
                 x, y = arg.split('=')
                 kwargs[x] = y
-            mailing_list = User.objects.filter(**kwargs).values_list('email', flat=True)
+            to_emails = User.objects.filter(**kwargs).values_list('email', flat=True)
         except (FieldError, ValueError) as e:
             form.add_error('query', 'Query is not a valid format')
             return super().form_invalid(form)
         # send emails to mailing list
-        msg = EmailMessage()
-        msg['Subject'] = form.cleaned_data['subject']
-        # msg['From'] = ???
-        msg['To'] = ', '.join(mailing_list)
-        msg.set_content(form.cleaned_data['body'])
-        # s = smtplib.SMTP('localhost')
-        # s.send_message(msg)
-        # s.quit()
+        subject = form.cleaned_data['subject']
+        from_email = DEFAULT_FROM_EMAIL
+        body = form.cleaned_data['body']
+        send_mail(
+            subject,
+            body,
+            from_email,
+            to_emails,
+            fail_silently=False,
+        )
         return super().form_valid(form)
 
 
