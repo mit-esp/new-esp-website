@@ -49,10 +49,9 @@ urlpatterns = [
     path('admin/programs/<uuid:pk>/stages/update/', ProgramStageUpdateView.as_view(), name="update_program_stage"),
     path('admin/programs/all/', ProgramListView.as_view(), name='programs'),
 
-    path('admin/classes/create/', CourseCreateView.as_view(), name='create_course'),
-    path('admin/classes/update/<uuid:pk>/', CourseUpdateView.as_view(), name='update_course'),
-    path('admin/classes/all/', CourseListView.as_view(), name='courses'),
-
+    path('admin/programs/<uuid:pk>/classes/create/', CourseCreateView.as_view(), name='create_course'),
+    path('admin/programs/<uuid:pk>/classes/update/<uuid:class_pk>/', CourseUpdateView.as_view(), name='update_course'),
+    path('admin/programs/<uuid:pk>/classes/', CourseListView.as_view(), name='courses'),
     path('admin/programs/<uuid:pk>/lottery/', ProgramLotteryView.as_view(), name="program_lottery"),
 
     # Teacher program registration views
