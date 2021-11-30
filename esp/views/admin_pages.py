@@ -162,6 +162,10 @@ class CourseUpdateView(PermissionRequiredMixin, UpdateView):
     form_class = TeacherCourseForm
     success_url = reverse_lazy('programs')
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["program"] = self.object.program
+        return kwargs
 
 class CourseListView(PermissionRequiredMixin, ListView):
     permission = PermissionType.courses_view_all

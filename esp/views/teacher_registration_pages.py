@@ -14,7 +14,7 @@ from esp.models.program import Course, Program, TeacherProgramRegistrationStep
 from esp.models.program_registration import (CompletedTeacherRegistrationStep,
                                              CourseTeacher,
                                              TeacherAvailability,
-                                             TeacherRegistration)
+                                             TeacherProfile, TeacherRegistration)
 
 
 class TeacherProgramRegistrationCreateView(PermissionRequiredMixin, SingleObjectMixin, TemplateView):
@@ -90,6 +90,12 @@ class TeacherRegistrationStepBaseView(PermissionRequiredMixin, DetailView):
         self.registration_step = get_object_or_404(
             TeacherProgramRegistrationStep, id=self.kwargs["step_id"]
         )
+        try:
+            # TeacherProfile should exist at this point for a user, including Admins who should create a
+            # teacher profile to proceed as teachers.
+            _ = self.object.user.teacher_profile
+        except TeacherProfile.DoesNotExist:
+            return False
         return self.object.has_access_to_step(self.registration_step)
 
     def get_queryset(self):
@@ -222,6 +228,11 @@ class TeacherEditCourseView(PermissionRequiredMixin, UpdateView):
         kwargs["program"] = self.object.program
         kwargs["is_update"] = True
         return kwargs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        context["dashboard_url"] = self.get_success_url()
+        return context
 
     def get_initial(self):
         return {

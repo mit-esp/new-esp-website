@@ -24,16 +24,13 @@ npm install
 # Apply migrations and sync database schema.
 python manage.py migrate
 
-```
-
-To run the project:
-```
+# To run the project:
 python manage.py runserver_plus
-```
-To run the React scheduler in development:
-```
+
+#To run the React scheduler in development:
 npm run start
 ```
+
 To access the database:
 ```
 python manage.py shell_plus
