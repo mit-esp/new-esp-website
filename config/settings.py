@@ -19,6 +19,7 @@ env = environ.Env(
     DEBUG_TOOLBAR=(bool, False),
     HOST=(str, "localhost"),
     LOCALHOST=(bool, False),
+    REACT_HOTLOAD=(bool, False),
     MAINTENANCE_MODE=(bool, False),
     SENTRY_DSN=(str, None),
 )
@@ -37,6 +38,7 @@ DEBUG = env("DEBUG")
 
 # run with this set to False in production
 LOCALHOST = env("LOCALHOST")
+REACT_HOTLOAD = env("REACT_HOTLOAD")
 
 ALLOWED_HOSTS = env("HOST").split(",")
 if LOCALHOST is True:

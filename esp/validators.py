@@ -1,10 +1,8 @@
-from datetime import timedelta
-
-
+from dateutil.relativedelta import relativedelta
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
-from dateutil.relativedelta import relativedelta
+
 
 def validate_graduation_year(value):
     earliest_allowed = (timezone.now() - relativedelta(years=round(100))).year  # 100 years
