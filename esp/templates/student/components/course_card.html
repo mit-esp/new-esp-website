@@ -1,0 +1,14 @@
+{% extends 'shared/course_card_base.html' %}
+
+{% block course_actions %}
+  <form action="{% url 'delete_course_registration' pk=course_registration.id  %}" method="post">
+    {% csrf_token %}
+    <button class="btn btn-outline-danger" type="submit">Remove</button>
+  </form>
+  <a
+    class="btn btn-secondary ms-2"
+    href="{% url 'edit_student_courses' registration_id=course_registration.program_registration.id %}"
+  >
+    Swap
+  </a>
+{% endblock %}

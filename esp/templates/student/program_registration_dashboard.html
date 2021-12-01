@@ -1,17 +1,16 @@
 {% extends "base/student_base.html" %}
 {% load filters %}
 
-{% block title %}{{ programregistration.program }} ({{ programregistration.get_program_stage.name }}){% endblock %}
+{% block title %}{{ program.name }} ({{ program_stage.name }}){% endblock %}
 
 {% block content %}
-{% with program_stage=programregistration.get_program_stage %}
-  <h1>{{ program_stage.program }}: {{ program_stage.name }}</h1>
+  <h1>{{ program.name }}: {{ program_stage.name }}</h1>
   <p>
-    Please complete the steps below in order to continue your registration for {{ programregistration.program }}.
+    Please complete the steps below in order to continue your registration for {{ program.name }}.
     Required steps are marked in bold.
   </p>
   <div class="list-group col-md-6">
-    {% for step in program_stage.steps.all %}
+    {% for step in program_stage_steps %}
       {% if step.display_after_completion or step.id not in completed_steps %}
         <a href="{% url step.step_key registration_id=programregistration.id step_id=step.id %}" class="list-group-item d-flex{% if step.id in completed_steps and not step.display_after_completion %} disabled{% endif %}">
           <span {% if step.required_for_stage_completion %}class="fw-bold" {% endif %}>{{ step.get_display_name }}</span>
@@ -20,6 +19,7 @@
       {% endif %}
     {% endfor %}
   </div>
+  <br>
   {% if course_registrations %}
     <h2>Registered Courses</h2>
     <div class="list-group">
@@ -32,7 +32,7 @@
           <div>{{ course_registration.course_section.get_section_times|format_time_slots }}</div>
           <div>
             (Co-)Teachers:
-            {% for teacher in course_registration.course.teachers.all %}
+            {% for teacher in course_registration.course_section.course.teachers.all %}
               {{ teacher.teacher_registration.user.first_name }} {{ teacher.teacher_registration.user.last_name }}{% if not forloop.last %}, {% endif %}
             {% endfor %}
           </div>
@@ -41,5 +41,4 @@
     {% endfor %}
     </div>
   {% endif %}
-{% endwith %}
 {% endblock %}

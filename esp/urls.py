@@ -6,15 +6,16 @@ from esp.views.admin_pages import (AdminDashboardView, CourseCreateView,
                                    ProgramCreateView, ProgramListView,
                                    ProgramLotteryView, ProgramStageCreateView,
                                    ProgramStageUpdateView, ProgramUpdateView)
-from esp.views.scheduler import ClassroomApiView, CourseApiView, CourseSectionApiView, TimeSlotApiView, \
-    ClassroomTimeSlotApiView, SchedulerView
+from esp.views.scheduler import (ClassroomApiView, ClassroomTimeSlotApiView,
+                                 CourseApiView, CourseSectionApiView,
+                                 SchedulerView, TimeSlotApiView)
 from esp.views.student_registration_pages import (
     CompleteSurveysView, ConfirmAssignedCoursesView,
-    ConfirmRegistrationSubmissionView, EditAssignedCoursesView,
-    InitiatePreferenceEntryView, PayProgramFeesView, PreferenceEntryRoundView,
-    ProgramRegistrationCreateView, ProgramRegistrationStageView,
-    RegistrationStepCompleteView, StudentAvailabilityView, SubmitWaiversView,
-    VerifyStudentProfileView)
+    ConfirmRegistrationSubmissionView, DeleteCourseRegistrationView,
+    EditAssignedCoursesView, InitiatePreferenceEntryView, PayProgramFeesView,
+    PreferenceEntryRoundView, ProgramRegistrationCreateView,
+    ProgramRegistrationStageView, RegistrationStepCompleteView,
+    StudentAvailabilityView, SubmitWaiversView, VerifyStudentProfileView)
 from esp.views.teacher_registration_pages import (
     AddCoTeacherView, TeacherEditCourseView, TeacherProgramDashboardView,
     TeacherProgramRegistrationCreateView, TeacherRegistrationStepRouterView)
@@ -77,6 +78,14 @@ urlpatterns = [
         'programs/registration/<uuid:pk>/', ProgramRegistrationStageView.as_view(),
         name="current_registration_stage"
     ),
+    path(
+        'programs/registration/<uuid:registration_id>/edit_classes/',
+        EditAssignedCoursesView.as_view(), name="edit_student_courses"
+    ),
+    path(
+        'programs/registration/remove_class/<uuid:pk>/',
+        DeleteCourseRegistrationView.as_view(), name='delete_course_registration'
+    ),
 
     # Student registration step initial views
     # Each registration step in esp.constants.StudentRegistrationStepType must have a corresponding view with a url name
@@ -106,10 +115,6 @@ urlpatterns = [
     path(
         'programs/registration/<uuid:registration_id>/lottery_results/<uuid:step_id>/',
         ConfirmAssignedCoursesView.as_view(), name=StudentRegistrationStepType.confirm_assigned_courses
-    ),
-    path(
-        'programs/registration/<uuid:registration_id>/edit_classes/<uuid:step_id>/',
-        EditAssignedCoursesView.as_view(), name=StudentRegistrationStepType.edit_assigned_courses
     ),
     path(
         'programs/registration/<uuid:registration_id>/fees/<uuid:step_id>/',

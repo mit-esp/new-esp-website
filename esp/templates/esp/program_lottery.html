@@ -15,9 +15,6 @@
       {% endfor %}
     </div>
   {% else %}
-    <form method="post">
-      {% csrf_token %}
-      <button class="btn btn-primary" type="submit">Run Lottery</button>
-    </form>
+    {% include 'shared/submit_button.html' with submit_label='Run Lottery' %}
   {% endif %}
 {% endblock %}

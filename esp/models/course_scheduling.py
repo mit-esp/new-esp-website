@@ -46,27 +46,27 @@ class CourseSection(BaseModel):
         return self.__class__.objects.filter(course=self.course).aggregate(max=Max("display_id"))["max"] + 1
 
     def get_section_times(self):
-        time_slots = self.time_slots.order_by("time_slot__start_time").values(
-            "time_slot__start_time", "time_slot__end_time"
+        time_slots = self.time_slots.order_by("time_slot__start_datetime").values(
+            "time_slot__start_datetime", "time_slot__end_datetime"
         )
         start_time = None
         end_time = None
         times = []
         for slot in time_slots:
             if not start_time:
-                start_time = slot["time_slot__start_time"]
+                start_time = slot["time_slot__start_datetime"]
             if end_time and (
-                slot["time_slot__start_time"]
+                slot["time_slot__start_datetime"]
                 > end_time + timedelta(minutes=self.course.program.time_block_minutes - 1)
             ):
                 times.append((start_time, end_time))
-                start_time = slot["time_slot__start_time"]
-            end_time = slot["time_slot__end_time"]
+                start_time = slot["time_slot__start_datetime"]
+            end_time = slot["time_slot__end_datetime"]
         times.append((start_time, end_time))
         return times
 
     def __str__(self):
-        return f"{self.course.get_display_name()}s{self.display_id}"
+        return f"{self.course.get_display_name()} S{self.display_id}"
 
 
 class ClassroomTimeSlot(BaseModel):
