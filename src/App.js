@@ -1,5 +1,5 @@
 import {useEffect, useMemo, useState} from "react";
-import {Form} from 'react-bootstrap';
+import {Form, Modal} from 'react-bootstrap';
 import dayjs from "dayjs";
 import {secureFetch} from "./utils";
 
@@ -12,6 +12,11 @@ const DEFAULT_FILTERS = {
   hideFullyScheduledCourses: false,
   ...Object.fromEntries(DAYS_OF_WEEK.map((dayOfWeek) => [`show${dayOfWeek}`, true])),
 }
+const DEFAULT_SELECTED = {
+  assignments: {},  // classroomTimeSlotId<string>:courseSection<object>
+  course: null,
+  courseSection: null,
+}
 
 
 export default function App() {
@@ -19,8 +24,8 @@ export default function App() {
   const [classroomTimeSlots, setClassroomTimeSlots] = useState([])
   const [courses, setCourses] = useState([])
   const [filters, setFilters] = useState(DEFAULT_FILTERS)
-  const [selectedCourse, setSelectedCourse] = useState(null)
-  const [selectedClassroomTimeSlots, setSelectedClassroomTimeSlots] = useState([])
+  const [selected, setSelected] = useState(DEFAULT_SELECTED)
+  const [showSubmitModal, setShowSubmitModal] = useState(false)
   const [timeSlots, setTimeSlots] = useState([])
 
   useEffect(() => {
@@ -36,7 +41,16 @@ export default function App() {
         start_datetime: dayjs(timeSlot.start_datetime),
       })
     )
-    loadData('/api/v0/classroom-time-slots/', setClassroomTimeSlots)
+    loadData(
+      '/api/v0/classroom-time-slots/',
+      setClassroomTimeSlots,
+      (classroomTimeSlot) => ({
+        ...classroomTimeSlot,
+        // TODO: This converts to local time; is this appropriate?
+        end_datetime: dayjs(classroomTimeSlot.end_datetime),
+        start_datetime: dayjs(classroomTimeSlot.start_datetime),
+      })
+    )
 
     async function loadData(endpoint, setStateFunc, processFunc) {
       const response = await secureFetch(`${process.env.REACT_APP_API_BASE_URL}${endpoint}`)
@@ -47,11 +61,20 @@ export default function App() {
       setStateFunc(data)
     }
   }, [])
-  console.log(courses)
+
   const classroomById = useMemo(() => (
     classrooms.reduce((accumulator, classroom) => ({...accumulator, [classroom.id]: classroom}), {})
   ), [classrooms])
 
+  // const classroomTimeSlotById = useMemo(() => (
+  //   classroomTimeSlots.reduce((accumulator, classroomTimeSlot) => (
+  //     {...accumulator, [classroomTimeSlot.id]: classroomTimeSlot}
+  //   ), {})
+  // ), [classroomTimeSlots])
+
+  /**
+   * Create a lookup table for classroomTimeSlot first by timeSlot.id, then by classrooml.id
+   */
   const classroomTimeSlotLookupTable = useMemo(() => (
     classroomTimeSlots.reduce((accumulator, classroomTimeSlot) => (
       {
@@ -64,13 +87,11 @@ export default function App() {
     ), {})
   ), [classroomTimeSlots])
 
-  const timeSlotById = useMemo(() => (
-    timeSlots.reduce((accumulator, timeSlot) => ({...accumulator, [timeSlot.id]: timeSlot}), {})
-  ), [timeSlots])
+  // const timeSlotById = useMemo(() => (
+  //   timeSlots.reduce((accumulator, timeSlot) => ({...accumulator, [timeSlot.id]: timeSlot}), {})
+  // ), [timeSlots])
 
-  const selectedClassroomTimeSlotIds = useMemo(() => (
-    selectedClassroomTimeSlots.map((x) => x.id)
-  ), [selectedClassroomTimeSlots])
+  const selectedClassroomTimeSlotIds = Object.keys(selected.assignments)
 
   return (
     <div className='scheduler'>
@@ -89,20 +110,17 @@ export default function App() {
                       key={course.id}
                       onClick={() => selectCourse(course)}
                     >
-                      <p>{course.name} ({getScheduledSectionsCount(course)}/{course.sections_count})</p>
-                      <div className='d-grid'>
-                        {course.id === selectedCourse?.id
-                          ? course.sections.map((section) => (
-                            <div
-                              className='btn btn-secondary'
-                              key={section.id}
-                              onClick={(event) => event.stopPropagation()}
-                            >
-                              Section {section.display_id}
-                            </div>
-                          ))
-                          : null
-                        }
+                      <span>{course.name} ({getScheduledSectionsCount(course)}/{course.sections_count})</span>
+                      <div className={`d-grid mt-2 ${course.id === selected.course?.id ? '' : 'd-none'}`}>
+                        {course.sections.map((section) => (
+                          <div
+                            className={getCourseSectionClassNames(section)}
+                            key={section.id}
+                            onClick={(event) => selectCourseSection(section, event)}
+                          >
+                            Section {section.display_id}
+                          </div>
+                        ))}
                       </div>
                     </div>
                   ))
@@ -112,7 +130,7 @@ export default function App() {
             </div>
           </div>
         </div>
-        <div className={`calendar ${selectedCourse === null ? '' : 'course-selected'}`}>
+        <div className={`calendar ${selected.course === null ? '' : 'course-selected'}`}>
           <div className='card'>
             {classroomTimeSlots.length || classrooms.length || timeSlots.length
               ? (
@@ -145,8 +163,9 @@ export default function App() {
                             return (
                               <td
                                 className={getClassroomTimeSlotClassNames(classroomTimeSlot, classroom)}
+                                key={`${timeSlot.id}-${classroom.id}`}
                                 onClick={
-                                  available && selectedCourse !== null
+                                  available && selected.course !== null && selected.courseSection !== null
                                     ? () => selectClassroomTimeSlot(classroomTimeSlot)
                                     : null
                                 }
@@ -167,31 +186,32 @@ export default function App() {
         </div>
         <div className='options'>
           <div className='card actions'>
-            <div className='card-body d-grid'>
+            <div className='card-body'>
               <h5 className='card-title'>Actions</h5>
               <dl className='mb-0'>
                 <dt>Course</dt>
-                <dd>{selectedCourse === null ? '(None selected)' : `"${selectedCourse.name}"`}</dd>
-                <dt>Pending Actions</dt>
+                <dd>{selected.course === null ? '--' : selected.course?.name}</dd>
+                <dt>Course Section</dt>
                 <dd>
-                  Schedule for:
-                  <ul className='pending-actions-list'>
-                    {selectedClassroomTimeSlots.map((selectedClassroomTimeSlot) => (
-                      <li>
-                        "{classroomById[selectedClassroomTimeSlot.classroom_id].name}"
-                        <br />
-                        {timeSlotDisplay(timeSlotById[selectedClassroomTimeSlot.time_slot_id])}
-                      </li>
-                    ))}
-                  </ul>
+                  {selected.courseSection === null ? '--' : `Section ${selected.courseSection?.display_id}`}
                 </dd>
               </dl>
-              <button
-                className={`btn btn-success ${selectedClassroomTimeSlots.length === 0 ? 'd-none' : ''}`}
-                onClick={() => alert('Sorry, I\'m not implemented yet :(')}
-              >
-                Submit
-              </button>
+              <div className='d-grid gap-2'>
+                <button
+                  className={`btn btn-${selectedClassroomTimeSlotIds.length === 0 ? 'light' : 'success'}`}
+                  disabled={selectedClassroomTimeSlotIds.length === 0}
+                  onClick={() => setShowSubmitModal(true)}
+                >
+                  Preview changes
+                </button>
+                <button
+                  className='btn btn-link'
+                  disabled={selected.course === null}
+                  onClick={() => setSelected(DEFAULT_SELECTED)}
+                >
+                  Clear selections
+                </button>
+              </div>
             </div>
           </div>
           <div className='card filters'>
@@ -212,6 +232,7 @@ export default function App() {
                   <Form.Check
                     checked={filters[`show${dayOfWeek}`]}
                     id={`filter-show${dayOfWeek}`}
+                    key={dayOfWeek}
                     label={`Show ${dayOfWeek}`}
                     onChange={() => toggleFilter(`show${dayOfWeek}`)}
                     type='checkbox'
@@ -253,8 +274,98 @@ export default function App() {
           </div>
         </div>
       </div>
+      <Modal onHide={() => setShowSubmitModal(false)} show={showSubmitModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>Changes</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>Please review the following changes before submitting.</p>
+          <dl>
+            <dt>Course</dt>
+            <dd>{selected.course?.name}</dd>
+          </dl>
+          <ul>
+            {showSubmitModal && displaySelected()}
+          </ul>
+        </Modal.Body>
+        <Modal.Footer>
+          <button className='btn btn-link' onClick={() => setShowSubmitModal(false)}>
+            Cancel
+          </button>
+          <button className='btn btn-success' onClick={() => setShowSubmitModal(false)}>
+            Submit
+          </button>
+        </Modal.Footer>
+      </Modal>
     </div>
   )
+
+  function displaySelected() {
+    const selectedClassroomTimeSlotIds = Object.keys(selected.assignments)
+    const selectedClassroomTimeSlots = classroomTimeSlots.filter((classroomTimeSlot) => {
+      return selectedClassroomTimeSlotIds.includes(classroomTimeSlot.id)
+    })
+    const sortedSelectedClassroomTimeSlots = selectedClassroomTimeSlots.sort((a, b) => {
+      if (a.classroom_id === b.classroom_id) {
+        return a.start_datetime > b.start_datetime ? 1 : -1
+      }
+      return a.classroom_id > b.classroom_id ? 1 : -1
+    })
+    const timeRangeDisplays = []
+    let currentClassroom = null
+    let currentEnd = null
+    let currentStart = null
+    for (const selectedClassroomTimeSlot of sortedSelectedClassroomTimeSlots) {
+      const differentClassroom = currentClassroom === null || currentClassroom.id !== selectedClassroomTimeSlot.id
+      if (differentClassroom || currentStart === null) {
+        currentClassroom = classroomById[selectedClassroomTimeSlot.classroom_id]
+        currentEnd = selectedClassroomTimeSlot.end_datetime
+        currentStart = selectedClassroomTimeSlot.start_datetime
+      }
+      if (currentEnd === selectedClassroomTimeSlot.start_datetime) {
+        timeRangeDisplays.pop()
+        currentEnd = selectedClassroomTimeSlot.end_datetime
+      }
+      timeRangeDisplays.push(
+        <li>Classroom "{currentClassroom.name}" {currentStart.format('ddd MMM D, YYYY')} - {currentEnd.format('ddd MMM D, YYYY')}</li>
+      )
+    }
+    return timeRangeDisplays
+  }
+
+  // function displaySelected2() {
+  //   const sectionToCTSMapping = (
+  //     Object
+  //       .entries(selected.assignments)
+  //       .reduce((accumulator, [classroomTimeSlotId, courseSection]) => ({
+  //         ...accumulator,
+  //         [courseSection?.id]: [
+  //           ...(accumulator[courseSection?.id] ?? []),
+  //           classroomTimeSlotId,
+  //         ],
+  //       }), {})
+  //   )
+  //   return (
+  //     <ul>
+  //       {Object.entries(sectionToCTSMapping).map(([courseSectionId, classroomTimeSlotIds]) => {
+  //         if (courseSectionId === null) {
+  //           return (
+  //             <li>
+  //               To remove
+  //             </li>
+  //           )
+  //         }
+  //         if (classroomTimeSlotIds.length === 0) {
+  //
+  //         }
+  //       }
+  //         const courseSection = selected.assignments[classroomTimeSlotIds]
+  //
+  //         <li></li>
+  //       }
+  //     </ul>
+  //   )
+  // }
 
   function getClassroomClassNames(classroom, header=false) {
     const classNames = []
@@ -307,12 +418,12 @@ export default function App() {
     }
 
     // Is selected course
-    if (classroomTimeSlot.course_id === selectedCourse?.id) {
+    if (classroomTimeSlot.course_id === selected.course?.id) {
       classNames.push('selected-course')
     }
 
     // Interactivity
-    if (selectedCourse !== null) {
+    if (selected.course !== null && selected.courseSection !== null) {
       classNames.push('clickable')
     }
     if (selectedClassroomTimeSlotIds.includes(classroomTimeSlot.id)) {
@@ -324,7 +435,7 @@ export default function App() {
 
   function getCourseClassNames(course) {
     const classNames = []
-    const isSelectedCourse = course.id === selectedCourse?.id
+    const isSelectedCourse = course.id === selected.course?.id
 
     // General styling
     classNames.push('btn')
@@ -339,6 +450,17 @@ export default function App() {
     return classNames.join(' ')
   }
 
+  function getCourseSectionClassNames(section) {
+    const classNames = []
+    const isSelectedCourseSection = section.id === selected.courseSection?.id
+
+    // General styling
+    classNames.push('btn')
+    classNames.push(`btn-${isSelectedCourseSection ? 'info' : 'secondary'}`)
+
+    return classNames.join(' ')
+  }
+
   function getScheduledSectionsCount(course) {
     return classroomTimeSlots.filter((classroomTimeSlot) => (
       classroomTimeSlot.course_id === course.id
@@ -346,24 +468,42 @@ export default function App() {
   }
 
   function selectClassroomTimeSlot(classroomTimeSlot) {
-    if (selectedClassroomTimeSlotIds.includes(classroomTimeSlot.id)) {
-      setSelectedClassroomTimeSlots(
-        selectedClassroomTimeSlots.filter(
-          (selectedClassroomTimeSlot) => selectedClassroomTimeSlot.id !== classroomTimeSlot.id
-        )
-      )
+    if (Object.keys(selected.assignments).includes(classroomTimeSlot.id)) {
+      // This classroomTimeSlot is currently selected
+      if (classroomTimeSlot.course_section_id) {
+        // This classroomTimeSlot already has an assignment, so we should include it in selections as null to reflect
+        // the unassignment of this classroomTimeSlot
+        setSelected({...selected, assignments: {...selected.assignments, [classroomTimeSlot.id]: null}})
+      } else {
+        // This classroomTimeSlot did not already have an assignment, so we can just remove it from selections since we
+        // we are not changing state
+        const newSelectedAssignments = selected.assignments
+        delete newSelectedAssignments[classroomTimeSlot.id]
+        setSelected({...selected, assignments: newSelectedAssignments})
+      }
     } else {
-      setSelectedClassroomTimeSlots([...selectedClassroomTimeSlots, classroomTimeSlot])
+      // This classroomTimeSlot is not currently selected
+      const newSelectedAssignments = selected.assignments
+      newSelectedAssignments[classroomTimeSlot.id] = selected.courseSection
+      setSelected({...selected, assignments: newSelectedAssignments})
     }
   }
 
   function selectCourse(course) {
-    if (selectedCourse?.id === course.id) {
-      setSelectedCourse(null)
+    if (selected.course?.id === course.id) {
+      setSelected(DEFAULT_SELECTED)
     } else {
-      setSelectedCourse(course)
+      setSelected({...selected, course})
     }
-    setSelectedClassroomTimeSlots([])
+  }
+
+  function selectCourseSection(courseSection, event) {
+    event.stopPropagation()
+    if (selected.courseSection?.id === courseSection.id) {
+      setSelected({...selected, courseSection: null})
+    } else {
+      setSelected({...selected, courseSection})
+    }
   }
 
   function setTextSearchFilter(filterName, filterText) {
@@ -371,7 +511,7 @@ export default function App() {
   }
 
   function shouldShowCourse(course) {
-    if (selectedCourse?.id === course.id) {
+    if (selected.course?.id === course.id) {
       return true
     }
     if (filters.hideFullyScheduledCourses) {
@@ -410,7 +550,7 @@ export default function App() {
   }
 
   async function submitData() {
-    const data = {"course_id": "","time_slot": selectedClassroomTimeSlots}
+    const data = {"course_id": "","time_slot": []}
     const response = await secureFetch(
       `${process.env.REACT_APP_API_BASE_URL}/api/v0/classroom-time-slots/`,
       {

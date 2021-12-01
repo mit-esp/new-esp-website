@@ -37,7 +37,7 @@ class ClassroomTimeSlotApiView(SerializerResponseMixin, BaseListView):
     #todo: protect with auth and admin permissions
     model = ClassroomTimeSlot
     serializer_class = ClassroomTimeSlotSerializer
-    queryset = ClassroomTimeSlot.objects.all().select_related("course_section__course")
+    queryset = ClassroomTimeSlot.objects.all().select_related("course_section__course", "time_slot")
 
     def post(self, *args, **kwargs):
 
