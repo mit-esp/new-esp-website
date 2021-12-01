@@ -21,7 +21,7 @@
   <div class="list-group">
     {% for course_registration in course_registrations %}
       {% with course_section=course_registration.course_section %}
-        {% include 'student/components/course_card.html' %}
+        {% include 'student/components/registered_course_card.html' %}
       {% endwith %}
     {% endfor %}
   </div>

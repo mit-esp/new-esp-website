@@ -12,7 +12,7 @@
   <div class="list-group col-md-6">
     {% for step in program_stage_steps %}
       {% if step.display_after_completion or step.id not in completed_steps %}
-        <a href="{% url step.step_key registration_id=programregistration.id step_id=step.id %}" class="list-group-item d-flex{% if step.id in completed_steps and not step.display_after_completion %} disabled{% endif %}">
+        <a href="{% url step.step_key registration_id=programregistration.id step_id=step.id %}" class="list-group-item d-flex{% if step.id in completed_steps and not step.allow_changes_after_completion %} disabled{% endif %}">
           <span {% if step.required_for_stage_completion %}class="fw-bold" {% endif %}>{{ step.get_display_name }}</span>
           {% if step.id in completed_steps %}<div class="ms-auto badge bg-success rounded-pill">Completed</div>{% endif %}
         </a>
@@ -24,20 +24,7 @@
     <h2>Registered Courses</h2>
     <div class="list-group">
     {% for course_registration in course_registrations %}
-      <div class="list-group-item">
-        <div class="list-group-item-heading d-flex">
-          <span class="card-title fw-bold">{{ course_registration.course_section}}</span>
-        </div>
-        <div class="list-group-item-text">
-          <div>{{ course_registration.course_section.get_section_times|format_time_slots }}</div>
-          <div>
-            (Co-)Teachers:
-            {% for teacher in course_registration.course_section.course.teachers.all %}
-              {{ teacher.teacher_registration.user.first_name }} {{ teacher.teacher_registration.user.last_name }}{% if not forloop.last %}, {% endif %}
-            {% endfor %}
-          </div>
-        </div>
-      </div>
+      {% include 'student/components/registered_course_card.html' with course_section=course_registration.course_section %}
     {% endfor %}
     </div>
   {% endif %}

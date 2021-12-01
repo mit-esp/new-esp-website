@@ -3,5 +3,15 @@
 {% block title %}Edit Courses{% endblock %}
 
 {% block content %}
-
+   <h1>Add Course</h1>
+  {% if registration_to_swap %}
+    <p>
+      The course you select will permanently replace your existing registration for
+      {{ registration_to_swap.course_section }}
+    </p>
+  {% endif %}
+  <h2>Available Courses</h2>
+  {% for course_section in available_courses %}
+    {% include 'student/components/available_course_card.html' %}
+  {% endfor %}
 {% endblock %}

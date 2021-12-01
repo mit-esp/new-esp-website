@@ -1,7 +1,8 @@
 import json
 
 from django.contrib import messages
-from django.db.models import Count, F, OuterRef, Subquery
+from django.db import transaction
+from django.db.models import Count, Exists, F, Min, OuterRef, Subquery
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
@@ -16,7 +17,7 @@ from esp.constants import StudentRegistrationStepType
 from esp.forms import UpdateStudentProfileForm
 from esp.models.course_scheduling import CourseSection
 from esp.models.program import (Course, PreferenceEntryCategory,
-                                PreferenceEntryRound, Program)
+                                PreferenceEntryRound, Program, TimeSlot)
 from esp.models.program_registration import (ClassRegistration,
                                              CompletedRegistrationStep,
                                              ProgramRegistration,
@@ -72,11 +73,16 @@ class ProgramRegistrationStageView(PermissionRequiredMixin, DetailView):
         context["program_stage"] = self.program_stage
         context["program_stage_steps"] = self.program_stage.steps.all()
         context["completed_steps"] = self.object.completed_steps.values_list("step_id", flat=True)
-        context["course_registrations"] = (
+        course_registrations = list(
             self.object.class_registrations.filter(confirmed_on__isnull=False)
-            .select_related("course_section", "course_section__course")
-            .prefetch_related("course_section__course__teachers__teacher_registration__user")
+            .annotate(start_time=Min("course_section__time_slots__time_slot__start_datetime"))
+            .order_by("start_time")
+            .select_related("course_section", "course_section__course", "course_section__course__program")
+            .prefetch_related(
+                "course_section__time_slots__time_slot", "course_section__course__teachers__teacher_registration__user"
+            )
         )
+        context["course_registrations"] = course_registrations
         return context
 
 
@@ -211,7 +217,7 @@ class ConfirmAssignedCoursesView(RegistrationStepBaseView):
         return context
 
     def post(self, *args, **kwargs):
-        self.object.courses.all().update(confirmed_on=timezone.now())
+        self.object.class_registrations.all().update(confirmed_on=timezone.now())
         # TODO: Send confirmation email
         return redirect("complete_registration_step", registration_id=self.object.id, step_id=self.registration_step.id)
 
@@ -351,17 +357,48 @@ class EditAssignedCoursesView(PermissionRequiredMixin, SingleObjectMixin, Templa
         swap_id = self.request.GET.get('swap')
         if swap_id:
             context["registration_to_swap"] = ClassRegistration.objects.get(id=swap_id)
-        context["student_unavailable_timeslots"] = (
-            self.object.class_registrations.exclude(id=swap_id).values("course_section__time_slots__id")
+        context["available_courses"] = self.get_available_courses(swap_id)
+        return context
+
+    def post(self, request, *args, **kwargs):
+        course_section_id = self.request.POST.get("course_section_id")
+        if not course_section_id:
+            messages.error(self.request, message='Invalid submission')
+        with transaction.atomic():
+            ClassRegistration.objects.filter(
+                program_registration__program_id=self.object.program_id).select_for_update()
+            context = self.get_context_data()
+            try:
+                context["available_courses"].get(id=course_section_id)
+                ClassRegistration.objects.create(
+                    course_section_id=course_section_id, program_registration_id=self.object.id,
+                    created_by_lottery=False, confirmed_on=timezone.now()
+                )
+                if context.get("registration_to_swap"):
+                    registration = context["registration_to_swap"]
+                    registration.delete()
+                if self.request.GET.get('next'):
+                    return redirect(self.request.GET.get('next'))
+                return redirect('current_registration_stage')
+            except CourseSection.DoesNotExist:
+                messages.error(self.request, 'This course is no longer available')
+
+    def get_available_courses(self, swap_id):
+        student_unavailable_timeslots = (
+            self.object.class_registrations.exclude(id=swap_id).values("course_section__time_slots__time_slot_id")
         )
-        student_courses = self.object.class_registrations.values('course_id')
-        context["available_courses"] = (
+        student_courses = self.object.class_registrations.values('course_section__course_id')
+        return (
             CourseSection.objects.filter(course__program_id=self.object.program_id)
             .exclude(course_id__in=student_courses)
             .annotate(num_registrations=Count("registrations"))
             .filter(num_registrations__lt=F('course__max_section_size'))
-        ).prefetch_related('time_slots')
-        return context
+            .annotate(student_unavailable=Exists(
+                TimeSlot.objects.filter(
+                    id__in=student_unavailable_timeslots, classrooms__course_section_id=OuterRef('id')
+                ))
+            )
+        )
 
 
 class DeleteCourseRegistrationView(PermissionRequiredMixin, SingleObjectMixin, View):
