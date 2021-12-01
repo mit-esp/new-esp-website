@@ -29,10 +29,15 @@
         &:hover {
           background: $light !important;
         }
-        &.selected {
+      }
+      & .selected {
+          background: $info !important;
+        &.clickable {
           background: $primary !important;
+          color: #ffffff !important;
         }
       }
+
 
       & .availability {
         &.available {
@@ -43,6 +48,9 @@
         }
         &.unavailable {
           background: #c9c9c9;
+        }
+        &.descheduled {
+          background: #ffcfcf !important;
         }
       }
 

@@ -92,6 +92,12 @@ export default function App() {
   // ), [timeSlots])
 
   const selectedClassroomTimeSlotIds = Object.keys(selected.assignments)
+  const selectedAssignedClassroomTimeSlotIds = (
+    Object
+      .entries(selected.assignments)
+      .filter(([_, courseSectionId]) => courseSectionId !== null)
+      .map(([classroomTimeSlotId, _]) => classroomTimeSlotId)
+  )
 
   return (
     <div className='scheduler'>
@@ -159,18 +165,22 @@ export default function App() {
                           />
                           {classrooms.map((classroom) => {
                             const classroomTimeSlot = getClassroomTimeSlot(timeSlot.id, classroom.id)
-                            const available = classroomTimeSlot.id !== undefined && !classroomTimeSlot.course_section_id
                             return (
                               <td
                                 className={getClassroomTimeSlotClassNames(classroomTimeSlot, classroom)}
                                 key={`${timeSlot.id}-${classroom.id}`}
                                 onClick={
-                                  available && selected.course !== null && selected.courseSection !== null
+                                  isClickable(classroomTimeSlot)
                                     ? () => selectClassroomTimeSlot(classroomTimeSlot)
                                     : null
                                 }
                               >
-                                {classroomTimeSlot.course_name}
+                                {isSelected(classroomTimeSlot)
+                                  ? `Section ${selected.assignments[classroomTimeSlot.id]?.display_id}`
+                                  : isDescheduled(classroomTimeSlot)
+                                    ? 'unscheduled'
+                                    : classroomTimeSlot.course_name
+                                }
                               </td>
                             )
                           })}
@@ -301,7 +311,6 @@ export default function App() {
   )
 
   function displaySelected() {
-    const selectedClassroomTimeSlotIds = Object.keys(selected.assignments)
     const selectedClassroomTimeSlots = classroomTimeSlots.filter((classroomTimeSlot) => {
       return selectedClassroomTimeSlotIds.includes(classroomTimeSlot.id)
     })
@@ -316,18 +325,22 @@ export default function App() {
     let currentEnd = null
     let currentStart = null
     for (const selectedClassroomTimeSlot of sortedSelectedClassroomTimeSlots) {
-      const differentClassroom = currentClassroom === null || currentClassroom.id !== selectedClassroomTimeSlot.id
-      if (differentClassroom || currentStart === null) {
+      const differentClassroom = currentClassroom === null || currentClassroom.id !== selectedClassroomTimeSlot.classroom_id
+      if (differentClassroom || currentStart === null ) {
         currentClassroom = classroomById[selectedClassroomTimeSlot.classroom_id]
-        currentEnd = selectedClassroomTimeSlot.end_datetime
         currentStart = selectedClassroomTimeSlot.start_datetime
       }
-      if (currentEnd === selectedClassroomTimeSlot.start_datetime) {
+      const continuation = currentEnd !== null && currentEnd.isSame(selectedClassroomTimeSlot.start_datetime)
+      if (continuation) {
         timeRangeDisplays.pop()
-        currentEnd = selectedClassroomTimeSlot.end_datetime
+      } else {
+        currentStart = selectedClassroomTimeSlot.start_datetime
       }
+      currentEnd = selectedClassroomTimeSlot.end_datetime
+      const startTimeFormat = 'M/D h:mma'
+      let endTimeFormat = currentStart.date() === currentEnd.date() ? 'h:mma' : startTimeFormat
       timeRangeDisplays.push(
-        <li>Classroom "{currentClassroom.name}" {currentStart.format('ddd MMM D, YYYY')} - {currentEnd.format('ddd MMM D, YYYY')}</li>
+        <li>Classroom "{currentClassroom.name}" {currentStart.format(startTimeFormat)} - {currentEnd.format(endTimeFormat)}</li>
       )
     }
     return timeRangeDisplays
@@ -423,11 +436,14 @@ export default function App() {
     }
 
     // Interactivity
-    if (selected.course !== null && selected.courseSection !== null) {
+    if (isClickable(classroomTimeSlot)) {
       classNames.push('clickable')
     }
-    if (selectedClassroomTimeSlotIds.includes(classroomTimeSlot.id)) {
+    if (isSelected(classroomTimeSlot)) {
       classNames.push('selected')
+    }
+    if (isDescheduled(classroomTimeSlot)) {
+      classNames.push('descheduled')
     }
 
     return classNames.join(' ')
@@ -467,26 +483,60 @@ export default function App() {
     )).length
   }
 
+  function isClickable(classroomTimeSlot) {
+    // No available ClassroomTimeSlot means it's not available for scheduling
+    if (classroomTimeSlot?.id === undefined) return false
+
+    // Not in selection context
+    if (selected.course === null) return false
+    if (selected.courseSection === null) return false
+
+    if (classroomTimeSlot?.course_section_id === null) {
+      // ClassroomTimeSlot is not yet taken, so it's clickable as long as no other section has it selected or if it's
+      // selected for this section
+      return (
+        selected.assignments[classroomTimeSlot.id] === undefined
+        || selected.courseSection.id === selected.assignments[classroomTimeSlot.id]?.id
+      )
+    } else {
+      /// ClassroomTimeSlot is taken, so it's only clickable if it's taken by this section
+      return classroomTimeSlot?.course_section_id === selected.courseSection.id
+    }
+  }
+
+  function isDescheduled(classroomTimeSlot) {
+    return selected.assignments[classroomTimeSlot?.id] === null
+  }
+
+  function isSelected(classroomTimeSlot) {
+    return (
+      selectedAssignedClassroomTimeSlotIds.includes(classroomTimeSlot?.id)
+      || (
+        classroomTimeSlot?.course_section_id === selected.courseSection?.id
+        && selected.assignments[classroomTimeSlot?.id] !== null
+      )
+    )
+  }
+
   function selectClassroomTimeSlot(classroomTimeSlot) {
-    if (Object.keys(selected.assignments).includes(classroomTimeSlot.id)) {
-      // This classroomTimeSlot is currently selected
-      if (classroomTimeSlot.course_section_id) {
-        // This classroomTimeSlot already has an assignment, so we should include it in selections as null to reflect
-        // the unassignment of this classroomTimeSlot
-        setSelected({...selected, assignments: {...selected.assignments, [classroomTimeSlot.id]: null}})
+    const newAssignments = {...selected.assignments}
+    if (classroomTimeSlot.course_section_id === selected.courseSection.id) {
+      if (selected.assignments[classroomTimeSlot.id] === null) {
+        // Deleting since it is an already saved assignment
+        newAssignments[classroomTimeSlot.id] = selected.courseSection
       } else {
-        // This classroomTimeSlot did not already have an assignment, so we can just remove it from selections since we
-        // we are not changing state
-        const newSelectedAssignments = selected.assignments
-        delete newSelectedAssignments[classroomTimeSlot.id]
-        setSelected({...selected, assignments: newSelectedAssignments})
+        // Marking as null since we're unassigning a saved assignment
+        newAssignments[classroomTimeSlot.id] = null
       }
     } else {
-      // This classroomTimeSlot is not currently selected
-      const newSelectedAssignments = selected.assignments
-      newSelectedAssignments[classroomTimeSlot.id] = selected.courseSection
-      setSelected({...selected, assignments: newSelectedAssignments})
+      if (selectedAssignedClassroomTimeSlotIds.includes(classroomTimeSlot.id)) {
+        // We're deselecting
+        delete newAssignments[classroomTimeSlot.id]
+      } else {
+        newAssignments[classroomTimeSlot.id] = selected.courseSection
+      }
     }
+    setSelected({...selected, assignments: newAssignments})
   }
 
   function selectCourse(course) {
@@ -499,10 +549,23 @@ export default function App() {
 
   function selectCourseSection(courseSection, event) {
     event.stopPropagation()
+    const newAssignments = {...selected.assignments}
     if (selected.courseSection?.id === courseSection.id) {
-      setSelected({...selected, courseSection: null})
+      // Also deselect any already saved assignments
+      for (const classroomTimeSlot of classroomTimeSlots) {
+        if (classroomTimeSlot.course_section_id === newAssignments[classroomTimeSlot.id]) {
+          delete newAssignments[classroomTimeSlot.id]
+        }
+      }
+      setSelected({...selected, assignments: newAssignments, courseSection: null})
     } else {
-      setSelected({...selected, courseSection})
+      // Also set already saved assignments
+      for (const classroomTimeSlot of classroomTimeSlots) {
+        if (classroomTimeSlot.course_section_id === courseSection.id) {
+          newAssignments[classroomTimeSlot.id] = courseSection
+        }
+      }
+      setSelected({...selected, assignments: newAssignments, courseSection})
     }
   }
 
