@@ -387,10 +387,11 @@ class EditAssignedCoursesView(PermissionRequiredMixin, SingleObjectMixin, Templa
         student_unavailable_timeslots = (
             self.object.class_registrations.exclude(id=swap_id).values("course_section__time_slots__time_slot_id")
         )
-        student_courses = self.object.class_registrations.values('course_section__course_id')
+        student_courses = self.object.class_registrations.exclude(id=swap_id).values('course_section__course_id')
         return (
-            CourseSection.objects.filter(course__program_id=self.object.program_id)
-            .exclude(course_id__in=student_courses)
+            CourseSection.objects.exclude(registrations__isnull=False, registrations__id=swap_id)
+            .filter(course__program_id=self.object.program_id)
+            .exclude(course_id__in=student_courses).distinct()
             .annotate(num_registrations=Count("registrations"))
             .filter(num_registrations__lt=F('course__max_section_size'))
             .annotate(student_unavailable=Exists(
@@ -402,7 +403,7 @@ class EditAssignedCoursesView(PermissionRequiredMixin, SingleObjectMixin, Templa
 
 
 class DeleteCourseRegistrationView(PermissionRequiredMixin, SingleObjectMixin, View):
-    permission_type = PermissionType.student_register_for_program
+    permission = PermissionType.student_register_for_program
     model = ClassRegistration
 
     def get_queryset(self):
@@ -416,6 +417,9 @@ class DeleteCourseRegistrationView(PermissionRequiredMixin, SingleObjectMixin, V
             course_registration.delete()
         except ClassRegistration.DoesNotExist:
             messages.error(request, message='Action not allowed')
+        if self.request.GET.get('next'):
+            return redirect(self.request.GET.get('next'))
+        return redirect('current_registration_stage')
 
 
 class RegistrationStepCompleteView(PermissionRequiredMixin, SingleObjectMixin, View):

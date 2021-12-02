@@ -21,7 +21,12 @@
   </div>
   <br>
   {% if course_registrations %}
-    <h2>Registered Courses</h2>
+    <h2 class="d-flex">
+      Registered Courses
+      <a class="btn btn-outline-primary ms-auto" href="{% url 'edit_student_courses' registration_id=programregistration.id %}">
+        Add courses
+      </a>
+    </h2>
     <div class="list-group">
     {% for course_registration in course_registrations %}
       {% include 'student/components/registered_course_card.html' with course_section=course_registration.course_section %}

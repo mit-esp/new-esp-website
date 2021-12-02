@@ -1,7 +1,7 @@
 {% extends 'shared/course_card_base.html' %}
 
 {% block course_actions %}
-  <form action="{% url 'delete_course_registration' pk=course_registration.id  %}" method="post">
+  <form action="{% url 'delete_course_registration' pk=course_registration.id  %}?next={{ request.get_full_path }}" method="post">
     {% csrf_token %}
     <button class="btn btn-outline-danger btn-sm" type="submit">Remove</button>
   </form>
