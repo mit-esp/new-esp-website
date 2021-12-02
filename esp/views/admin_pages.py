@@ -5,11 +5,13 @@ from django.contrib import messages
 from django.core.exceptions import FieldError
 from django.core.mail import send_mail
 from django.db.models import Count, Max
+from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import (CreateView, FormView, ListView, TemplateView,
                                   UpdateView)
 from django.views.generic.detail import SingleObjectMixin
+from django.views.generic.edit import FormMixin
 
 from common.constants import PermissionType, UserType
 from common.forms import CrispyFormsetHelper
@@ -17,7 +19,8 @@ from common.models import User
 from common.views import PermissionRequiredMixin
 from config.settings import DEFAULT_FROM_EMAIL
 from esp.forms import (ProgramForm, ProgramRegistrationStepFormset,
-                       ProgramStageForm, TeacherCourseForm, SendEmailForm)
+                       ProgramStageForm, TeacherCourseForm, QuerySendEmailForm,
+                       StudentSendEmailForm, TeacherSendEmailForm)
 from esp.lottery import run_program_lottery
 from esp.models.program import Course, Program, ProgramStage
 ######################################
@@ -155,24 +158,87 @@ class ProgramLotteryView(PermissionRequiredMixin, SingleObjectMixin, TemplateVie
         return redirect("program_lottery", pk=self.kwargs["pk"])
 
 
-class SendEmailsView(PermissionRequiredMixin, FormView):
+class SendEmailsView(PermissionRequiredMixin, FormMixin, TemplateView):
     permission = PermissionType.send_email
-    form_class = SendEmailForm
     template_name = "esp/send_email.html"
     success_url = reverse_lazy('admin_dashboard')
     mailing_list = None
+    forms = {
+        'query_form': QuerySendEmailForm,
+        'student_form': StudentSendEmailForm,
+        'teacher_form': TeacherSendEmailForm,
+    }
+
+    def get(self, request, *args, **kwargs):
+        return self.render_to_response(self.forms)
+
+    def get_form(self, post_request):
+        """Return an instance of the form to be used in this view."""
+        form_class = None
+        for name, _ in self.forms.items():
+            if name in post_request:
+                form_class = self.forms[name]
+        if form_class is None:
+            raise Exception
+        return form_class(**self.get_form_kwargs())
+
+    def post(self, request, *args, **kwargs):
+        """
+        Handle POST requests: instantiate a form instance with the passed
+        POST variables and then check if it's valid.
+        """
+        form = self.get_form(request.POST)
+        if form.is_valid():
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
 
     def form_valid(self, form):
-        try:
-            query = form.cleaned_data['query'].replace(' ', '')
-            kwargs = {}
-            for arg in query.split(','):
-                x, y = arg.split('=')
-                kwargs[x] = y
-            to_emails = User.objects.filter(**kwargs).values_list('email', flat=True)
-        except (FieldError, ValueError) as e:
-            form.add_error('query', 'Query is not a valid format')
+        """
+        Ensures that the inputted query is valid. The form takes in a list of comma separated
+        Django clauses on the User model that will be ANDed together to form one query on the
+        User model. Any spaces will be removed before parsing. If any part of any of the clauses
+        is not formatted correctly, the form will be invalid.
+        """
+        print(type(form))
+        print(form.cleaned_data)
+        to_emails = []
+        if form is QuerySendEmailForm:
+            try:
+                query = form.cleaned_data['query'].replace(' ', '')
+                kwargs = {}
+                for arg in query.split(','):
+                    x, y = arg.split('=')
+                    kwargs[x] = y
+                to_emails = User.objects.filter(**kwargs).values_list('email', flat=True)
+            except (FieldError, ValueError) as e:
+                form.add_error('query', 'Query is not a valid format')
+                return super().form_invalid(form)
+        elif form is TeacherSendEmailForm:
+            teachers = User.objects.filter(user_type=UserType.teacher)
+            if form.cleaned_data['submit_one_class']:
+                 pass
+            if form.cleaned_data['difficulty']:
+                 pass
+            if form.cleaned_data['registration_step']:
+                 pass
+            to_emails.append(teachers.value_list('email', flat=True))
+        elif form is StudentSendEmailForm:
+            students = User.objects.filter(user_type=UserType.teacher)
+            if form.cleaned_data['registration_step']:
+                pass
+            to_emails.append(students.value_list('email', flat=True))
+            if form.cleaned_data['guardians']:
+                to_emails.append(students.value_list('guardian_email', flat=True))
+            if form.cleaned_data['emergency_contact']:
+                to_emails.append(students.value_list('emergency_contact_email', flat=True))
+        else:
+            raise Exception
+
+        # if mailing list is empty, return to the form
+        if not to_emails:
             return super().form_invalid(form)
+
         # send emails to mailing list
         subject = form.cleaned_data['subject']
         from_email = DEFAULT_FROM_EMAIL
