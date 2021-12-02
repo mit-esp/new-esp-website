@@ -389,11 +389,13 @@ class EditAssignedCoursesView(PermissionRequiredMixin, SingleObjectMixin, Templa
         )
         student_courses = self.object.class_registrations.exclude(id=swap_id).values('course_section__course_id')
         return (
-            CourseSection.objects.exclude(registrations__isnull=False, registrations__id=swap_id)
+            CourseSection.objects.exclude(registrations__id=swap_id, registrations__isnull=False)
             .filter(course__program_id=self.object.program_id)
             .exclude(course_id__in=student_courses).distinct()
             .annotate(num_registrations=Count("registrations"))
             .filter(num_registrations__lt=F('course__max_section_size'))
+            .annotate(start_time=Min("time_slots__time_slot__start_datetime"))
+            .order_by("start_time")
             .annotate(student_unavailable=Exists(
                 TimeSlot.objects.filter(
                     id__in=student_unavailable_timeslots, classrooms__course_section_id=OuterRef('id')
