@@ -206,7 +206,7 @@ class AddCoTeacherForm(CrispyFormMixin, forms.Form):
         ).distinct()
 
 
-class AssignClassroomTimeSlotForm(forms.Form):
+class AssignClassroomTimeSlotsForm(forms.Form):
     data = forms.JSONField()
 
     def clean_data(self):
@@ -219,7 +219,7 @@ class AssignClassroomTimeSlotForm(forms.Form):
             # Todo: Add sentry notification; this error is not intended for the user
             raise ValidationError("Sorry, something went wrong")
         self._validate_ids(ClassroomTimeSlot, 'classroom_time_slot_id', serializer.data)
-        self._validate_ids(CourseSection, 'course_section_id', serializer.data)
+        self._validate_ids(CourseSection, 'course_section_id', serializer.data, ignore_none=True)
         return serializer.data
 
     def save(self):
@@ -236,9 +236,11 @@ class AssignClassroomTimeSlotForm(forms.Form):
                         .update(course_section_id=datum["course_section_id"])
                 )
 
-    def _validate_ids(self, Model, id_field_name, data):
-        model_ids = [getattr(datum, id_field_name) for datum in data]
-        model_count = Model.objects.filter(id__in=model_ids).count()
-        if len(data) != model_count:
+    def _validate_ids(self, Model, id_field_name, data, ignore_none=False):
+        model_ids = [datum.get(id_field_name, None) for datum in data]
+        if ignore_none:
+            model_ids = [_id for _id in model_ids if _id is not None]
+        model_count = Model.objects.filter(id__in=[_id for _id in model_ids if _id is not None]).count()
+        if len(set(model_ids)) != model_count:
             # Todo: Add sentry notification; this error is not intended for the user
             raise ValidationError("Sorry, something went wrong")

@@ -302,7 +302,7 @@ export default function App() {
           <button className='btn btn-link' onClick={() => setShowSubmitModal(false)}>
             Cancel
           </button>
-          <button className='btn btn-success' onClick={() => setShowSubmitModal(false)}>
+          <button className='btn btn-success' onClick={submitData}>
             Submit
           </button>
         </Modal.Footer>
@@ -324,13 +324,19 @@ export default function App() {
     let currentClassroom = null
     let currentEnd = null
     let currentStart = null
+    let previousUnscheduling = null;
     for (const selectedClassroomTimeSlot of sortedSelectedClassroomTimeSlots) {
       const differentClassroom = currentClassroom === null || currentClassroom.id !== selectedClassroomTimeSlot.classroom_id
       if (differentClassroom || currentStart === null ) {
         currentClassroom = classroomById[selectedClassroomTimeSlot.classroom_id]
         currentStart = selectedClassroomTimeSlot.start_datetime
       }
-      const continuation = currentEnd !== null && currentEnd.isSame(selectedClassroomTimeSlot.start_datetime)
+      const isUnscheduling = selected.assignments[selectedClassroomTimeSlot.id] === null
+      const continuation = (
+        previousUnscheduling === isUnscheduling
+        && currentEnd !== null
+        && currentEnd.isSame(selectedClassroomTimeSlot.start_datetime)
+      )
       if (continuation) {
         timeRangeDisplays.pop()
       } else {
@@ -338,47 +344,27 @@ export default function App() {
       }
       currentEnd = selectedClassroomTimeSlot.end_datetime
       const startTimeFormat = 'M/D h:mma'
-      let endTimeFormat = currentStart.date() === currentEnd.date() ? 'h:mma' : startTimeFormat
+      const endTimeFormat = currentStart.date() === currentEnd.date() ? 'h:mma' : startTimeFormat
       timeRangeDisplays.push(
-        <li>Classroom "{currentClassroom.name}" {currentStart.format(startTimeFormat)} - {currentEnd.format(endTimeFormat)}</li>
+        <li>
+          <ul className='list-unstyled'>
+            <li>
+              {isUnscheduling ? 'Unscheduling' : 'Scheduling' }{' '}
+              Section{' '}
+              {(selected.assignments[selectedClassroomTimeSlot.id] ?? selectedClassroomTimeSlot.course_section).display_id}
+            </li>
+            <li>
+              {currentStart.format(startTimeFormat)} - {currentEnd.format(endTimeFormat)}{' '}
+              ({currentEnd.diff(currentStart, 'minute', true)} minutes)
+            </li>
+            <li>Classroom "{currentClassroom.name}"</li>
+          </ul>
+        </li>
       )
+      previousUnscheduling = isUnscheduling
     }
     return timeRangeDisplays
   }
-
-  // function displaySelected2() {
-  //   const sectionToCTSMapping = (
-  //     Object
-  //       .entries(selected.assignments)
-  //       .reduce((accumulator, [classroomTimeSlotId, courseSection]) => ({
-  //         ...accumulator,
-  //         [courseSection?.id]: [
-  //           ...(accumulator[courseSection?.id] ?? []),
-  //           classroomTimeSlotId,
-  //         ],
-  //       }), {})
-  //   )
-  //   return (
-  //     <ul>
-  //       {Object.entries(sectionToCTSMapping).map(([courseSectionId, classroomTimeSlotIds]) => {
-  //         if (courseSectionId === null) {
-  //           return (
-  //             <li>
-  //               To remove
-  //             </li>
-  //           )
-  //         }
-  //         if (classroomTimeSlotIds.length === 0) {
-  //
-  //         }
-  //       }
-  //         const courseSection = selected.assignments[classroomTimeSlotIds]
-  //
-  //         <li></li>
-  //       }
-  //     </ul>
-  //   )
-  // }
 
   function getClassroomClassNames(classroom, header=false) {
     const classNames = []
@@ -512,7 +498,8 @@ export default function App() {
     return (
       selectedAssignedClassroomTimeSlotIds.includes(classroomTimeSlot?.id)
       || (
-        classroomTimeSlot?.course_section_id === selected.courseSection?.id
+        (classroomTimeSlot?.course_section_id ?? null) !== null
+        && classroomTimeSlot?.course_section_id === selected.courseSection?.id
         && selected.assignments[classroomTimeSlot?.id] !== null
       )
     )
@@ -613,18 +600,23 @@ export default function App() {
   }
 
   async function submitData() {
-    const data = {"course_id": "","time_slot": []}
+    const data = Object.entries(selected.assignments).map(([classroomTimeSlotId, courseSection]) => ({
+      classroom_time_slot_id: classroomTimeSlotId,
+      course_section_id: courseSection?.id ?? null,
+    }))
     const response = await secureFetch(
-      `${process.env.REACT_APP_API_BASE_URL}/api/v0/classroom-time-slots/`,
+      `${process.env.REACT_APP_API_BASE_URL}/api/v0/assign-classroom-time-slots/`,
       {
-        body: JSON.stringify(data),
+        body: JSON.stringify({data}),
         headers: {
+          Accept: 'application/json',
           'Content-Type': 'application/json',
         },
         method: 'POST',
       }
     )
-    console.log(response.json())
+    // Todo: Handle errors and success
+    setShowSubmitModal(false)
   }
 
   function timeSlotDisplay(timeSlot, html=false) {

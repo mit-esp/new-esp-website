@@ -98,6 +98,7 @@ class ClassroomSerializer(serializers.ModelSerializer):
 class ClassroomTimeSlotSerializer(serializers.ModelSerializer):
     course_id = serializers.CharField(allow_null=True, source="course_section.course_id")
     course_name = serializers.CharField(allow_null=True, source="course_section.course.name")
+    course_section = CourseSectionSerializer(read_only=True)
     end_datetime = serializers.DateTimeField(source="time_slot.end_datetime")
     start_datetime = serializers.DateTimeField(source="time_slot.start_datetime")
 
@@ -107,6 +108,7 @@ class ClassroomTimeSlotSerializer(serializers.ModelSerializer):
             "classroom_id",
             "course_id",
             "course_name",
+            "course_section",
             "course_section_id",
             "end_datetime",
             "id",
@@ -149,4 +151,4 @@ class TimeSlotSerializer(serializers.ModelSerializer):
 
 class AssignClassroomTimeSlotSerializer(serializers.Serializer):
     classroom_time_slot_id = serializers.UUIDField(required=True)
-    course_section_id = serializers.UUIDField(required=True)
+    course_section_id = serializers.UUIDField(allow_null=True, required=True)
