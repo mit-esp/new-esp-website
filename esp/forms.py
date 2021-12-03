@@ -206,7 +206,7 @@ class AddCoTeacherForm(CrispyFormMixin, forms.Form):
 class QuerySendEmailForm(CrispyFormMixin, forms.Form):
     submit_label = "Send"
     submit_name = "query_form"
-    query = forms.CharField(label='Query', widget=forms.TextInput(attrs={'placeholder': 'user_type=student, registrations__program__stages__steps'}))
+    query = forms.CharField(label='Query', widget=forms.TextInput(attrs={'placeholder': 'user_type=student, registrations__completed_steps__step=edit_assigned_courses'}))
     subject = forms.CharField(label='Subject Line')
     body = forms.CharField(label='Email Body', widget=forms.Textarea)
 
@@ -215,8 +215,8 @@ class TeacherSendEmailForm(CrispyFormMixin, forms.Form):
     submit_label = "Send"
     submit_name = "teacher_form"
     submit_one_class = forms.BooleanField(required=False, label='Submitted at least one class')
-    difficulty = forms.ChoiceField(required=False, choices=CourseDifficulty.choices)
-    registration_step = forms.ChoiceField(required=False, choices=TeacherRegistrationStepType.choices, label='Completed this registration step')
+    difficulty = forms.ChoiceField(required=False, choices=[('', '--------'), *CourseDifficulty.choices], label='Teaches a course of a ceratin difficulty')
+    registration_step = forms.ChoiceField(required=False, choices=[('', '--------'), TeacherRegistrationStepType.choices], label='Completed this registration step')
 
     subject = forms.CharField(label='Subject Line')
     body = forms.CharField(label='Email Body', widget=forms.Textarea)
@@ -227,7 +227,7 @@ class StudentSendEmailForm(CrispyFormMixin, forms.Form):
     submit_name = "student_form"
     guardians = forms.BooleanField(required=False, label='Send to guardians')
     emergency_contact = forms.BooleanField(required=False, label='Send to emergency contact')
-    registration_step = forms.ChoiceField(required=False, choices=StudentRegistrationStepType.choices, label='Completed this registration step')
+    registration_step = forms.ChoiceField(required=False, choices=[('', '--------'), StudentRegistrationStepType.choices], label='Completed this registration step')
 
     subject = forms.CharField(label='Subject Line')
     body = forms.CharField(label='Email Body', widget=forms.Textarea)

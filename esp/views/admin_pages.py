@@ -26,7 +26,7 @@ from esp.models.program import Course, Program, ProgramStage
 ######################################
 # ADMIN DASHBOARD
 ######################################
-from esp.models.program_registration import ClassRegistration
+from esp.models.program_registration import ClassRegistration, CompletedTeacherRegistrationStep
 
 
 class AdminDashboardView(TemplateView):
@@ -165,8 +165,8 @@ class SendEmailsView(PermissionRequiredMixin, FormMixin, TemplateView):
     mailing_list = None
     forms = {
         'query_form': QuerySendEmailForm,
-        'student_form': StudentSendEmailForm,
         'teacher_form': TeacherSendEmailForm,
+        'student_form': StudentSendEmailForm,
     }
 
     def get(self, request, *args, **kwargs):
@@ -217,16 +217,16 @@ class SendEmailsView(PermissionRequiredMixin, FormMixin, TemplateView):
         elif form is TeacherSendEmailForm:
             teachers = User.objects.filter(user_type=UserType.teacher)
             if form.cleaned_data['submit_one_class']:
-                 pass
+                teachers = teachers.filter()
             if form.cleaned_data['difficulty']:
-                 pass
+                teachers = teachers.filter(teacher_registrations__courses__course__difficulty=form.cleaned_data['difficulty'])
             if form.cleaned_data['registration_step']:
-                 pass
+                teachers = teachers.filter(teacher_registrations__completed_steps__step=form.cleaned_data['registration_step'])
             to_emails.append(teachers.value_list('email', flat=True))
         elif form is StudentSendEmailForm:
             students = User.objects.filter(user_type=UserType.teacher)
             if form.cleaned_data['registration_step']:
-                pass
+                students = students.filter(registrations__completed_steps__step=form.cleaned_data['registration_step'])
             to_emails.append(students.value_list('email', flat=True))
             if form.cleaned_data['guardians']:
                 to_emails.append(students.value_list('guardian_email', flat=True))

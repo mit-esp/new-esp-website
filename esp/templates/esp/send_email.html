@@ -4,9 +4,13 @@
 
 {% block body %}
   <div>
-    <h3>Send an Email</h3>
+    <h3>Django Query Email Form</h3>
     {% crispy query_form %}
-    {% crispy student_form %}
+    <br>
+    <h3>Teacher Email form</h3>
     {% crispy teacher_form %}
+    <br>
+    <h3>Student Email form</h3>
+    {% crispy student_form %}
   </div>
 {% endblock %}
