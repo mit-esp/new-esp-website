@@ -7,6 +7,7 @@ from django.core.mail import send_mail
 from django.db.models import Count, Max
 from django.http import HttpResponse
 from django.shortcuts import redirect
+from django.template import Template, Context
 from django.urls import reverse_lazy
 from django.views.generic import (CreateView, FormView, ListView, TemplateView,
                                   UpdateView)
@@ -195,22 +196,26 @@ class SendEmailsView(PermissionRequiredMixin, FormMixin, TemplateView):
 
     def form_valid(self, form):
         """
-        Ensures that the inputted query is valid. The form takes in a list of comma separated
-        Django clauses on the User model that will be ANDed together to form one query on the
-        User model. Any spaces will be removed before parsing. If any part of any of the clauses
-        is not formatted correctly, the form will be invalid.
+        Ensures that the inputted query is valid. Each form does its own validation. If any form
+        or query is not valid then no email will be sent and the form will be reloaded
         """
         print(type(form))
         print(form.cleaned_data)
-        to_emails = []
+        to_users = None
+        guardians = False
+        emergency_contacts = False
         if form is QuerySendEmailForm:
+            # The form takes in a list of comma separated Django clauses on the User model that
+            # will be ANDed together to form one query on the User model. Any spaces will be
+            # removed before parsing. If any part of any of the clauses is not formatted
+            # correctly, the form will be invalid.
             try:
                 query = form.cleaned_data['query'].replace(' ', '')
                 kwargs = {}
                 for arg in query.split(','):
                     x, y = arg.split('=')
                     kwargs[x] = y
-                to_emails = User.objects.filter(**kwargs).values_list('email', flat=True)
+                to_users = User.objects.filter(**kwargs)
             except (FieldError, ValueError) as e:
                 form.add_error('query', 'Query is not a valid format')
                 return super().form_invalid(form)
@@ -222,34 +227,69 @@ class SendEmailsView(PermissionRequiredMixin, FormMixin, TemplateView):
                 teachers = teachers.filter(teacher_registrations__courses__course__difficulty=form.cleaned_data['difficulty'])
             if form.cleaned_data['registration_step']:
                 teachers = teachers.filter(teacher_registrations__completed_steps__step=form.cleaned_data['registration_step'])
-            to_emails.append(teachers.value_list('email', flat=True))
+            to_users.append(teachers.value_list('email', flat=True))
         elif form is StudentSendEmailForm:
             students = User.objects.filter(user_type=UserType.teacher)
             if form.cleaned_data['registration_step']:
                 students = students.filter(registrations__completed_steps__step=form.cleaned_data['registration_step'])
-            to_emails.append(students.value_list('email', flat=True))
+            to_users.append(students.value_list('email', flat=True))
             if form.cleaned_data['guardians']:
-                to_emails.append(students.value_list('guardian_email', flat=True))
+                guardians = True
             if form.cleaned_data['emergency_contact']:
-                to_emails.append(students.value_list('emergency_contact_email', flat=True))
+                emergency_contacts = True
         else:
             raise Exception
 
         # if mailing list is empty, return to the form
-        if not to_emails:
+        if not to_users:
             return super().form_invalid(form)
 
-        # send emails to mailing list
+        # send emails to mailing list, sends one at a time to account for merge fields
+        # and guardian/emergency contact emails
         subject = form.cleaned_data['subject']
         from_email = DEFAULT_FROM_EMAIL
-        body = form.cleaned_data['body']
-        send_mail(
-            subject,
-            body,
-            from_email,
-            to_emails,
-            fail_silently=False,
-        )
+        template = Template(form.cleaned_data['body'])
+        for user in to_users:
+            # this dict contains the available merge fields that you can use in sending emails
+            # add to this dict to add to the available fields you can use in emails
+            context_dict = {
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+                'email': user.email,
+            }
+            body = template.render(Context(context_dict))
+            send_mail(
+                subject,
+                body,
+                from_email,
+                user.email,
+                fail_silently=False,
+            )
+            if guardians:
+                context_dict['first_name'] = user.student_profile.guardian_first_name
+                context_dict['last_name'] = user.student_profile.guardian_last_name
+                context_dict['email'] = user.student_profile.guardian_email
+                body = template.render(Context(context_dict))
+                send_mail(
+                    subject,
+                    body,
+                    from_email,
+                    user.student_profile.guardian_email,
+                    fail_silently=False,
+                )
+            if emergency_contacts:
+                context_dict['first_name'] = user.student_profile.emergency_contact_first_name
+                context_dict['last_name'] = user.student_profile.emergency_contact_last_name
+                context_dict['email'] = user.student_profile.emergency_contact_email
+                body = template.render(Context(context_dict))
+                send_mail(
+                    subject,
+                    body,
+                    from_email,
+                    user.student_profile.emergency_contact_email,
+                    fail_silently=False,
+                )
+
         return super().form_valid(form)
 
 
