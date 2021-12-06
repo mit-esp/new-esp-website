@@ -1,7 +1,8 @@
 import {useEffect, useMemo, useState} from "react";
-import {Form, Modal} from 'react-bootstrap';
+import {Form, Modal, Toast} from 'react-bootstrap';
 import dayjs from "dayjs";
-import {secureFetch} from "./utils";
+import {loadData, secureFetch, useStateWithCallback} from "./utils";
+import {BsExclamationCircleFill, BsFillCheckCircleFill, BsInfoCircleFill} from "react-icons/all";
 
 
 const DAYS_OF_WEEK = ['Mondays', 'Tuesdays', 'Wednesdays', 'Thursdays', 'Fridays', 'Saturdays', 'Sundays']
@@ -17,6 +18,22 @@ const DEFAULT_SELECTED = {
   course: null,
   courseSection: null,
 }
+const TOAST_TYPES = {
+  secondary: 'secondary',
+  success: 'success',
+  warning: 'warning',
+}
+const DEFAULT_TOAST_OPTIONS = {
+  message: '',
+  show: false,
+  type: TOAST_TYPES.success,
+}
+const DATA_TYPES = {
+  classrooms: 'classrooms',
+  classroomTimeSlots: 'classroomTimeSlots',
+  courses: 'courses',
+  timeSlots: 'timeSlots',
+}
 
 
 export default function App() {
@@ -26,41 +43,9 @@ export default function App() {
   const [filters, setFilters] = useState(DEFAULT_FILTERS)
   const [selected, setSelected] = useState(DEFAULT_SELECTED)
   const [showSubmitModal, setShowSubmitModal] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
+  const [toastOptions, setToastOptions] = useStateWithCallback(DEFAULT_TOAST_OPTIONS)
   const [timeSlots, setTimeSlots] = useState([])
-
-  useEffect(() => {
-    loadData('/api/v0/courses/', setCourses)
-    loadData('/api/v0/classrooms/', setClassrooms)
-    loadData(
-      '/api/v0/time-slots/',
-      setTimeSlots,
-      (timeSlot) => ({
-        ...timeSlot,
-        // TODO: This converts to local time; is this appropriate?
-        end_datetime: dayjs(timeSlot.end_datetime),
-        start_datetime: dayjs(timeSlot.start_datetime),
-      })
-    )
-    loadData(
-      '/api/v0/classroom-time-slots/',
-      setClassroomTimeSlots,
-      (classroomTimeSlot) => ({
-        ...classroomTimeSlot,
-        // TODO: This converts to local time; is this appropriate?
-        end_datetime: dayjs(classroomTimeSlot.end_datetime),
-        start_datetime: dayjs(classroomTimeSlot.start_datetime),
-      })
-    )
-
-    async function loadData(endpoint, setStateFunc, processFunc) {
-      const response = await secureFetch(`${process.env.REACT_APP_API_BASE_URL}${endpoint}`)
-      let data = (await response.json()).data
-      if (processFunc !== undefined) {
-        data = data.map((datum) => processFunc(datum))
-      }
-      setStateFunc(data)
-    }
-  }, [])
 
   const classroomById = useMemo(() => (
     classrooms.reduce((accumulator, classroom) => ({...accumulator, [classroom.id]: classroom}), {})
@@ -73,7 +58,7 @@ export default function App() {
   // ), [classroomTimeSlots])
 
   /**
-   * Create a lookup table for classroomTimeSlot first by timeSlot.id, then by classrooml.id
+   * Create a lookup table for classroomTimeSlot first by timeSlot.id, then by classroom.id
    */
   const classroomTimeSlotLookupTable = useMemo(() => (
     classroomTimeSlots.reduce((accumulator, classroomTimeSlot) => (
@@ -91,13 +76,36 @@ export default function App() {
   //   timeSlots.reduce((accumulator, timeSlot) => ({...accumulator, [timeSlot.id]: timeSlot}), {})
   // ), [timeSlots])
 
-  const selectedClassroomTimeSlotIds = Object.keys(selected.assignments)
+  const classroomTimeSlotsToSubmit = classroomTimeSlots.filter((classroomTimeSlot) => {
+    if (!Object.keys(selected.assignments).includes(classroomTimeSlot.id)) {
+      return false
+    }
+    if (selected.assignments[classroomTimeSlot.id]?.id === classroomTimeSlot.course_section_id) {
+      return false
+    }
+    return true
+  })
   const selectedAssignedClassroomTimeSlotIds = (
     Object
       .entries(selected.assignments)
       .filter(([_, courseSectionId]) => courseSectionId !== null)
       .map(([classroomTimeSlotId, _]) => classroomTimeSlotId)
   )
+
+  useEffect(() => {
+    loadData('/api/v0/classrooms/', setClassrooms)
+    loadData(
+      '/api/v0/classroom-time-slots/',
+      setClassroomTimeSlots,
+      processTimeSlots,
+    )
+    loadData('/api/v0/courses/', setCourses)
+    loadData(
+      '/api/v0/time-slots/',
+      setTimeSlots,
+      processTimeSlots,
+    )
+  }, [])
 
   return (
     <div className='scheduler'>
@@ -175,12 +183,7 @@ export default function App() {
                                     : null
                                 }
                               >
-                                {isSelected(classroomTimeSlot)
-                                  ? `Section ${selected.assignments[classroomTimeSlot.id]?.display_id}`
-                                  : isDescheduled(classroomTimeSlot)
-                                    ? 'unscheduled'
-                                    : classroomTimeSlot.course_name
-                                }
+                                {getClassroomTimeSlotDisplay(classroomTimeSlot)}
                               </td>
                             )
                           })}
@@ -208,8 +211,8 @@ export default function App() {
               </dl>
               <div className='d-grid gap-2'>
                 <button
-                  className={`btn btn-${selectedClassroomTimeSlotIds.length === 0 ? 'light' : 'success'}`}
-                  disabled={selectedClassroomTimeSlotIds.length === 0}
+                  className={`btn btn-${classroomTimeSlotsToSubmit.length === 0 ? 'light' : 'success'}`}
+                  disabled={classroomTimeSlotsToSubmit.length === 0}
                   onClick={() => setShowSubmitModal(true)}
                 >
                   Preview changes
@@ -295,26 +298,45 @@ export default function App() {
             <dd>{selected.course?.name}</dd>
           </dl>
           <ul>
-            {showSubmitModal && displaySelected()}
+            {showSubmitModal && displayChangesPreview()}
           </ul>
         </Modal.Body>
         <Modal.Footer>
           <button className='btn btn-link' onClick={() => setShowSubmitModal(false)}>
             Cancel
           </button>
-          <button className='btn btn-success' onClick={submitData}>
-            Submit
+          <button className='btn btn-success' disabled={submitting} onClick={submitting ? null : submitData}>
+            Submit{submitting ? 'ting' : ''}
           </button>
         </Modal.Footer>
       </Modal>
+      <Toast
+        autohide
+        bg={toastOptions.type}
+        delay={8000}
+        onClose={() => setToastOptions({...toastOptions, show: false})}
+        show={toastOptions.show}
+      >
+        <Toast.Header>
+          <div className={`text-${toastOptions.type} me-auto`}>
+            <span hidden={toastOptions.type !== TOAST_TYPES.success}>
+              <BsFillCheckCircleFill /> Success!
+            </span>
+            <span hidden={toastOptions.type !== TOAST_TYPES.warning}>
+              <BsExclamationCircleFill /> Warning!
+            </span>
+            <span hidden={toastOptions.type !== TOAST_TYPES.secondary}>
+              <BsInfoCircleFill /> Scheduler
+            </span>
+          </div>
+        </Toast.Header>
+        <Toast.Body>{toastOptions.message}</Toast.Body>
+      </Toast>
     </div>
   )
 
-  function displaySelected() {
-    const selectedClassroomTimeSlots = classroomTimeSlots.filter((classroomTimeSlot) => {
-      return selectedClassroomTimeSlotIds.includes(classroomTimeSlot.id)
-    })
-    const sortedSelectedClassroomTimeSlots = selectedClassroomTimeSlots.sort((a, b) => {
+  function displayChangesPreview() {
+    const sortedSelectedClassroomTimeSlots = classroomTimeSlotsToSubmit.sort((a, b) => {
       if (a.classroom_id === b.classroom_id) {
         return a.start_datetime > b.start_datetime ? 1 : -1
       }
@@ -346,7 +368,7 @@ export default function App() {
       const startTimeFormat = 'M/D h:mma'
       const endTimeFormat = currentStart.date() === currentEnd.date() ? 'h:mma' : startTimeFormat
       timeRangeDisplays.push(
-        <li>
+        <li key={selectedClassroomTimeSlot.id}>
           <ul className='list-unstyled'>
             <li>
               {isUnscheduling ? 'Unscheduling' : 'Scheduling' }{' '}
@@ -398,6 +420,19 @@ export default function App() {
     return selector
   }
 
+  function getClassroomTimeSlotDisplay(classroomTimeSlot) {
+    if (!selected.course) {
+      return classroomTimeSlot.course_name
+    }
+    if (isDescheduled(classroomTimeSlot)) {
+      return 'unscheduled'
+    }
+    if (!Object.keys(selected.assignments).includes(classroomTimeSlot.id)) {
+      return ''
+    }
+    return `Section ${selected.assignments[classroomTimeSlot.id]?.display_id}`
+  }
+
   function getClassroomTimeSlotClassNames(classroomTimeSlot, classroom) {
     const classNames = []
 
@@ -419,6 +454,14 @@ export default function App() {
     // Is selected course
     if (classroomTimeSlot.course_id === selected.course?.id) {
       classNames.push('selected-course')
+    }
+
+    // Is selected course section
+    if (
+      selected.courseSection !== null
+      && selected.assignments[classroomTimeSlot.id]?.id === selected.courseSection.id
+    ) {
+      classNames.push('selected-course-section')
     }
 
     // Interactivity
@@ -505,6 +548,15 @@ export default function App() {
     )
   }
 
+  function processTimeSlots(classroomTimeSlots) {
+    return classroomTimeSlots.map((classroomTimeSlot) => ({
+      ...classroomTimeSlot,
+      // TODO: This converts to local time; is this appropriate?
+      end_datetime: dayjs(classroomTimeSlot.end_datetime),
+      start_datetime: dayjs(classroomTimeSlot.start_datetime),
+    }))
+  }
+
   function selectClassroomTimeSlot(classroomTimeSlot) {
     const newAssignments = {...selected.assignments}
     if (classroomTimeSlot.course_section_id === selected.courseSection.id) {
@@ -530,7 +582,13 @@ export default function App() {
     if (selected.course?.id === course.id) {
       setSelected(DEFAULT_SELECTED)
     } else {
-      setSelected({...selected, course})
+      const newAssignments = {...selected.assignments}
+      for (const classroomTimeSlot of classroomTimeSlots) {
+        if (classroomTimeSlot.course_id === course.id) {
+          newAssignments[classroomTimeSlot.id] = classroomTimeSlot.course_section
+        }
+      }
+      setSelected({...selected, assignments: newAssignments, course})
     }
   }
 
@@ -599,24 +657,59 @@ export default function App() {
     return true
   }
 
+  function showToast(message, type=TOAST_TYPES.secondary) {
+    if (toastOptions.show === true) {
+      setToastOptions({...toastOptions, show: false}, () => _showToast(message, type))
+    } else {
+      _showToast(message, type)
+    }
+
+    function _showToast(message, type) {
+      setToastOptions({message, show: true, type})
+    }
+  }
+
   async function submitData() {
+    setSubmitting(true)
     const data = Object.entries(selected.assignments).map(([classroomTimeSlotId, courseSection]) => ({
       classroom_time_slot_id: classroomTimeSlotId,
       course_section_id: courseSection?.id ?? null,
     }))
-    const response = await secureFetch(
-      `${process.env.REACT_APP_API_BASE_URL}/api/v0/assign-classroom-time-slots/`,
-      {
-        body: JSON.stringify({data}),
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-        method: 'POST',
-      }
+
+    let response
+    try {
+      response = await secureFetch(
+        `${process.env.REACT_APP_API_BASE_URL}/api/v0/assign-classroom-time-slots/`,
+        {
+          body: JSON.stringify({data}),
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+          method: 'POST',
+        }
+      )
+    } catch (e) {
+      return showToast('Oops! There was an issue communicating with the server.', TOAST_TYPES.warning)
+    }
+
+    if (!response.ok) {
+      return showToast('Oops! Something went wrong with submitting your data.', TOAST_TYPES.warning)
+    }
+
+    await loadData(
+      '/api/v0/classroom-time-slots/',
+      setClassroomTimeSlots,
+      _processTimeSlots,
     )
-    // Todo: Handle errors and success
-    setShowSubmitModal(false)
+    showToast('Your changes have been saved!', TOAST_TYPES.success)
+
+    function _processTimeSlots(data) {
+      setSelected(DEFAULT_SELECTED)
+      setShowSubmitModal(false)
+      setSubmitting(false)
+      return processTimeSlots(data)
+    }
   }
 
   function timeSlotDisplay(timeSlot, html=false) {

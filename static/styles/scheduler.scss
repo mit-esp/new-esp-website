@@ -30,12 +30,9 @@
           background: $light !important;
         }
       }
-      & .selected {
-          background: $info !important;
-        &.clickable {
-          background: $primary !important;
-          color: #ffffff !important;
-        }
+      & .selected-course-section {
+        background: $primary !important;
+        color: #ffffff !important;
       }
 
 
@@ -55,10 +52,11 @@
       }
 
       &.course-selected .availability {
+        &.selected,
         &.selected-course {
           background: #169d16;
         }
-        &:not(.selected-course) {
+        &:not(.selected):not(.selected-course) {
           background: #c9c9c9;
           &.available {
             background: #ffffff;
@@ -170,6 +168,20 @@
           }
         }
       }
+    }
+  }
+
+  & .toast {
+    bottom: 12px;
+    position: absolute;
+    right: 12px;
+    z-index: 99;
+
+    & .toast-header svg {
+      font-size: 16px;
+      margin-right: 6px;
+      position: relative;
+      top: -2px;
     }
   }
 }
