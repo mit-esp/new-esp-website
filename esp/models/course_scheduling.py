@@ -35,6 +35,11 @@ class CourseSection(BaseModel):
     course = models.ForeignKey(Course, related_name="sections", on_delete=models.PROTECT)
     display_id = models.IntegerField()
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["course", "display_id"], name="unique_course_section")
+        ]
+
     def save(self, *args, **kwargs):
         if not self.display_id:
             self.display_id = self.get_next_display_id()
