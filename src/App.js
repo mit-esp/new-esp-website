@@ -1,16 +1,21 @@
 import {useEffect, useMemo, useState} from "react";
-import {Form, Modal, Toast} from 'react-bootstrap';
+import {Modal, Toast} from 'react-bootstrap';
 import dayjs from "dayjs";
 import {loadData, secureFetch, useStateWithCallback} from "./utils";
 import {BsExclamationCircleFill, BsFillCheckCircleFill, BsInfoCircleFill} from "react-icons/all";
+import {CheckboxFilter, TextFilter} from "./filters";
 
 
 const DAYS_OF_WEEK = ['Mondays', 'Tuesdays', 'Wednesdays', 'Thursdays', 'Fridays', 'Saturdays', 'Sundays']
 const DEFAULT_FILTERS = {
-  classroomNameFilter: '',
-  courseNameFilter: '',
+  classroomName: '',
+  courseName: '',
+  dateEnd: '',
+  dateStart: '',
   hideUnavailableTimeSlots: false,
   hideFullyScheduledCourses: false,
+  timeEnd: '',
+  timeStart: '',
   ...Object.fromEntries(DAYS_OF_WEEK.map((dayOfWeek) => [`show${dayOfWeek}`, true])),
 }
 const DEFAULT_SELECTED = {
@@ -27,12 +32,6 @@ const DEFAULT_TOAST_OPTIONS = {
   message: '',
   show: false,
   type: TOAST_TYPES.success,
-}
-const DATA_TYPES = {
-  classrooms: 'classrooms',
-  classroomTimeSlots: 'classroomTimeSlots',
-  courses: 'courses',
-  timeSlots: 'timeSlots',
 }
 
 
@@ -233,55 +232,75 @@ export default function App() {
               <div className='filters-list'>
                 <h6>Schedule</h6>
                 <hr />
-                <Form.Check
-                  checked={filters.hideUnavailableTimeSlots}
-                  id='filter-hideUnavailableTimeSlots'
-                  label='Hide unavailable time slots'
-                  onChange={() => toggleFilter('hideUnavailableTimeSlots')}
-                  type='checkbox'
+                <CheckboxFilter
+                  filters={filters}
+                  filterKey='hideUnavailableTimeSlots'
+                  filterLabel='Hide unavailable time slots'
+                  setFilters={setFilters}
+                />
+                <TextFilter
+                  filters={filters}
+                  filterKey='dateStart'
+                  filterLabel='Show only on or after date'
+                  inputProps={{pattern: '\d{4}-\d{2}-\d{2}', type: 'date'}}
+                  setFilters={setFilters}
+                />
+                <TextFilter
+                  filters={filters}
+                  filterKey='timeStart'
+                  filterLabel='Show only on or after time'
+                  inputProps={{pattern: '[0-9]{2}:[0-9]{2}', type: 'time'}}
+                  setFilters={setFilters}
+                />
+                <TextFilter
+                  filters={filters}
+                  filterKey='dateEnd'
+                  filterLabel='Show only before date'
+                  inputProps={{pattern: '\d{4}-\d{2}-\d{2}', type: 'date'}}
+                  setFilters={setFilters}
+                />
+                <TextFilter
+                  filters={filters}
+                  filterKey='timeEnd'
+                  filterLabel='Show only before time'
+                  inputProps={{pattern: '[0-9]{2}:[0-9]{2}', type: 'time'}}
+                  setFilters={setFilters}
                 />
                 <small>Days of week</small>
                 {DAYS_OF_WEEK.map((dayOfWeek) => (
-                  <Form.Check
-                    checked={filters[`show${dayOfWeek}`]}
-                    id={`filter-show${dayOfWeek}`}
-                    key={dayOfWeek}
-                    label={`Show ${dayOfWeek}`}
-                    onChange={() => toggleFilter(`show${dayOfWeek}`)}
-                    type='checkbox'
+                  <CheckboxFilter
+                    filters={filters}
+                    filterKey={`show${dayOfWeek}`}
+                    filterLabel={`Show ${dayOfWeek}`}
+                    setFilters={setFilters}
                   />
                 ))}
                 <br />
                 <h6>Courses</h6>
                 <hr />
-                <Form.Check
-                  checked={filters.hideFullyScheduledCourses}
-                  id='filter-hideFullyScheduledCourses'
-                  label='Hide fully scheduled courses'
-                  onChange={() => toggleFilter('hideFullyScheduledCourses')}
-                  type='checkbox'
+                <CheckboxFilter
+                  filters={filters}
+                  filterKey='hideFullyScheduledCourses'
+                  filterLabel='Hide fully scheduled course'
+                  setFilters={setFilters}
                 />
-                <Form.Group className="my-2 mb-3" controlId="filter-courseNameSearch">
-                  <Form.Label>Filter by course name</Form.Label>
-                  <Form.Control
-                    onChange={(event) => setTextSearchFilter('courseNameFilter', event.target.value)}
-                    placeholder="Enter course name"
-                    type="text"
-                    value={filters.courseNameFilter}
-                  />
-                </Form.Group>
+                <TextFilter
+                  filters={filters}
+                  filterKey='courseName'
+                  filterLabel='Filter by course name'
+                  inputProps={{placeholder: 'Enter course name'}}
+                  setFilters={setFilters}
+                />
                 <br />
                 <h6>Classrooms</h6>
                 <hr />
-                <Form.Group className="my-2 mb-3" controlId="filter-classroomNameSearch">
-                  <Form.Label>Filter by classroom name</Form.Label>
-                  <Form.Control
-                    onChange={(event) => setTextSearchFilter('classroomNameFilter', event.target.value)}
-                    placeholder="Enter classroom name"
-                    type="text"
-                    value={filters.classroomNameFilter}
-                  />
-                </Form.Group>
+                <TextFilter
+                  filters={filters}
+                  filterKey='classroomName'
+                  filterLabel='Filter by classroom name'
+                  inputProps={{placeholder: 'Enter classroom name'}}
+                  setFilters={setFilters}
+                />
               </div>
             </div>
           </div>
@@ -398,8 +417,8 @@ export default function App() {
     }
 
     // Classroom search filter
-    if (filters.classroomNameFilter !== '') {
-      if (!classroom.name.toLowerCase().includes(filters.classroomNameFilter.toLowerCase())) {
+    if (filters.classroomName !== '') {
+      if (!classroom.name.toLowerCase().includes(filters.classroomName.toLowerCase())) {
         classNames.push('d-none')
       }
     }
@@ -614,10 +633,6 @@ export default function App() {
     }
   }
 
-  function setTextSearchFilter(filterName, filterText) {
-    setFilters({...filters, [filterName]: filterText})
-  }
-
   function shouldShowCourse(course) {
     if (selected.course?.id === course.id) {
       return true
@@ -628,7 +643,7 @@ export default function App() {
         return false
       }
     }
-    if (filters.courseNameFilter !== '' && !course.name.toLowerCase().includes(filters.courseNameFilter.toLowerCase())) {
+    if (filters.courseName !== '' && !course.name.toLowerCase().includes(filters.courseName.toLowerCase())) {
       return false
     }
     return true
@@ -652,6 +667,38 @@ export default function App() {
         if (dayOfWeek.startsWith(timeSlot.start_datetime.format('dddd'))) {
           return false
         }
+      }
+    }
+    // Show only after date
+    if (filters.dateStart) {
+      if (timeSlot.start_datetime.isBefore(filters.dateStart)) {
+        return false
+      }
+    }
+    // Show only after time
+    if (filters.timeStart) {
+      const [hour, minute] = filters.timeStart.split(':').map((text) => parseInt(text, 10))
+      if (
+        timeSlot.start_datetime.hour() < hour
+        || (timeSlot.start_datetime.hour() === hour && timeSlot.start_datetime.minute() < minute)
+      ) {
+        return false
+      }
+    }
+    // Show only before date
+    if (filters.dateEnd) {
+      if (timeSlot.start_datetime.isSame(filters.dateEnd) || timeSlot.start_datetime.isAfter(filters.dateEnd)) {
+        return false
+      }
+    }
+    // Show only before time
+    if (filters.timeEnd) {
+      const [hour, minute] = filters.timeEnd.split(':').map((text) => parseInt(text, 10))
+      if (
+        timeSlot.start_datetime.hour() > hour
+        || (timeSlot.start_datetime.hour() === hour && timeSlot.start_datetime.minute() >= minute)
+      ) {
+        return false
       }
     }
     return true
@@ -717,9 +764,5 @@ export default function App() {
     const startTimeDisplay = timeSlot.start_datetime.format('h:mma')
     const endTimeDisplay = timeSlot.end_datetime.format('h:mma')
     return `${dateDisplay}${html ? '<br>' : ' '}${startTimeDisplay} - ${endTimeDisplay}`
-  }
-
-  function toggleFilter(filterName) {
-    setFilters({...filters, [filterName]: !filters[filterName]})
   }
 }
