@@ -12,9 +12,6 @@
   {% else %}
     <h1>Register for {{ program }}</h1>
     <p>{{ program.description }}</p>
-    <form method="post">
-      {% csrf_token %}
-      <input type="submit" class="btn btn-primary" value="Register">
-    </form>
+    {% include 'shared/submit_button.html' with submit_label='Register' %}
   {% endif %}
 {% endblock %}

@@ -1,0 +1,13 @@
+{% extends 'shared/course_card_base.html' %}
+
+{% block course_actions %}
+  {% if course_section.student_unavailable %}
+    <span class="text-secondary">Conflicts with existing registration</span>
+  {% else %}
+    <form method="post">
+      {% csrf_token %}
+      <input type="hidden" name="course_section_id" value="{{ course_section.id }}">
+      <button type="submit" class="btn btn-primary btn-sm">Register</button>
+    </form>
+  {% endif %}
+{% endblock %}
