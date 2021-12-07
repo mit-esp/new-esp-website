@@ -8,7 +8,7 @@ from esp.views.admin_pages import (AdminDashboardView, CourseCreateView,
                                    ProgramStageUpdateView, ProgramUpdateView)
 from esp.views.scheduler import (ClassroomApiView, ClassroomTimeSlotApiView,
                                  CourseApiView, CourseSectionApiView,
-                                 SchedulerView, TimeSlotApiView)
+                                 SchedulerView, TimeSlotApiView, AssignClassroomTimeSlotsApiView)
 from esp.views.student_registration_pages import (
     CompleteSurveysView, ConfirmAssignedCoursesView,
     ConfirmRegistrationSubmissionView, DeleteCourseRegistrationView,
@@ -50,10 +50,9 @@ urlpatterns = [
     path('admin/programs/<uuid:pk>/stages/update/', ProgramStageUpdateView.as_view(), name="update_program_stage"),
     path('admin/programs/all/', ProgramListView.as_view(), name='programs'),
 
-    path('admin/classes/create/', CourseCreateView.as_view(), name='create_course'),
-    path('admin/classes/update/<uuid:pk>/', CourseUpdateView.as_view(), name='update_course'),
-    path('admin/classes/all/', CourseListView.as_view(), name='courses'),
-
+    path('admin/programs/<uuid:pk>/classes/create/', CourseCreateView.as_view(), name='create_course'),
+    path('admin/programs/<uuid:pk>/classes/update/<uuid:class_pk>/', CourseUpdateView.as_view(), name='update_course'),
+    path('admin/programs/<uuid:pk>/classes/', CourseListView.as_view(), name='courses'),
     path('admin/programs/<uuid:pk>/lottery/', ProgramLotteryView.as_view(), name="program_lottery"),
 
     # Teacher program registration views
@@ -138,7 +137,7 @@ urlpatterns = [
     path("scheduler/", SchedulerView.as_view(), name="scheduler"),  # TODO: make program specific url
     path("api/v0/classrooms/", ClassroomApiView.as_view(), name="classroom_api"),
     path("api/v0/courses/", CourseApiView.as_view(), name="course_api"),
-    path("api/v0/course-sections/", CourseSectionApiView.as_view(), name="course_section_api"),
     path("api/v0/time-slots/", TimeSlotApiView.as_view(), name="time_slot_api"),
     path("api/v0/classroom-time-slots/", ClassroomTimeSlotApiView.as_view(), name="classroom_time_slot_api"),
+    path("api/v0/assign-classroom-time-slots/", AssignClassroomTimeSlotsApiView.as_view(), name="assign_classroom_time_slots_api"),
 ]

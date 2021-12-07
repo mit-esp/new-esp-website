@@ -1,14 +1,37 @@
 import {useEffect, useMemo, useState} from "react";
-import {Form} from 'react-bootstrap';
+import {Modal, Toast} from 'react-bootstrap';
 import dayjs from "dayjs";
+import {loadData, secureFetch, useStateWithCallback} from "./utils";
+import {BsExclamationCircleFill, BsFillCheckCircleFill, BsInfoCircleFill} from "react-icons/all";
+import {CheckboxFilter, TextFilter} from "./filters";
 
 
 const DAYS_OF_WEEK = ['Mondays', 'Tuesdays', 'Wednesdays', 'Thursdays', 'Fridays', 'Saturdays', 'Sundays']
 const DEFAULT_FILTERS = {
+  classroomName: '',
+  courseName: '',
+  dateEnd: '',
+  dateStart: '',
   hideUnavailableTimeSlots: false,
   hideFullyScheduledCourses: false,
+  timeEnd: '',
+  timeStart: '',
   ...Object.fromEntries(DAYS_OF_WEEK.map((dayOfWeek) => [`show${dayOfWeek}`, true])),
-  courseNameFilter: '',
+}
+const DEFAULT_SELECTED = {
+  assignments: {},  // classroomTimeSlotId<string>:courseSection<object>
+  course: null,
+  courseSection: null,
+}
+const TOAST_TYPES = {
+  secondary: 'secondary',
+  success: 'success',
+  warning: 'warning',
+}
+const DEFAULT_TOAST_OPTIONS = {
+  message: '',
+  show: false,
+  type: TOAST_TYPES.success,
 }
 
 
@@ -17,39 +40,25 @@ export default function App() {
   const [classroomTimeSlots, setClassroomTimeSlots] = useState([])
   const [courses, setCourses] = useState([])
   const [filters, setFilters] = useState(DEFAULT_FILTERS)
-  const [selectedCourse, setSelectedCourse] = useState(null)
-  const [selectedClassroomTimeSlots, setSelectedClassromTimeSlots] = useState([])
+  const [selected, setSelected] = useState(DEFAULT_SELECTED)
+  const [showSubmitModal, setShowSubmitModal] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
+  const [toastOptions, setToastOptions] = useStateWithCallback(DEFAULT_TOAST_OPTIONS)
   const [timeSlots, setTimeSlots] = useState([])
-
-  useEffect(() => {
-    loadData('/api/v0/courses', setCourses)
-    loadData('/api/v0/classrooms', setClassrooms)
-    loadData(
-      '/api/v0/time-slots',
-      setTimeSlots,
-      (timeSlot) => ({
-        ...timeSlot,
-        // TODO: This converts to local time; is this appropriate?
-        end_datetime: dayjs(timeSlot.end_datetime),
-        start_datetime: dayjs(timeSlot.start_datetime),
-      })
-    )
-    loadData('/api/v0/classroom-time-slots', setClassroomTimeSlots)
-
-    async function loadData(endpoint, setStateFunc, processFunc) {
-      const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}${endpoint}`)
-      let data = (await response.json()).data
-      if (processFunc !== undefined) {
-        data = data.map((datum) => processFunc(datum))
-      }
-      setStateFunc(data)
-    }
-  }, [])
 
   const classroomById = useMemo(() => (
     classrooms.reduce((accumulator, classroom) => ({...accumulator, [classroom.id]: classroom}), {})
   ), [classrooms])
 
+  // const classroomTimeSlotById = useMemo(() => (
+  //   classroomTimeSlots.reduce((accumulator, classroomTimeSlot) => (
+  //     {...accumulator, [classroomTimeSlot.id]: classroomTimeSlot}
+  //   ), {})
+  // ), [classroomTimeSlots])
+
+  /**
+   * Create a lookup table for classroomTimeSlot first by timeSlot.id, then by classroom.id
+   */
   const classroomTimeSlotLookupTable = useMemo(() => (
     classroomTimeSlots.reduce((accumulator, classroomTimeSlot) => (
       {
@@ -62,13 +71,40 @@ export default function App() {
     ), {})
   ), [classroomTimeSlots])
 
-  const timeSlotById = useMemo(() => (
-    timeSlots.reduce((accumulator, timeSlot) => ({...accumulator, [timeSlot.id]: timeSlot}), {})
-  ), [timeSlots])
+  // const timeSlotById = useMemo(() => (
+  //   timeSlots.reduce((accumulator, timeSlot) => ({...accumulator, [timeSlot.id]: timeSlot}), {})
+  // ), [timeSlots])
 
-  const selectedClassroomTimeSlotIds = useMemo(() => (
-    selectedClassroomTimeSlots.map((x) => x.id)
-  ), [selectedClassroomTimeSlots])
+  const classroomTimeSlotsToSubmit = classroomTimeSlots.filter((classroomTimeSlot) => {
+    if (!Object.keys(selected.assignments).includes(classroomTimeSlot.id)) {
+      return false
+    }
+    if (selected.assignments[classroomTimeSlot.id]?.id === classroomTimeSlot.course_section_id) {
+      return false
+    }
+    return true
+  })
+  const selectedAssignedClassroomTimeSlotIds = (
+    Object
+      .entries(selected.assignments)
+      .filter(([_, courseSectionId]) => courseSectionId !== null)
+      .map(([classroomTimeSlotId, _]) => classroomTimeSlotId)
+  )
+
+  useEffect(() => {
+    loadData('/api/v0/classrooms/', setClassrooms)
+    loadData(
+      '/api/v0/classroom-time-slots/',
+      setClassroomTimeSlots,
+      processTimeSlots,
+    )
+    loadData('/api/v0/courses/', setCourses)
+    loadData(
+      '/api/v0/time-slots/',
+      setTimeSlots,
+      processTimeSlots,
+    )
+  }, [])
 
   return (
     <div className='scheduler'>
@@ -82,13 +118,24 @@ export default function App() {
               <div className='course-list d-grid'>
                 {courses.length
                   ? courses.map((course) => (
-                    <button
-                      className={`btn btn-${course.id === selectedCourse?.id ? 'primary' : 'light'} ${shouldShowCourse(course) ? '' : 'd-none'}`}
+                    <div
+                      className={getCourseClassNames(course)}
                       key={course.id}
                       onClick={() => selectCourse(course)}
                     >
-                      {course.name} ({getScheduledSectionsCount(course)}/{course.sections_count})
-                    </button>
+                      <span>{course.name} ({getScheduledSectionsCount(course)}/{course.sections_count})</span>
+                      <div className={`d-grid mt-2 ${course.id === selected.course?.id ? '' : 'd-none'}`}>
+                        {course.sections.map((section) => (
+                          <div
+                            className={getCourseSectionClassNames(section)}
+                            key={section.id}
+                            onClick={(event) => selectCourseSection(section, event)}
+                          >
+                            Section {section.display_id}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   ))
                   : <span>Loading...</span>
                 }
@@ -96,7 +143,7 @@ export default function App() {
             </div>
           </div>
         </div>
-        <div className={`calendar ${selectedCourse === null ? '' : 'course-selected'}`}>
+        <div className={`calendar ${selected.course === null ? '' : 'course-selected'}`}>
           <div className='card'>
             {classroomTimeSlots.length || classrooms.length || timeSlots.length
               ? (
@@ -106,7 +153,13 @@ export default function App() {
                       <tr>
                         <th className='sticky column header' scope='col' />
                         {classrooms.map((classroom) => (
-                          <th className='sticky header' key={classroom.id} scope='col'>{classroom.name}</th>
+                          <th
+                            className={getClassroomClassNames(classroom, true)}
+                            key={classroom.id}
+                            scope='col'
+                          >
+                            {classroom.name}
+                          </th>
                         ))}
                       </tr>
                     </thead>
@@ -119,17 +172,17 @@ export default function App() {
                           />
                           {classrooms.map((classroom) => {
                             const classroomTimeSlot = getClassroomTimeSlot(timeSlot.id, classroom.id)
-                            const available = classroomTimeSlot.id !== undefined && !classroomTimeSlot.course_section_id
                             return (
                               <td
-                                className={getClassroomTimeSlotClassNames(classroomTimeSlot)}
+                                className={getClassroomTimeSlotClassNames(classroomTimeSlot, classroom)}
+                                key={`${timeSlot.id}-${classroom.id}`}
                                 onClick={
-                                  available && selectedCourse !== null
+                                  isClickable(classroomTimeSlot)
                                     ? () => selectClassroomTimeSlot(classroomTimeSlot)
                                     : null
                                 }
                               >
-                                {classroomTimeSlot.course_name}
+                                {getClassroomTimeSlotDisplay(classroomTimeSlot)}
                               </td>
                             )
                           })}
@@ -138,7 +191,6 @@ export default function App() {
                     </tbody>
                   </table>
                 </div>
-                // <Table columns={columns} data={data} />
               )
               : <div>Loading...</div>
             }
@@ -146,31 +198,32 @@ export default function App() {
         </div>
         <div className='options'>
           <div className='card actions'>
-            <div className='card-body d-grid'>
+            <div className='card-body'>
               <h5 className='card-title'>Actions</h5>
               <dl className='mb-0'>
                 <dt>Course</dt>
-                <dd>{selectedCourse === null ? '(None selected)' : `"${selectedCourse.name}"`}</dd>
-                <dt>Pending Actions</dt>
+                <dd>{selected.course === null ? '--' : selected.course?.name}</dd>
+                <dt>Course Section</dt>
                 <dd>
-                  Schedule for:
-                  <ul className='pending-actions-list'>
-                    {selectedClassroomTimeSlots.map((selectedClassroomTimeSlot) => (
-                      <li>
-                        "{classroomById[selectedClassroomTimeSlot.classroom_id].name}"
-                        <br />
-                        {timeSlotDisplay(timeSlotById[selectedClassroomTimeSlot.time_slot_id])}
-                      </li>
-                    ))}
-                  </ul>
+                  {selected.courseSection === null ? '--' : `Section ${selected.courseSection?.display_id}`}
                 </dd>
               </dl>
-              <button
-                className={`btn btn-success ${selectedClassroomTimeSlots.length === 0 ? 'd-none' : ''}`}
-                onClick={() => alert('Sorry, I\'m not implemented yet :(')}
-              >
-                Submit
-              </button>
+              <div className='d-grid gap-2'>
+                <button
+                  className={`btn btn-${classroomTimeSlotsToSubmit.length === 0 ? 'light' : 'success'}`}
+                  disabled={classroomTimeSlotsToSubmit.length === 0}
+                  onClick={() => setShowSubmitModal(true)}
+                >
+                  Preview changes
+                </button>
+                <button
+                  className='btn btn-link'
+                  disabled={selected.course === null}
+                  onClick={() => setSelected(DEFAULT_SELECTED)}
+                >
+                  Clear selections
+                </button>
+              </div>
             </div>
           </div>
           <div className='card filters'>
@@ -179,49 +232,199 @@ export default function App() {
               <div className='filters-list'>
                 <h6>Schedule</h6>
                 <hr />
-                <Form.Check
-                  checked={filters.hideUnavailableTimeSlots}
-                  id='filter-hideUnavailableTimeSlots'
-                  label='Hide unavailable time slots'
-                  onChange={() => toggleFilter('hideUnavailableTimeSlots')}
-                  type='checkbox'
+                <CheckboxFilter
+                  filters={filters}
+                  filterKey='hideUnavailableTimeSlots'
+                  filterLabel='Hide unavailable time slots'
+                  setFilters={setFilters}
+                />
+                <TextFilter
+                  filters={filters}
+                  filterKey='dateStart'
+                  filterLabel='Show only on or after date'
+                  inputProps={{pattern: '\d{4}-\d{2}-\d{2}', type: 'date'}}
+                  setFilters={setFilters}
+                />
+                <TextFilter
+                  filters={filters}
+                  filterKey='timeStart'
+                  filterLabel='Show only on or after time'
+                  inputProps={{pattern: '[0-9]{2}:[0-9]{2}', type: 'time'}}
+                  setFilters={setFilters}
+                />
+                <TextFilter
+                  filters={filters}
+                  filterKey='dateEnd'
+                  filterLabel='Show only before date'
+                  inputProps={{pattern: '\d{4}-\d{2}-\d{2}', type: 'date'}}
+                  setFilters={setFilters}
+                />
+                <TextFilter
+                  filters={filters}
+                  filterKey='timeEnd'
+                  filterLabel='Show only before time'
+                  inputProps={{pattern: '[0-9]{2}:[0-9]{2}', type: 'time'}}
+                  setFilters={setFilters}
                 />
                 <small>Days of week</small>
                 {DAYS_OF_WEEK.map((dayOfWeek) => (
-                  <Form.Check
-                    checked={filters[`show${dayOfWeek}`]}
-                    id={`filter-show${dayOfWeek}`}
-                    label={`Show ${dayOfWeek}`}
-                    onChange={() => toggleFilter(`show${dayOfWeek}`)}
-                    type='checkbox'
+                  <CheckboxFilter
+                    filters={filters}
+                    filterKey={`show${dayOfWeek}`}
+                    filterLabel={`Show ${dayOfWeek}`}
+                    setFilters={setFilters}
                   />
                 ))}
                 <br />
                 <h6>Courses</h6>
                 <hr />
-                <Form.Check
-                  checked={filters.hideFullyScheduledCourses}
-                  id='filter-hideFullyScheduledCourses'
-                  label='Hide fully scheduled courses'
-                  onChange={() => toggleFilter('hideFullyScheduledCourses')}
-                  type='checkbox'
+                <CheckboxFilter
+                  filters={filters}
+                  filterKey='hideFullyScheduledCourses'
+                  filterLabel='Hide fully scheduled course'
+                  setFilters={setFilters}
                 />
-                <Form.Group className="my-2 mb-3" controlId="filter-courseNameSearch">
-                  <Form.Label>Filter by course name</Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder="Enter course name"
-                    onChange={(event) => setCourseNameFilter(event.target.value)}
-                    value={filters.courseNameFilter}
-                  />
-                </Form.Group>
+                <TextFilter
+                  filters={filters}
+                  filterKey='courseName'
+                  filterLabel='Filter by course name'
+                  inputProps={{placeholder: 'Enter course name'}}
+                  setFilters={setFilters}
+                />
+                <br />
+                <h6>Classrooms</h6>
+                <hr />
+                <TextFilter
+                  filters={filters}
+                  filterKey='classroomName'
+                  filterLabel='Filter by classroom name'
+                  inputProps={{placeholder: 'Enter classroom name'}}
+                  setFilters={setFilters}
+                />
               </div>
             </div>
           </div>
         </div>
       </div>
+      <Modal onHide={() => setShowSubmitModal(false)} show={showSubmitModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>Changes</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>Please review the following changes before submitting.</p>
+          <dl>
+            <dt>Course</dt>
+            <dd>{selected.course?.name}</dd>
+          </dl>
+          <ul>
+            {showSubmitModal && displayChangesPreview()}
+          </ul>
+        </Modal.Body>
+        <Modal.Footer>
+          <button className='btn btn-link' onClick={() => setShowSubmitModal(false)}>
+            Cancel
+          </button>
+          <button className='btn btn-success' disabled={submitting} onClick={submitting ? null : submitData}>
+            Submit{submitting ? 'ting' : ''}
+          </button>
+        </Modal.Footer>
+      </Modal>
+      <Toast
+        autohide
+        bg={toastOptions.type}
+        delay={8000}
+        onClose={() => setToastOptions({...toastOptions, show: false})}
+        show={toastOptions.show}
+      >
+        <Toast.Header>
+          <div className={`text-${toastOptions.type} me-auto`}>
+            <span hidden={toastOptions.type !== TOAST_TYPES.success}>
+              <BsFillCheckCircleFill /> Success!
+            </span>
+            <span hidden={toastOptions.type !== TOAST_TYPES.warning}>
+              <BsExclamationCircleFill /> Warning!
+            </span>
+            <span hidden={toastOptions.type !== TOAST_TYPES.secondary}>
+              <BsInfoCircleFill /> Scheduler
+            </span>
+          </div>
+        </Toast.Header>
+        <Toast.Body>{toastOptions.message}</Toast.Body>
+      </Toast>
     </div>
   )
+
+  function displayChangesPreview() {
+    const sortedSelectedClassroomTimeSlots = classroomTimeSlotsToSubmit.sort((a, b) => {
+      if (a.classroom_id === b.classroom_id) {
+        return a.start_datetime > b.start_datetime ? 1 : -1
+      }
+      return a.classroom_id > b.classroom_id ? 1 : -1
+    })
+    const timeRangeDisplays = []
+    let currentClassroom = null
+    let currentEnd = null
+    let currentStart = null
+    let previousUnscheduling = null;
+    for (const selectedClassroomTimeSlot of sortedSelectedClassroomTimeSlots) {
+      const differentClassroom = currentClassroom === null || currentClassroom.id !== selectedClassroomTimeSlot.classroom_id
+      if (differentClassroom || currentStart === null ) {
+        currentClassroom = classroomById[selectedClassroomTimeSlot.classroom_id]
+        currentStart = selectedClassroomTimeSlot.start_datetime
+      }
+      const isUnscheduling = selected.assignments[selectedClassroomTimeSlot.id] === null
+      const continuation = (
+        previousUnscheduling === isUnscheduling
+        && currentEnd !== null
+        && currentEnd.isSame(selectedClassroomTimeSlot.start_datetime)
+      )
+      if (continuation) {
+        timeRangeDisplays.pop()
+      } else {
+        currentStart = selectedClassroomTimeSlot.start_datetime
+      }
+      currentEnd = selectedClassroomTimeSlot.end_datetime
+      const startTimeFormat = 'M/D h:mma'
+      const endTimeFormat = currentStart.date() === currentEnd.date() ? 'h:mma' : startTimeFormat
+      timeRangeDisplays.push(
+        <li key={selectedClassroomTimeSlot.id}>
+          <ul className='list-unstyled'>
+            <li>
+              {isUnscheduling ? 'Unscheduling' : 'Scheduling' }{' '}
+              Section{' '}
+              {(selected.assignments[selectedClassroomTimeSlot.id] ?? selectedClassroomTimeSlot.course_section).display_id}
+            </li>
+            <li>
+              {currentStart.format(startTimeFormat)} - {currentEnd.format(endTimeFormat)}{' '}
+              ({currentEnd.diff(currentStart, 'minute', true)} minutes)
+            </li>
+            <li>Classroom "{currentClassroom.name}"</li>
+          </ul>
+        </li>
+      )
+      previousUnscheduling = isUnscheduling
+    }
+    return timeRangeDisplays
+  }
+
+  function getClassroomClassNames(classroom, header=false) {
+    const classNames = []
+
+    // Sticky headers
+    if (header) {
+      classNames.push('sticky')
+      classNames.push('header')
+    }
+
+    // Classroom search filter
+    if (filters.classroomName !== '') {
+      if (!classroom.name.toLowerCase().includes(filters.classroomName.toLowerCase())) {
+        classNames.push('d-none')
+      }
+    }
+
+    return classNames.join(' ')
+  }
 
   function getClassroomTimeSlot(timeSlotId, classroomId) {
     let selector
@@ -236,8 +439,24 @@ export default function App() {
     return selector
   }
 
-  function getClassroomTimeSlotClassNames(classroomTimeSlot) {
+  function getClassroomTimeSlotDisplay(classroomTimeSlot) {
+    if (!selected.course) {
+      return classroomTimeSlot.course_name
+    }
+    if (isDescheduled(classroomTimeSlot)) {
+      return 'unscheduled'
+    }
+    if (!Object.keys(selected.assignments).includes(classroomTimeSlot.id)) {
+      return ''
+    }
+    return `Section ${selected.assignments[classroomTimeSlot.id]?.display_id}`
+  }
+
+  function getClassroomTimeSlotClassNames(classroomTimeSlot, classroom) {
     const classNames = []
+
+    // Classroom filters
+    classNames.push(getClassroomClassNames(classroom))
 
     // Availability
     classNames.push('availability')
@@ -252,17 +471,56 @@ export default function App() {
     }
 
     // Is selected course
-    if (classroomTimeSlot.course_id === selectedCourse?.id) {
+    if (classroomTimeSlot.course_id === selected.course?.id) {
       classNames.push('selected-course')
     }
 
+    // Is selected course section
+    if (
+      selected.courseSection !== null
+      && selected.assignments[classroomTimeSlot.id]?.id === selected.courseSection.id
+    ) {
+      classNames.push('selected-course-section')
+    }
+
     // Interactivity
-    if (selectedCourse !== null) {
+    if (isClickable(classroomTimeSlot)) {
       classNames.push('clickable')
     }
-    if (selectedClassroomTimeSlotIds.includes(classroomTimeSlot.id)) {
+    if (isSelected(classroomTimeSlot)) {
       classNames.push('selected')
     }
+    if (isDescheduled(classroomTimeSlot)) {
+      classNames.push('descheduled')
+    }
+
+    return classNames.join(' ')
+  }
+
+  function getCourseClassNames(course) {
+    const classNames = []
+    const isSelectedCourse = course.id === selected.course?.id
+
+    // General styling
+    classNames.push('btn')
+    classNames.push(`btn-${isSelectedCourse ? 'primary' : 'light'}`)
+    classNames.push('mb-2')
+
+    // Filters
+    if (!shouldShowCourse(course)) {
+      classNames.push('d-none')
+    }
+
+    return classNames.join(' ')
+  }
+
+  function getCourseSectionClassNames(section) {
+    const classNames = []
+    const isSelectedCourseSection = section.id === selected.courseSection?.id
+
+    // General styling
+    classNames.push('btn')
+    classNames.push(`btn-${isSelectedCourseSection ? 'info' : 'secondary'}`)
 
     return classNames.join(' ')
   }
@@ -273,38 +531,119 @@ export default function App() {
     )).length
   }
 
-  function selectClassroomTimeSlot(classroomTimeSlot) {
-    if (selectedClassroomTimeSlotIds.includes(classroomTimeSlot.id)) {
-      setSelectedClassromTimeSlots(
-        selectedClassroomTimeSlots.filter(
-          (selectedClassroomTimeSlot) => selectedClassroomTimeSlot.id !== classroomTimeSlot.id
-        )
+  function isClickable(classroomTimeSlot) {
+    // No available ClassroomTimeSlot means it's not available for scheduling
+    if (classroomTimeSlot?.id === undefined) return false
+
+    // Not in selection context
+    if (selected.course === null) return false
+    if (selected.courseSection === null) return false
+
+    if (classroomTimeSlot?.course_section_id === null) {
+      // ClassroomTimeSlot is not yet taken, so it's clickable as long as no other section has it selected or if it's
+      // selected for this section
+      return (
+        selected.assignments[classroomTimeSlot.id] === undefined
+        || selected.courseSection.id === selected.assignments[classroomTimeSlot.id]?.id
       )
     } else {
-      setSelectedClassromTimeSlots([...selectedClassroomTimeSlots, classroomTimeSlot])
+      /// ClassroomTimeSlot is taken, so it's only clickable if it's taken by this section
+      return classroomTimeSlot?.course_section_id === selected.courseSection.id
     }
+  }
+
+  function isDescheduled(classroomTimeSlot) {
+    return selected.assignments[classroomTimeSlot?.id] === null
+  }
+
+  function isSelected(classroomTimeSlot) {
+    return (
+      selectedAssignedClassroomTimeSlotIds.includes(classroomTimeSlot?.id)
+      || (
+        (classroomTimeSlot?.course_section_id ?? null) !== null
+        && classroomTimeSlot?.course_section_id === selected.courseSection?.id
+        && selected.assignments[classroomTimeSlot?.id] !== null
+      )
+    )
+  }
+
+  function processTimeSlots(classroomTimeSlots) {
+    return classroomTimeSlots.map((classroomTimeSlot) => ({
+      ...classroomTimeSlot,
+      // TODO: This converts to local time; is this appropriate?
+      end_datetime: dayjs(classroomTimeSlot.end_datetime),
+      start_datetime: dayjs(classroomTimeSlot.start_datetime),
+    }))
+  }
+
+  function selectClassroomTimeSlot(classroomTimeSlot) {
+    const newAssignments = {...selected.assignments}
+    if (classroomTimeSlot.course_section_id === selected.courseSection.id) {
+      if (selected.assignments[classroomTimeSlot.id] === null) {
+        // Deleting since it is an already saved assignment
+        newAssignments[classroomTimeSlot.id] = selected.courseSection
+      } else {
+        // Marking as null since we're unassigning a saved assignment
+        newAssignments[classroomTimeSlot.id] = null
+      }
+    } else {
+      if (selectedAssignedClassroomTimeSlotIds.includes(classroomTimeSlot.id)) {
+        // We're deselecting
+        delete newAssignments[classroomTimeSlot.id]
+      } else {
+        newAssignments[classroomTimeSlot.id] = selected.courseSection
+      }
+    }
+    setSelected({...selected, assignments: newAssignments})
   }
 
   function selectCourse(course) {
-    if (selectedCourse?.id === course.id) {
-      setSelectedCourse(null)
+    if (selected.course?.id === course.id) {
+      setSelected(DEFAULT_SELECTED)
     } else {
-      setSelectedCourse(course)
+      const newAssignments = {...selected.assignments}
+      for (const classroomTimeSlot of classroomTimeSlots) {
+        if (classroomTimeSlot.course_id === course.id) {
+          newAssignments[classroomTimeSlot.id] = classroomTimeSlot.course_section
+        }
+      }
+      setSelected({...selected, assignments: newAssignments, course})
     }
   }
 
-  function setCourseNameFilter(courseName) {
-    setFilters({...filters, courseNameFilter: courseName})
+  function selectCourseSection(courseSection, event) {
+    event.stopPropagation()
+    const newAssignments = {...selected.assignments}
+    if (selected.courseSection?.id === courseSection.id) {
+      // Also deselect any already saved assignments
+      for (const classroomTimeSlot of classroomTimeSlots) {
+        if (classroomTimeSlot.course_section_id === newAssignments[classroomTimeSlot.id]) {
+          delete newAssignments[classroomTimeSlot.id]
+        }
+      }
+      setSelected({...selected, assignments: newAssignments, courseSection: null})
+    } else {
+      // Also set already saved assignments
+      for (const classroomTimeSlot of classroomTimeSlots) {
+        if (classroomTimeSlot.course_section_id === courseSection.id) {
+          newAssignments[classroomTimeSlot.id] = courseSection
+        }
+      }
+      setSelected({...selected, assignments: newAssignments, courseSection})
+    }
   }
 
   function shouldShowCourse(course) {
+    if (selected.course?.id === course.id) {
+      return true
+    }
     if (filters.hideFullyScheduledCourses) {
       // Hide fully scheduled courses
       if (course.sections_count === getScheduledSectionsCount(course)) {
         return false
       }
     }
-    if (filters.courseNameFilter !== '' && !course.name.toLowerCase().includes(filters.courseNameFilter.toLowerCase())) {
+    if (filters.courseName !== '' && !course.name.toLowerCase().includes(filters.courseName.toLowerCase())) {
       return false
     }
     return true
@@ -330,22 +669,94 @@ export default function App() {
         }
       }
     }
+    // Show only after date
+    if (filters.dateStart) {
+      if (timeSlot.start_datetime.isBefore(filters.dateStart)) {
+        return false
+      }
+    }
+    // Show only after time
+    if (filters.timeStart) {
+      const [hour, minute] = filters.timeStart.split(':').map((text) => parseInt(text, 10))
+      if (
+        timeSlot.start_datetime.hour() < hour
+        || (timeSlot.start_datetime.hour() === hour && timeSlot.start_datetime.minute() < minute)
+      ) {
+        return false
+      }
+    }
+    // Show only before date
+    if (filters.dateEnd) {
+      if (timeSlot.start_datetime.isSame(filters.dateEnd) || timeSlot.start_datetime.isAfter(filters.dateEnd)) {
+        return false
+      }
+    }
+    // Show only before time
+    if (filters.timeEnd) {
+      const [hour, minute] = filters.timeEnd.split(':').map((text) => parseInt(text, 10))
+      if (
+        timeSlot.start_datetime.hour() > hour
+        || (timeSlot.start_datetime.hour() === hour && timeSlot.start_datetime.minute() >= minute)
+      ) {
+        return false
+      }
+    }
     return true
   }
 
+  function showToast(message, type=TOAST_TYPES.secondary) {
+    if (toastOptions.show === true) {
+      setToastOptions({...toastOptions, show: false}, () => _showToast(message, type))
+    } else {
+      _showToast(message, type)
+    }
+
+    function _showToast(message, type) {
+      setToastOptions({message, show: true, type})
+    }
+  }
+
   async function submitData() {
-    const data = {"course_id": "","time_slot": selectedClassroomTimeSlots}
-    const response = await fetch(
-      `${process.env.REACT_APP_API_BASE_URL}/api/v0/classroom-time-slots/`,
-      {
-        body: JSON.stringify(data),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        method: 'POST',
-      }
+    setSubmitting(true)
+    const data = Object.entries(selected.assignments).map(([classroomTimeSlotId, courseSection]) => ({
+      classroom_time_slot_id: classroomTimeSlotId,
+      course_section_id: courseSection?.id ?? null,
+    }))
+
+    let response
+    try {
+      response = await secureFetch(
+        `${process.env.REACT_APP_API_BASE_URL}/api/v0/assign-classroom-time-slots/`,
+        {
+          body: JSON.stringify({data}),
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+          method: 'POST',
+        }
+      )
+    } catch (e) {
+      return showToast('Oops! There was an issue communicating with the server.', TOAST_TYPES.warning)
+    }
+
+    if (!response.ok) {
+      return showToast('Oops! Something went wrong with submitting your data.', TOAST_TYPES.warning)
+    }
+
+    await loadData(
+      '/api/v0/classroom-time-slots/',
+      setClassroomTimeSlots,
+      _processTimeSlots,
     )
-    console.log(response.json())
+    showToast('Your changes have been saved!', TOAST_TYPES.success)
+
+    function _processTimeSlots(data) {
+      setSelected(DEFAULT_SELECTED)
+      setShowSubmitModal(false)
+      setSubmitting(false)
+      return processTimeSlots(data)
+    }
   }
 
   function timeSlotDisplay(timeSlot, html=false) {
@@ -353,9 +764,5 @@ export default function App() {
     const startTimeDisplay = timeSlot.start_datetime.format('h:mma')
     const endTimeDisplay = timeSlot.end_datetime.format('h:mma')
     return `${dateDisplay}${html ? '<br>' : ' '}${startTimeDisplay} - ${endTimeDisplay}`
-  }
-
-  function toggleFilter(filterName) {
-    setFilters({...filters, [filterName]: !filters[filterName]})
   }
 }

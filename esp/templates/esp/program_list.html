@@ -23,15 +23,16 @@
     </ol>
     <br/>
     <p>Created: {{ program.created_on }} - Updated: {{ program.updated_on }}
-    <a href = '{% url "update_program" program.id %}'>Update</a> -
-    <a href = '{% url "update_program" program.id %}'>Clone</a>
+    <a href='{% url "update_program" program.id %}'>Update</a> -
+    <a href='{% url "update_program" program.id %}'>Clone</a>
     </p>
   </div>
   <div class="col-lg-6">
     <div class="card">
       <div class="card-body">
         <div class="card-title">Admin actions</div>
-        <a role="button" href="{% url 'program_lottery' pk=program.id %}">Run lottery</a>
+        <li><a role="button" href="{% url 'program_lottery' pk=program.id %}">Run lottery</a></li>
+        <li><a role="button" href="{% url 'courses' pk=program.id %}">Manage Classes</a></li>
       </div>
     </div>
   </div>
