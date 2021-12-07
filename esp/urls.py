@@ -6,9 +6,8 @@ from esp.views.admin_pages import (AdminDashboardView, CourseCreateView,
                                    ProgramCreateView, ProgramListView,
                                    ProgramLotteryView, ProgramStageCreateView,
                                    ProgramStageUpdateView, ProgramUpdateView)
-from esp.views.scheduler import (ClassroomApiView, ClassroomTimeSlotApiView,
-                                 CourseApiView, CourseSectionApiView,
-                                 SchedulerView, TimeSlotApiView, AssignClassroomTimeSlotsApiView)
+from esp.views.scheduler import (AssignClassroomTimeSlotsApiView, ClassroomApiView, ClassroomTimeSlotApiView,
+                                 CourseApiView, SchedulerView, TimeSlotApiView)
 from esp.views.student_registration_pages import (
     CompleteSurveysView, ConfirmAssignedCoursesView,
     ConfirmRegistrationSubmissionView, DeleteCourseRegistrationView,
