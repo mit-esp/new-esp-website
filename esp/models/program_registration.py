@@ -16,6 +16,7 @@ from esp.models.program import (Course, PreferenceEntryCategory, Program,
 ####################################################
 # STUDENT REGISTRATIONS
 ####################################################
+from esp.validators import validate_graduation_year
 
 
 class StudentProfile(BaseModel):
@@ -29,7 +30,7 @@ class StudentProfile(BaseModel):
     cell_phone = models.CharField(max_length=16, null=True, blank=True)
 
     dob = models.DateField()
-    graduation_year = models.CharField(max_length=4)
+    graduation_year = models.IntegerField(validators=[validate_graduation_year])
     school = models.CharField(max_length=512)
     heard_about_esp_via = models.CharField(
         choices=HeardAboutVia.choices, max_length=32, verbose_name="How did you hear about this program?",
@@ -148,8 +149,7 @@ class TeacherProfile(BaseModel):
         max_length=128, blank=True, null=True,
         help_text="If you are currently a student, please provide your major or degree field."
     )
-    graduation_year = models.CharField(
-        max_length=4, blank=True, null=True,
+    graduation_year = models.IntegerField(null=True, blank=True, validators=[validate_graduation_year],
         help_text="If you are currently a student, please provide your graduation year."
     )
     university_or_employer = models.CharField(

@@ -1,6 +1,8 @@
 {% extends "base_templates/base.html" %}
 
+{% load static %}
 {% load sass_tags %}
+{% load auth %}
 
 {% block title %}Dashboard{% endblock %}
 
@@ -18,14 +20,15 @@
     <strong>Warning!</strong> This is an active work-in-progress.
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
   </div>
-{% if LOCALHOST %}
+{% django_setting "REACT_HOTLOAD" as react_hotload %}
+{% if react_hotload %}
  <iframe
     src="http://localhost:3000"
     style="border: none; height: calc(100vh - 66px); left: 0; position: absolute; width: 100vw;"
   ></iframe>
 {% else %}
   <div style="border: none; height: calc(100vh - 66px); left: 0; position: absolute; width: 100vw;">
-    {% include "index.html" %}
+    {% include "scheduler.html" %}
   </div>
 {% endif %}
 {% endblock %}
