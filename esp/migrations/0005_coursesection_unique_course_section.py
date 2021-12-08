@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('esp', '0003_classroomtimeslot_unique_classroom_time_slot'),
+        ('esp', '0004_auto_20211130_1850'),
     ]
 
     operations = [
