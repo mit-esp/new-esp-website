@@ -1,18 +1,17 @@
-import smtplib
-from email.message import EmailMessage
+import timeit
 
 from django.contrib import messages
 from django.core.exceptions import FieldError
 from django.core.mail import send_mail
 from django.db.models import Count, Max
-from django.http import HttpResponse
+from django.http import HttpResponseRedirect
 from django.shortcuts import redirect
 from django.template import Template, Context
 from django.urls import reverse_lazy
 from django.views.generic import (CreateView, FormView, ListView, TemplateView,
                                   UpdateView)
 from django.views.generic.detail import SingleObjectMixin
-from django.views.generic.edit import FormMixin
+from multiform_views.edit import FormsView
 
 from common.constants import PermissionType, UserType
 from common.forms import CrispyFormsetHelper
@@ -27,7 +26,7 @@ from esp.models.program import Course, Program, ProgramStage
 ######################################
 # ADMIN DASHBOARD
 ######################################
-from esp.models.program_registration import ClassRegistration, CompletedTeacherRegistrationStep
+from esp.models.program_registration import ClassRegistration
 
 
 class AdminDashboardView(TemplateView):
@@ -159,138 +158,99 @@ class ProgramLotteryView(PermissionRequiredMixin, SingleObjectMixin, TemplateVie
         return redirect("program_lottery", pk=self.kwargs["pk"])
 
 
-class SendEmailsView(PermissionRequiredMixin, FormMixin, TemplateView):
+class SendEmailsView(PermissionRequiredMixin, FormsView):
     permission = PermissionType.send_email
     template_name = "esp/send_email.html"
     success_url = reverse_lazy('admin_dashboard')
     mailing_list = None
-    forms = {
+    form_classes = {
         'query_form': QuerySendEmailForm,
         'teacher_form': TeacherSendEmailForm,
         'student_form': StudentSendEmailForm,
     }
 
-    def get(self, request, *args, **kwargs):
-        return self.render_to_response(self.forms)
+    def query_form_valid(self, form):
+        users = form.cleaned_data['users']
+        self._send_emails(users, form)
+        return HttpResponseRedirect(self.success_url)
 
-    def get_form(self, post_request):
-        """Return an instance of the form to be used in this view."""
-        form_class = None
-        for name, _ in self.forms.items():
-            if name in post_request:
-                form_class = self.forms[name]
-        if form_class is None:
-            raise Exception
-        return form_class(**self.get_form_kwargs())
+    def teacher_form_valid(self, form):
+        teachers = User.objects.filter(user_type=UserType.teacher)
+        if form.cleaned_data['submit_one_class']:
+            teachers = teachers.filter()
+        if form.cleaned_data['difficulty']:
+            teachers = teachers.filter(
+                teacher_registrations__courses__course__difficulty=form.cleaned_data['difficulty'])
+        if form.cleaned_data['registration_step']:
+            teachers = teachers.filter(
+                teacher_registrations__completed_steps__step=form.cleaned_data['registration_step'])
+        self._send_emails(teachers, form)
+        return HttpResponseRedirect(self.success_url)
 
-    def post(self, request, *args, **kwargs):
-        """
-        Handle POST requests: instantiate a form instance with the passed
-        POST variables and then check if it's valid.
-        """
-        form = self.get_form(request.POST)
-        if form.is_valid():
-            return self.form_valid(form)
-        else:
-            return self.form_invalid(form)
+    def student_form_valid(self, form):
+        students = User.objects.filter(user_type=UserType.teacher)
+        if form.cleaned_data['registration_step']:
+            students = students.filter(
+                registrations__completed_steps__step=form.cleaned_data['registration_step'])
+        guardians = form.cleaned_data['guardians']
+        emergency_contacts = form.cleaned_data['emergency_contact']
+        self._send_emails(students, form, guardians, emergency_contacts)
+        return HttpResponseRedirect(self.success_url)
 
-    def form_valid(self, form):
-        """
-        Ensures that the inputted query is valid. Each form does its own validation. If any form
-        or query is not valid then no email will be sent and the form will be reloaded
-        """
-        print(type(form))
-        print(form.cleaned_data)
-        to_users = None
-        guardians = False
-        emergency_contacts = False
-        if form is QuerySendEmailForm:
-            # The form takes in a list of comma separated Django clauses on the User model that
-            # will be ANDed together to form one query on the User model. Any spaces will be
-            # removed before parsing. If any part of any of the clauses is not formatted
-            # correctly, the form will be invalid.
-            try:
-                query = form.cleaned_data['query'].replace(' ', '')
-                kwargs = {}
-                for arg in query.split(','):
-                    x, y = arg.split('=')
-                    kwargs[x] = y
-                to_users = User.objects.filter(**kwargs)
-            except (FieldError, ValueError) as e:
-                form.add_error('query', 'Query is not a valid format')
-                return super().form_invalid(form)
-        elif form is TeacherSendEmailForm:
-            teachers = User.objects.filter(user_type=UserType.teacher)
-            if form.cleaned_data['submit_one_class']:
-                teachers = teachers.filter()
-            if form.cleaned_data['difficulty']:
-                teachers = teachers.filter(teacher_registrations__courses__course__difficulty=form.cleaned_data['difficulty'])
-            if form.cleaned_data['registration_step']:
-                teachers = teachers.filter(teacher_registrations__completed_steps__step=form.cleaned_data['registration_step'])
-            to_users.append(teachers.value_list('email', flat=True))
-        elif form is StudentSendEmailForm:
-            students = User.objects.filter(user_type=UserType.teacher)
-            if form.cleaned_data['registration_step']:
-                students = students.filter(registrations__completed_steps__step=form.cleaned_data['registration_step'])
-            to_users.append(students.value_list('email', flat=True))
-            if form.cleaned_data['guardians']:
-                guardians = True
-            if form.cleaned_data['emergency_contact']:
-                emergency_contacts = True
-        else:
-            raise Exception
-
-        # if mailing list is empty, return to the form
-        if not to_users:
-            return super().form_invalid(form)
-
-        # send emails to mailing list, sends one at a time to account for merge fields
-        # and guardian/emergency contact emails
+    def _send_emails(self, to_users, form, guardians=False, emergency_contacts=False):
         subject = form.cleaned_data['subject']
         from_email = DEFAULT_FROM_EMAIL
         template = Template(form.cleaned_data['body'])
-        for user in to_users:
-            # this dict contains the available merge fields that you can use in sending emails
-            # add to this dict to add to the available fields you can use in emails
+        to_emails = to_users.values_list('email', flat=True)
+        for to_user in to_users:
+            # This dict contains the available merge fields that you can use in sending emails
+            # add to this dict to add to the available fields you can use in the email body ex.
+            # to insert a user's first name into an email, type '{{ first_name }}'. If a merge field
+            # is used in the body that is not present in the context_dict then that field will be
+            # replaced by the empty string
+            # NOTE: merge fields currently ony available for use in the email body. To use in the
+            # subject line or else where, follow the same pattern used for rendering the template
+            # in the body
             context_dict = {
-                'first_name': user.first_name,
-                'last_name': user.last_name,
-                'email': user.email,
+                'first_name': to_user.first_name,
+                'last_name': to_user.last_name,
+                'email': to_user.email,
             }
             body = template.render(Context(context_dict))
             send_mail(
                 subject,
                 body,
                 from_email,
-                user.email,
+                to_user.email,
                 fail_silently=False,
             )
             if guardians:
-                context_dict['first_name'] = user.student_profile.guardian_first_name
-                context_dict['last_name'] = user.student_profile.guardian_last_name
-                context_dict['email'] = user.student_profile.guardian_email
+                context_dict['first_name'] = to_user.student_profile.guardian_first_name
+                context_dict['last_name'] = to_user.student_profile.guardian_last_name
+                context_dict['email'] = to_user.student_profile.guardian_email
                 body = template.render(Context(context_dict))
                 send_mail(
                     subject,
                     body,
                     from_email,
-                    user.student_profile.guardian_email,
+                    [user.student_profile.guardian_email],
                     fail_silently=False,
                 )
+                to_emails.append(to_users.values_list('student_profile__guardian_email', flat=True))
             if emergency_contacts:
-                context_dict['first_name'] = user.student_profile.emergency_contact_first_name
-                context_dict['last_name'] = user.student_profile.emergency_contact_last_name
-                context_dict['email'] = user.student_profile.emergency_contact_email
+                context_dict['first_name'] = to_user.student_profile.emergency_contact_first_name
+                context_dict['last_name'] = to_user.student_profile.emergency_contact_last_name
+                context_dict['email'] = to_user.student_profile.emergency_contact_email
                 body = template.render(Context(context_dict))
                 send_mail(
                     subject,
                     body,
                     from_email,
-                    user.student_profile.emergency_contact_email,
+                    [user.student_profile.emergency_contact_email],
                     fail_silently=False,
                 )
-
-        return super().form_valid(form)
+                to_emails.append(to_users.values_list('student_profile__emergency_contact_email', flat=True))
+        messages.info(self.request, f'An email to {to_emails.count()} email addresses')
 
 
 ###########################################################

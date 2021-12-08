@@ -2,6 +2,7 @@ from crispy_forms import layout
 from crispy_forms.helper import FormHelper
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
+from django.core.exceptions import FieldError, ValidationError
 from django.forms import ModelForm, inlineformset_factory
 
 from common.constants import REGISTRATION_USER_TYPE_CHOICES, GradeLevel
@@ -210,13 +211,25 @@ class QuerySendEmailForm(CrispyFormMixin, forms.Form):
     subject = forms.CharField(label='Subject Line')
     body = forms.CharField(label='Email Body', widget=forms.Textarea)
 
+    def clean_query(self):
+        query = self.cleaned_data['query'].replace(' ', '')
+        try:
+            kwargs = {}
+            for arg in query.split(','):
+                x, y = arg.split('=')
+                kwargs[x] = y
+            to_users = User.objects.filter(**kwargs)
+        except (FieldError, ValueError):
+            raise ValidationError('Query is not a valid format')
+        self.cleaned_data["users"] = to_users
+        return kwargs
 
 class TeacherSendEmailForm(CrispyFormMixin, forms.Form):
     submit_label = "Send"
     submit_name = "teacher_form"
     submit_one_class = forms.BooleanField(required=False, label='Submitted at least one class')
     difficulty = forms.ChoiceField(required=False, choices=[('', '--------'), *CourseDifficulty.choices], label='Teaches a course of a ceratin difficulty')
-    registration_step = forms.ChoiceField(required=False, choices=[('', '--------'), TeacherRegistrationStepType.choices], label='Completed this registration step')
+    registration_step = forms.ChoiceField(required=False, choices=[('', '--------'), *TeacherRegistrationStepType.choices], label='Completed this registration step')
 
     subject = forms.CharField(label='Subject Line')
     body = forms.CharField(label='Email Body', widget=forms.Textarea)
@@ -227,7 +240,7 @@ class StudentSendEmailForm(CrispyFormMixin, forms.Form):
     submit_name = "student_form"
     guardians = forms.BooleanField(required=False, label='Send to guardians')
     emergency_contact = forms.BooleanField(required=False, label='Send to emergency contact')
-    registration_step = forms.ChoiceField(required=False, choices=[('', '--------'), StudentRegistrationStepType.choices], label='Completed this registration step')
+    registration_step = forms.ChoiceField(required=False, choices=[('', '--------'), *StudentRegistrationStepType.choices], label='Completed this registration step')
 
     subject = forms.CharField(label='Subject Line')
     body = forms.CharField(label='Email Body', widget=forms.Textarea)
