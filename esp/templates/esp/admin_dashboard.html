@@ -13,51 +13,71 @@
       <h3><a class="btn btn-primary d-grid" href="{% url 'programs' %}">Manage Programs</a></h3>
       </div>
       <div class="col">
-      <h3><a class="btn btn-primary d-grid" href="/scheduler/">The Scheduler</a></h3>
-      </div>
-      <div class="col">
       <h3><a class="btn btn-primary d-grid" href="/django_admin/">Django Admin Interface</a></h3>
       </div>
     </div>
   </div>
- <div class="content-wrapper">
-    <div class="container-fluid">
-      <div class="row">
-      <!-- Cards-->
-        <div class="col-lg-3 col-md-4 col-sm-6 col-12 mb-2 mt-4">
-              <div class="row">
-                <div class="col-lg-9 col-md-8 col-sm-8 col-8">
-                    <h4>Total Users</h4>
-                    <h2>{{users_count}}</h2>
-                </div>
-              </div>
-        </div>
-        <div class="col-lg-3 col-md-4 col-sm-6 col-12 mb-2 mt-4">
-              <div class="row">
-                <div class="col-lg-9 col-md-8 col-sm-8 col-8">
-                    <h4>Total Students</h4>
-                    <h2>{{students_count}}</h2>
-                </div>
-              </div>
-        </div>
-        <div class="col-lg-3 col-md-4 col-sm-6 col-12 mb-2 mt-4">
-              <div class="row">
-                <div class="col-lg-9 col-md-8 col-sm-8 col-8">
-                    <h4>Total Teachers</h4>
-                    <h2>{{teachers_count}}</h2>
-                </div>
-              </div>
-        </div>
-        <div class="col-lg-3 col-md-4 col-sm-6 col-12 mb-2 mt-4">
-              <div class="row">
-                <div class="col-lg-9 col-md-8 col-sm-8 col-8">
-                    <h4>Total Active Admins</h4>
-                    <h2>{{admins_count}}</h2>
-                </div>
-              </div>
-        </div>
 
+<div class="content-wrapper">
+  <div class="container-fluid">
+      <div class="row">
+          <div class="col-lg-3 col-md-4 col-sm-6 col-12 mb-2 mt-4">
+                <div class="row">
+                  <div class="col-lg-9 col-md-8 col-sm-8 col-8">
+                      <h4>Total Users</h4>
+                      <h2>{{users_count}}</h2>
+                  </div>
+                </div>
+          </div>
+          <div class="col-lg-3 col-md-4 col-sm-6 col-12 mb-2 mt-4">
+                <div class="row">
+                  <div class="col-lg-9 col-md-8 col-sm-8 col-8">
+                      <h4>Total Students</h4>
+                      <h2>{{students_count}}</h2>
+                  </div>
+                </div>
+          </div>
+          <div class="col-lg-3 col-md-4 col-sm-6 col-12 mb-2 mt-4">
+                <div class="row">
+                  <div class="col-lg-9 col-md-8 col-sm-8 col-8">
+                      <h4>Total Teachers</h4>
+                      <h2>{{teachers_count}}</h2>
+                  </div>
+                </div>
+          </div>
+          <div class="col-lg-3 col-md-4 col-sm-6 col-12 mb-2 mt-4">
+                <div class="row">
+                  <div class="col-lg-9 col-md-8 col-sm-8 col-8">
+                      <h4>Active Admins</h4>
+                      <h2>{{admins_count}}</h2>
+                  </div>
+                </div>
+          </div>
+      </div>
+  </div>
+</div>
+
+{% if active_programs %}
+<div class="my-3">
+  <div class="row">
+    <div class="col-lg-8">
+    <h3>Active Programs</h3>
+    {% for program in active_programs %}
+      {% include "esp/components/program_card.html" %}
+    {% endfor %}
     </div>
   </div>
 </div>
+{% endif %} 
+
+{% if upcoming_program %}
+<div class="my-3">
+  <h3>Upcoming Program</h3>
+  {% with program=upcoming_program %}
+  {% include "esp/components/program_card.html" %}
+  {% endwith %}
+</div>
+{% endif %} 
+
+
 {% endblock %}

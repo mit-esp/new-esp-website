@@ -135,8 +135,8 @@ urlpatterns = [
     # Scheduler
     path("scheduler/", SchedulerView.as_view(), name="scheduler"),  # TODO: make program specific url
     path("api/v0/classrooms/", ClassroomApiView.as_view(), name="classroom_api"),
-    path("api/v0/courses/", CourseApiView.as_view(), name="course_api"),
-    path("api/v0/time-slots/", TimeSlotApiView.as_view(), name="time_slot_api"),
-    path("api/v0/classroom-time-slots/", ClassroomTimeSlotApiView.as_view(), name="classroom_time_slot_api"),
-    path("api/v0/assign-classroom-time-slots/", AssignClassroomTimeSlotsApiView.as_view(), name="assign_classroom_time_slots_api"),
+    path("api/v0/programs/<uuid:pk>/courses/", CourseApiView.as_view(), name="course_api"),
+    path("api/v0/programs/<uuid:pk>/time-slots/", TimeSlotApiView.as_view(), name="time_slot_api"),
+    path("api/v0/programs/<uuid:pk>/classroom-time-slots/", ClassroomTimeSlotApiView.as_view(), name="classroom_time_slot_api"),
+    path("api/v0/programs/<uuid:pk>/assign-classroom-time-slots/", AssignClassroomTimeSlotsApiView.as_view(), name="assign_classroom_time_slots_api"),
 ]

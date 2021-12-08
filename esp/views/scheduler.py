@@ -1,6 +1,7 @@
 import json
 
 from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.generic import TemplateView
@@ -12,7 +13,7 @@ from common.utils import csrf_exempt_localhost
 from common.views import PermissionRequiredMixin
 from esp.forms import AssignClassroomTimeSlotsForm
 from esp.models.course_scheduling import ClassroomTimeSlot
-from esp.models.program import Classroom, Course, TimeSlot
+from esp.models.program import Classroom, Course, Program, TimeSlot
 from esp.serializers import ClassroomSerializer, CourseSerializer, TimeSlotSerializer, \
     ClassroomTimeSlotSerializer
 
@@ -55,15 +56,20 @@ class ClassroomApiView(SerializerResponseMixin, BaseListView):
 
 class ClassroomTimeSlotApiView(SerializerResponseMixin, BaseListView):
     # Todo: Protect with auth and admin permissions
-    model = ClassroomTimeSlot
     serializer_class = ClassroomTimeSlotSerializer
-    queryset = ClassroomTimeSlot.objects.all().select_related("course_section__course", "time_slot")
+
+    def get_queryset(self, **kwargs):
+        program = get_object_or_404(Program, pk=self.kwargs['pk'])
+        return ClassroomTimeSlot.objects.filter(time_slot__program=program).select_related("course_section__course", "time_slot")
 
 
 class CourseApiView(SerializerResponseMixin, BaseListView):
     # Todo: Protect with auth and admin permissions
-    model = Course
     serializer_class = CourseSerializer
+
+    def get_queryset(self, **kwargs):
+        program = get_object_or_404(Program, pk=self.kwargs['pk'])
+        return Course.objects.filter(program=program)
 
 
 class SchedulerView(PermissionRequiredMixin, TemplateView):
@@ -73,5 +79,8 @@ class SchedulerView(PermissionRequiredMixin, TemplateView):
 
 class TimeSlotApiView(SerializerResponseMixin, BaseListView):
     # Todo: Protect with auth and admin permissions
-    model = TimeSlot
     serializer_class = TimeSlotSerializer
+
+    def get_queryset(self, **kwargs):
+        program = get_object_or_404(Program, pk=self.kwargs['pk'])
+        return TimeSlot.objects.filter(program=program)

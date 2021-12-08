@@ -101,7 +101,7 @@ class ProgramForm(CrispyFormMixin, ModelForm):
 
     class Meta:
         model = Program
-        fields = ["name", "program_type", "start_date", "end_date", "description", "notes"]
+        fields = ["name", "program_type", "start_date", "end_date", "number_of_weeks", "time_block_minutes", "min_grade_level", "max_grade_level", "description", "notes"]
         widgets = {
             'start_date': forms.DateInput(attrs={'type': 'date', 'class': 'datepicker'}),
             'end_date': forms.DateInput(attrs={'type': 'date', 'class': 'datepicker'}),

@@ -46,6 +46,10 @@ export default function App() {
   const [toastOptions, setToastOptions] = useStateWithCallback(DEFAULT_TOAST_OPTIONS)
   const [timeSlots, setTimeSlots] = useState([])
 
+  const urlSearchParams = new URLSearchParams(window.location.search)
+  const params = Object.fromEntries(urlSearchParams.entries())
+  const programId = params.program_id
+
   const classroomById = useMemo(() => (
     classrooms.reduce((accumulator, classroom) => ({...accumulator, [classroom.id]: classroom}), {})
   ), [classrooms])
@@ -94,13 +98,13 @@ export default function App() {
   useEffect(() => {
     loadData('/api/v0/classrooms/', setClassrooms)
     loadData(
-      '/api/v0/classroom-time-slots/',
+      `/api/v0/programs/${programId}/classroom-time-slots/`,
       setClassroomTimeSlots,
       processTimeSlots,
     )
-    loadData('/api/v0/courses/', setCourses)
+    loadData(`/api/v0/programs/${programId}/courses/`, setCourses)
     loadData(
-      '/api/v0/time-slots/',
+      `/api/v0/programs/${programId}/time-slots/`,
       setTimeSlots,
       processTimeSlots,
     )
@@ -137,7 +141,7 @@ export default function App() {
                       </div>
                     </div>
                   ))
-                  : <span>Loading...</span>
+                  : <span>(No Courses)</span>
                 }
               </div>
             </div>
@@ -192,7 +196,7 @@ export default function App() {
                   </table>
                 </div>
               )
-              : <div>Loading...</div>
+              : <div>(No Time Slots)</div>
             }
           </div>
         </div>
@@ -726,7 +730,7 @@ export default function App() {
     let response
     try {
       response = await secureFetch(
-        `${process.env.REACT_APP_API_BASE_URL}/api/v0/assign-classroom-time-slots/`,
+        `${process.env.REACT_APP_API_BASE_URL}/api/v0/programs/${programId}/assign-classroom-time-slots/`,
         {
           body: JSON.stringify({data}),
           headers: {
@@ -745,7 +749,7 @@ export default function App() {
     }
 
     await loadData(
-      '/api/v0/classroom-time-slots/',
+      `/api/v0/programs/${programId}/classroom-time-slots/`,
       setClassroomTimeSlots,
       _processTimeSlots,
     )
