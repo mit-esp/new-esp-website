@@ -228,7 +228,7 @@ class TeacherSendEmailForm(MultiFormMixin, forms.Form):
     submit_label = "Send"
     submit_name = "teacher_form"
     submit_one_class = forms.BooleanField(required=False, label='Submitted at least one class')
-    difficulty = forms.ChoiceField(required=False, choices=[('', '--------'), *CourseDifficulty.choices], label='Teaches a course of a ceratin difficulty')
+    difficulty = forms.ChoiceField(required=False, choices=[('', '--------'), *CourseDifficulty.choices], label='Teaches a course of a certain difficulty')
     registration_step = forms.ChoiceField(required=False, choices=[('', '--------'), *TeacherRegistrationStepType.choices], label='Completed this registration step')
 
     subject = forms.CharField(label='Subject Line')
