@@ -187,9 +187,13 @@ class SendEmailsView(PermissionRequiredMixin, FormsView):
         return HttpResponseRedirect(self.success_url)
 
     def teacher_form_valid(self, form):
+        print(form.cleaned_data)
         teachers = User.objects.filter(user_type=UserType.teacher)
+        if form.cleaned_data['program']:
+            print(form.cleaned_data['program'])
+            teachers = teachers.filter(teacher_registrations__program=form.cleaned_data['program'])
         if form.cleaned_data['submit_one_class']:
-            teachers = teachers.filter()
+            teachers = teachers.annotate(num_courses=Count('teacher_registrations__courses')).filter(num_courses__gte=1)
         if form.cleaned_data['difficulty']:
             teachers = teachers.filter(
                 teacher_registrations__courses__course__difficulty=form.cleaned_data['difficulty'])
@@ -201,6 +205,8 @@ class SendEmailsView(PermissionRequiredMixin, FormsView):
 
     def student_form_valid(self, form):
         students = User.objects.filter(user_type=UserType.student)
+        if form.cleaned_data['program']:
+            students = students.filter(registrations__program=form.cleaned_data['program'])
         if form.cleaned_data['registration_step']:
             students = students.filter(
                 registrations__completed_steps__step=form.cleaned_data['registration_step'])
@@ -217,13 +223,16 @@ class SendEmailsView(PermissionRequiredMixin, FormsView):
         for to_user in to_users:
             # This dict contains the available merge fields that you can use in sending emails
             # add to this dict to add to the available fields you can use in the email body ex.
-            # to insert a user's first name into an email, type '{{ first_name }}'. If a merge field
-            # is used in the body that is not present in the context_dict then that field will be
-            # replaced by the empty string
+            # to insert a user's first name into an email, type '{{ first_name }}'. You may
+            # access any field or related object of a user with dot notation ex. {{
+            # user.teacher_profile.graduation_year }}. If a merge field is used in the body that
+            # is not present in the context_dict then that field will be replaced by the empty
+            # string
             # NOTE: merge fields currently ony available for use in the email body. To use in the
-            # subject line or else where, follow the same pattern used for rendering the template
+            # subject line or elsewhere, follow the same pattern used for rendering the template
             # in the body
             context_dict = {
+                'user': to_user,
                 'first_name': to_user.first_name,
                 'last_name': to_user.last_name,
                 'email': to_user.email,
@@ -263,10 +272,7 @@ class SendEmailsView(PermissionRequiredMixin, FormsView):
                 )
                 to_emails.append(to_users.values_list('student_profile__emergency_contact_email', flat=True))
         email_count = to_emails.count()
-        if email_count == 1:
-            messages.info(self.request, f'An email was sent to {to_emails.count()} email address')
-        else:
-         messages.info(self.request, f'An email was sent to {to_emails.count()} email addresses')
+        messages.info(self.request, f'An email was sent to {email_count} email address{"" if email_count == 1 else "es"}')
 
 
 ###########################################################
