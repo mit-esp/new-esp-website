@@ -209,7 +209,7 @@ class QuerySendEmailForm(MultiFormMixin, forms.Form):
     submit_name = "query_form"
     query = forms.CharField(label='Query', widget=forms.TextInput(attrs={'placeholder': 'user_type=student, registrations__completed_steps__step=edit_assigned_courses'}))
     subject = forms.CharField(label='Subject Line')
-    body = forms.CharField(label='Email Body', widget=forms.Textarea)
+    body = forms.CharField(label='Email Body', widget=forms.Textarea(attrs={'placeholder': 'Hello {{ first_name }}...'}))
 
     def clean_query(self):
         query = self.cleaned_data['query'].replace(' ', '')
@@ -232,7 +232,7 @@ class TeacherSendEmailForm(MultiFormMixin, forms.Form):
     registration_step = forms.ChoiceField(required=False, choices=[('', '--------'), *TeacherRegistrationStepType.choices], label='Completed this registration step')
 
     subject = forms.CharField(label='Subject Line')
-    body = forms.CharField(label='Email Body', widget=forms.Textarea)
+    body = forms.CharField(label='Email Body', widget=forms.Textarea(attrs={'placeholder': 'Hello {{ first_name }}...'}))
 
 
 class StudentSendEmailForm(MultiFormMixin, forms.Form):
@@ -243,4 +243,4 @@ class StudentSendEmailForm(MultiFormMixin, forms.Form):
     registration_step = forms.ChoiceField(required=False, choices=[('', '--------'), *StudentRegistrationStepType.choices], label='Completed this registration step')
 
     subject = forms.CharField(label='Subject Line')
-    body = forms.CharField(label='Email Body', widget=forms.Textarea)
+    body = forms.CharField(label='Email Body', widget=forms.Textarea(attrs={'placeholder': 'Hello {{ first_name }}...'}))
