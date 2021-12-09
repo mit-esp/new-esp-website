@@ -188,7 +188,7 @@ class SendEmailsView(PermissionRequiredMixin, FormsView):
         return HttpResponseRedirect(self.success_url)
 
     def student_form_valid(self, form):
-        students = User.objects.filter(user_type=UserType.teacher)
+        students = User.objects.filter(user_type=UserType.student)
         if form.cleaned_data['registration_step']:
             students = students.filter(
                 registrations__completed_steps__step=form.cleaned_data['registration_step'])
