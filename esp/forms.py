@@ -6,7 +6,7 @@ from django.core.exceptions import FieldError, ValidationError
 from django.forms import ModelForm, inlineformset_factory
 
 from common.constants import REGISTRATION_USER_TYPE_CHOICES, GradeLevel
-from common.forms import CrispyFormMixin, HiddenOrderingInputFormset
+from common.forms import CrispyFormMixin, HiddenOrderingInputFormset, MultiFormMixin
 from common.models import User
 from esp.constants import CourseTagCategory, CourseDifficulty, TeacherRegistrationStepType, \
     StudentRegistrationStepType
@@ -204,7 +204,7 @@ class AddCoTeacherForm(CrispyFormMixin, forms.Form):
         ).distinct()
 
 
-class QuerySendEmailForm(CrispyFormMixin, forms.Form):
+class QuerySendEmailForm(MultiFormMixin, forms.Form):
     submit_label = "Send"
     submit_name = "query_form"
     query = forms.CharField(label='Query', widget=forms.TextInput(attrs={'placeholder': 'user_type=student, registrations__completed_steps__step=edit_assigned_courses'}))
@@ -224,7 +224,7 @@ class QuerySendEmailForm(CrispyFormMixin, forms.Form):
         self.cleaned_data["users"] = to_users
         return kwargs
 
-class TeacherSendEmailForm(CrispyFormMixin, forms.Form):
+class TeacherSendEmailForm(MultiFormMixin, forms.Form):
     submit_label = "Send"
     submit_name = "teacher_form"
     submit_one_class = forms.BooleanField(required=False, label='Submitted at least one class')
@@ -235,7 +235,7 @@ class TeacherSendEmailForm(CrispyFormMixin, forms.Form):
     body = forms.CharField(label='Email Body', widget=forms.Textarea)
 
 
-class StudentSendEmailForm(CrispyFormMixin, forms.Form):
+class StudentSendEmailForm(MultiFormMixin, forms.Form):
     submit_label = "Send"
     submit_name = "student_form"
     guardians = forms.BooleanField(required=False, label='Send to guardians')

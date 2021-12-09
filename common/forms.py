@@ -16,6 +16,12 @@ class CrispyFormMixin(object):
         self.helper.add_input(Submit(self.submit_name, self.submit_label, css_class="mt-3 w-100"))
 
 
+class MultiFormMixin(CrispyFormMixin):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper.layout.append('multiform_key')
+
+
 class HiddenOrderingInputFormset(BaseInlineFormSet):
     ordering_widget = HiddenInput
 

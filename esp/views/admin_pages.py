@@ -221,7 +221,7 @@ class SendEmailsView(PermissionRequiredMixin, FormsView):
                 subject,
                 body,
                 from_email,
-                to_user.email,
+                [to_user.email],
                 fail_silently=False,
             )
             if guardians:
@@ -250,7 +250,11 @@ class SendEmailsView(PermissionRequiredMixin, FormsView):
                     fail_silently=False,
                 )
                 to_emails.append(to_users.values_list('student_profile__emergency_contact_email', flat=True))
-        messages.info(self.request, f'An email to {to_emails.count()} email addresses')
+        email_count = to_emails.count()
+        if email_count == 1:
+            messages.info(self.request, f'An email was sent to {to_emails.count()} email address')
+        else:
+         messages.info(self.request, f'An email was sent to {to_emails.count()} email addresses')
 
 
 ###########################################################
