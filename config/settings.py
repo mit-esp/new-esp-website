@@ -19,6 +19,7 @@ env = environ.Env(
     DEBUG_TOOLBAR=(bool, False),
     HOST=(str, "localhost"),
     LOCALHOST=(bool, False),
+    REACT_HOTLOAD=(bool, False),
     MAINTENANCE_MODE=(bool, False),
     SENTRY_DSN=(str, None),
 )
@@ -37,6 +38,7 @@ DEBUG = env("DEBUG")
 
 # run with this set to False in production
 LOCALHOST = env("LOCALHOST")
+REACT_HOTLOAD = env("REACT_HOTLOAD")
 
 ALLOWED_HOSTS = env("HOST").split(",")
 if LOCALHOST is True:
@@ -95,7 +97,7 @@ ROOT_URLCONF = "config.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [os.path.join(BASE_DIR, "build")],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -186,7 +188,9 @@ USE_TZ = True
 STATIC_URL = "/static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static")
+    os.path.join(BASE_DIR, "static"),
+    os.path.join(BASE_DIR, "build"),
+    os.path.join(BASE_DIR, "build/static")
 ]
 
 AUTH_USER_MODEL = "common.User"

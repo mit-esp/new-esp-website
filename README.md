@@ -12,6 +12,8 @@ cp config/.env.example config/.env
 
 # Fill in appropriate environment values.
 vim config/.env
+# set top level REACT_APP_API_BASE_URL to backend API base url
+vim .env
 
 # Install backend requirements.
 pip install -r requirements.txt
@@ -22,18 +24,13 @@ npm install
 # Apply migrations and sync database schema.
 python manage.py migrate
 
-# Creates database fixtures.
-python manage.py loaddata --app common fixtures.json
-```
-
-To run the project:
-```
+# To run the project:
 python manage.py runserver_plus
-```
-To run the React scheduler in development:
-```
+
+#To run the React scheduler in development:
 npm run start
 ```
+
 To access the database:
 ```
 python manage.py shell_plus
@@ -63,12 +60,34 @@ Install Postgres:
 sudo yum install -y postgresql-devel
 ```
 
-Deployment commands
+Configure environment variables in `config/.env` e.g.
 ```
+HOST=esp-dev.mit.edu
+DEBUG=False
+DEBUG_TOOLBAR=False
+LOCALHOST=False
+...
+```
+and `.env` e.g.
+```
+# should be set to base url
+REACT_APP_API_BASE_URL=https://esp-dev.mit.edu
+PUBLIC_URL=https://esp-dev.mit.edu
+```
+
+Deployment commands:
+```
+git pull
 pip install --upgrade pip
 pip install -r requirements.txt
-python manage.py migrate --noinput
+npm install
+npm run build
+python manage.py compilescss
 python manage.py collectstatic --noinput --ignore *.scss
+python manage.py migrate --noinput
+
+# restart wsgi process e.g.
+sudo systemctl restart gunicorn
 ```
 
 ### Settings

@@ -3,6 +3,7 @@ from crispy_forms.helper import FormHelper
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import FieldError, ValidationError
+from django.db import transaction
 from django.forms import ModelForm, inlineformset_factory
 
 from common.constants import REGISTRATION_USER_TYPE_CHOICES, GradeLevel
@@ -10,10 +11,12 @@ from common.forms import CrispyFormMixin, HiddenOrderingInputFormset, MultiFormM
 from common.models import User
 from esp.constants import CourseTagCategory, CourseDifficulty, TeacherRegistrationStepType, \
     StudentRegistrationStepType
+from esp.models.course_scheduling import ClassroomTimeSlot, CourseSection
 from esp.models.program import Course, CourseTag, Program, ProgramStage
 from esp.models.program_registration import (ProgramRegistrationStep,
                                              StudentProfile, TeacherProfile,
                                              TeacherRegistration)
+from esp.serializers import AssignClassroomTimeSlotSerializer
 
 
 class RegisterUserForm(CrispyFormMixin, UserCreationForm):
@@ -99,10 +102,10 @@ class ProgramForm(CrispyFormMixin, ModelForm):
 
     class Meta:
         model = Program
-        fields = ["name", "program_type", "start_date", "end_date", "description", "notes"]
+        fields = ["name", "program_type", "start_date", "end_date", "number_of_weeks", "time_block_minutes", "min_grade_level", "max_grade_level", "description", "notes"]
         widgets = {
-            'start_date': forms.DateInput(attrs={'class': 'datepicker'}),
-            'end_date': forms.DateInput(attrs={'class': 'datepicker'}),
+            'start_date': forms.DateInput(attrs={'type': 'date', 'class': 'datepicker'}),
+            'end_date': forms.DateInput(attrs={'type': 'date', 'class': 'datepicker'}),
         }
 
 
@@ -116,8 +119,8 @@ class ProgramStageForm(ModelForm):
         model = ProgramStage
         fields = ("name", "start_date", "end_date", "description")
         widgets = {
-            'start_date': forms.DateInput(attrs={'class': 'datepicker'}),
-            'end_date': forms.DateInput(attrs={'class': 'datepicker'}),
+            'start_date': forms.DateInput(attrs={'type': 'date', 'class': 'datepicker'}),
+            'end_date': forms.DateInput(attrs={'type': 'date', 'class': 'datepicker'}),
         }
 
 
@@ -160,8 +163,8 @@ class TeacherCourseForm(CrispyFormMixin, ModelForm):
             "teacher_notes",
         ]
         widgets = {
-            'start_date': forms.DateInput(attrs={'class': 'datepicker'}),
-            'end_date': forms.DateInput(attrs={'class': 'datepicker'}),
+            'start_date': forms.DateInput(attrs={'type': 'date', 'class': 'datepicker'}),
+            'end_date': forms.DateInput(attrs={'type': 'date', 'class': 'datepicker'}),
         }
 
     def __init__(self, *args, is_update=False, program=None, **kwargs):
@@ -244,3 +247,43 @@ class StudentSendEmailForm(MultiFormMixin, forms.Form):
 
     subject = forms.CharField(label='Subject Line')
     body = forms.CharField(label='Email Body', widget=forms.Textarea(attrs={'placeholder': 'Hello {{ first_name }}...'}))
+
+    
+class AssignClassroomTimeSlotsForm(forms.Form):
+    data = forms.JSONField()
+
+    def clean_data(self):
+        """
+        Validate data json structure.
+        """
+        data = self.cleaned_data["data"]
+        serializer = AssignClassroomTimeSlotSerializer(data=data, many=True)
+        if not serializer.is_valid():
+            # Todo: Add sentry notification; this error is not intended for the user
+            raise ValidationError("Sorry, something went wrong")
+        self._validate_ids(ClassroomTimeSlot, 'classroom_time_slot_id', serializer.data)
+        self._validate_ids(CourseSection, 'course_section_id', serializer.data, ignore_none=True)
+        return serializer.data
+
+    def save(self):
+        """
+        Save ClassroomTimeSlot assignments. This is intentionally not optimized for readability since
+        we don't expect any single call to affect that many ClassroomTimeSlot objects.
+        """
+        with transaction.atomic():
+            for datum in self.cleaned_data["data"]:
+                (
+                    ClassroomTimeSlot
+                        .objects
+                        .filter(id=datum["classroom_time_slot_id"])
+                        .update(course_section_id=datum["course_section_id"])
+                )
+
+    def _validate_ids(self, Model, id_field_name, data, ignore_none=False):
+        model_ids = [datum.get(id_field_name, None) for datum in data]
+        if ignore_none:
+            model_ids = [_id for _id in model_ids if _id is not None]
+        model_count = Model.objects.filter(id__in=[_id for _id in model_ids if _id is not None]).count()
+        if len(set(model_ids)) != model_count:
+            # Todo: Add sentry notification; this error is not intended for the user
+            raise ValidationError("Sorry, something went wrong")

@@ -79,7 +79,7 @@ class StudentProfileUpdateView(PermissionRequiredMixin, UpdateView):
         return super().form_valid(form)
 
 
-class StudentDashboardView(TemplateView):
+class StudentDashboardView(PermissionRequiredMixin, TemplateView):
     permission = PermissionType.student_dashboard_view
     template_name = 'student/student_dashboard.html'
 
@@ -132,6 +132,7 @@ class TeacherProfileUpdateView(PermissionRequiredMixin, UpdateView):
     model = TeacherProfile
     form_class = TeacherProfileForm
     template_name = "teacher/teacher_profile_update_form.html"
+    success_url = reverse_lazy("teacher_dashboard")
 
 
 class TeacherDashboardView(TemplateView):

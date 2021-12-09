@@ -6,15 +6,15 @@ from esp.views.admin_pages import (AdminDashboardView, CourseCreateView,
                                    ProgramCreateView, ProgramListView,
                                    ProgramLotteryView, ProgramStageCreateView,
                                    ProgramStageUpdateView, ProgramUpdateView, SendEmailsView)
-from esp.views.scheduler import ClassroomApiView, CourseApiView, CourseSectionApiView, TimeSlotApiView, \
-    ClassroomTimeSlotApiView, SchedulerView
+from esp.views.scheduler import (AssignClassroomTimeSlotsApiView, ClassroomApiView, ClassroomTimeSlotApiView,
+                                 CourseApiView, CourseSectionApiView, SchedulerView, TimeSlotApiView)
 from esp.views.student_registration_pages import (
     CompleteSurveysView, ConfirmAssignedCoursesView,
-    ConfirmRegistrationSubmissionView, EditAssignedCoursesView,
-    InitiatePreferenceEntryView, PayProgramFeesView, PreferenceEntryRoundView,
-    ProgramRegistrationCreateView, ProgramRegistrationStageView,
-    RegistrationStepCompleteView, StudentAvailabilityView, SubmitWaiversView,
-    VerifyStudentProfileView)
+    ConfirmRegistrationSubmissionView, DeleteCourseRegistrationView,
+    EditAssignedCoursesView, InitiatePreferenceEntryView, PayProgramFeesView,
+    PreferenceEntryRoundView, ProgramRegistrationCreateView,
+    ProgramRegistrationStageView, RegistrationStepCompleteView,
+    StudentAvailabilityView, SubmitWaiversView, VerifyStudentProfileView)
 from esp.views.teacher_registration_pages import (
     AddCoTeacherView, TeacherEditCourseView, TeacherProgramDashboardView,
     TeacherProgramRegistrationCreateView, TeacherRegistrationStepRouterView)
@@ -49,10 +49,9 @@ urlpatterns = [
     path('admin/programs/<uuid:pk>/stages/update/', ProgramStageUpdateView.as_view(), name="update_program_stage"),
     path('admin/programs/all/', ProgramListView.as_view(), name='programs'),
 
-    path('admin/classes/create/', CourseCreateView.as_view(), name='create_course'),
-    path('admin/classes/update/<uuid:pk>/', CourseUpdateView.as_view(), name='update_course'),
-    path('admin/classes/all/', CourseListView.as_view(), name='courses'),
-
+    path('admin/programs/<uuid:pk>/classes/create/', CourseCreateView.as_view(), name='create_course'),
+    path('admin/programs/<uuid:pk>/classes/update/<uuid:class_pk>/', CourseUpdateView.as_view(), name='update_course'),
+    path('admin/programs/<uuid:pk>/classes/', CourseListView.as_view(), name='courses'),
     path('admin/programs/<uuid:pk>/lottery/', ProgramLotteryView.as_view(), name="program_lottery"),
 
     path('admin/email/', SendEmailsView.as_view(), name="send_email"),
@@ -78,6 +77,14 @@ urlpatterns = [
     path(
         'programs/registration/<uuid:pk>/', ProgramRegistrationStageView.as_view(),
         name="current_registration_stage"
+    ),
+    path(
+        'programs/registration/<uuid:registration_id>/edit_classes/',
+        EditAssignedCoursesView.as_view(), name="edit_student_courses"
+    ),
+    path(
+        'programs/registration/remove_class/<uuid:pk>/',
+        DeleteCourseRegistrationView.as_view(), name='delete_course_registration'
     ),
 
     # Student registration step initial views
@@ -110,10 +117,6 @@ urlpatterns = [
         ConfirmAssignedCoursesView.as_view(), name=StudentRegistrationStepType.confirm_assigned_courses
     ),
     path(
-        'programs/registration/<uuid:registration_id>/edit_classes/<uuid:step_id>/',
-        EditAssignedCoursesView.as_view(), name=StudentRegistrationStepType.edit_assigned_courses
-    ),
-    path(
         'programs/registration/<uuid:registration_id>/fees/<uuid:step_id>/',
         PayProgramFeesView.as_view(), name=StudentRegistrationStepType.pay_program_fees
     ),
@@ -134,8 +137,8 @@ urlpatterns = [
     # Scheduler
     path("scheduler/", SchedulerView.as_view(), name="scheduler"),  # TODO: make program specific url
     path("api/v0/classrooms/", ClassroomApiView.as_view(), name="classroom_api"),
-    path("api/v0/courses/", CourseApiView.as_view(), name="course_api"),
-    path("api/v0/course-sections/", CourseSectionApiView.as_view(), name="course_section_api"),
-    path("api/v0/time-slots/", TimeSlotApiView.as_view(), name="time_slot_api"),
-    path("api/v0/classroom-time-slots/", ClassroomTimeSlotApiView.as_view(), name="classroom_time_slot_api"),
+    path("api/v0/programs/<uuid:pk>/courses/", CourseApiView.as_view(), name="course_api"),
+    path("api/v0/programs/<uuid:pk>/time-slots/", TimeSlotApiView.as_view(), name="time_slot_api"),
+    path("api/v0/programs/<uuid:pk>/classroom-time-slots/", ClassroomTimeSlotApiView.as_view(), name="classroom_time_slot_api"),
+    path("api/v0/programs/<uuid:pk>/assign-classroom-time-slots/", AssignClassroomTimeSlotsApiView.as_view(), name="assign_classroom_time_slots_api"),
 ]

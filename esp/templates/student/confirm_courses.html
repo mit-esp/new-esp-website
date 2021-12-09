@@ -1,0 +1,30 @@
+{% extends "base/student_base.html" %}
+{% load filters %}
+
+{% block title %}Confirm Class Registrations{% endblock %}
+
+{% block nav %}
+  <div class="my-3">
+    <a href="{% url 'current_registration_stage' pk=programregistration.id %}" class="btn btn-secondary">Return to program dashboard</a>
+  </div>
+{% endblock %}
+
+{% block content %}
+  <h1>Lottery Results</h1>
+  <p>
+    Your assigned courses are listed below. Please review the list and confirm your registrations.
+    If you wish to un-enroll from a course, press the remove button. This will permanently cancel your registration and
+    open your slot to another student. After you confirm your initial class list, you will have the option to add
+    additional classes on a first-come-first-served basis from your program dashboard.
+  </p>
+  <hr>
+  <div class="list-group">
+    {% for course_registration in course_registrations %}
+      {% with course_section=course_registration.course_section %}
+        {% include 'student/components/registered_course_card.html' %}
+      {% endwith %}
+    {% endfor %}
+  </div>
+  <br>
+  {% include 'shared/submit_button.html' with submit_label='Confirm Course Registrations' %}
+{% endblock %}

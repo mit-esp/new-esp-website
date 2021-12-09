@@ -3,8 +3,5 @@
 {% block content %}
   This registration step is not yet supported.
 
-  <form method="post">
-    {% csrf_token %}
-    <button class="btn btn-primary" type="submit">Mark step as completed and return to stage</button>
-  </form>
+  {% include 'shared/submit_button.html' with submit_label='Mark step completed and return to stage' %}
 {% endblock %}

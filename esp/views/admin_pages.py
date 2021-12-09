@@ -5,9 +5,10 @@ from django.core.exceptions import FieldError
 from django.core.mail import send_mail
 from django.db.models import Count, Max
 from django.http import HttpResponseRedirect
-from django.shortcuts import redirect
+from django.shortcuts import get_object_or_404, redirect
 from django.template import Template, Context
 from django.urls import reverse_lazy
+from django.utils import timezone
 from django.views.generic import (CreateView, FormView, ListView, TemplateView,
                                   UpdateView)
 from django.views.generic.detail import SingleObjectMixin
@@ -35,11 +36,13 @@ class AdminDashboardView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
+        ts = timezone.now()
         context["users_count"] = User.objects.count()
         context["students_count"] = User.objects.filter(user_type=UserType.student).count()
         context["teachers_count"] = User.objects.filter(user_type=UserType.teacher).count()
-        context["admins_count"] = User.objects.filter(user_type=UserType.admin,
-                                                      is_active=True).count()
+        context["admins_count"] = User.objects.filter(user_type=UserType.admin, is_active=True).count()
+        context["upcoming_program"] = Program.objects.filter(start_date__gte=ts).latest('-start_date', '-end_date')
+        context["active_programs"] = Program.objects.filter(start_date__lte=ts, end_date__gte=ts).order_by('-start_date')
         return context
 
 
@@ -70,7 +73,15 @@ class ProgramUpdateView(PermissionRequiredMixin, UpdateView):
 
 class ProgramListView(PermissionRequiredMixin, ListView):
     permission = PermissionType.programs_view_all
-    model = Program
+    context_object_name = "data"
+    template_name = "esp/program_list.html"
+
+    def get_queryset(self):
+        data = {
+            "upcoming_programs": Program.objects.filter(end_date__gt=timezone.now()),
+            "past_programs": Program.objects.filter(end_date__lte=timezone.now()),
+        }
+        return data
 
 
 class ProgramStageFormsetMixin:
@@ -116,7 +127,8 @@ class ProgramStageCreateView(PermissionRequiredMixin, SingleObjectMixin, Program
 
     def form_valid(self, form):
         self.object = self.get_object()
-        max_index = self.object.stages.aggregate(Max('index'))["index__max"]
+        # _order from order_with_respect_to
+        max_index = self.object.stages.aggregate(Max('_order'))["_order__max"]
         if max_index:
             form.instance.index = max_index + 1
         form.instance.program = self.object
@@ -264,16 +276,41 @@ class CourseCreateView(PermissionRequiredMixin, CreateView):
     permission = PermissionType.courses_edit_all
     model = Course
     form_class = TeacherCourseForm
-    success_url = reverse_lazy('programs')
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["program"] = get_object_or_404(Program, pk=self.kwargs['pk'])
+        return kwargs
+
+    def get_success_url(self):
+        program_id = self.kwargs['pk']
+        return reverse_lazy('courses', kwargs={'pk': program_id})
 
 
 class CourseUpdateView(PermissionRequiredMixin, UpdateView):
     permission = PermissionType.courses_edit_all
     model = Course
     form_class = TeacherCourseForm
-    success_url = reverse_lazy('programs')
+    pk_url_kwarg = "class_pk"
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["program"] = self.object.program
+        return kwargs
+
+    def get_success_url(self):
+        program_id = self.kwargs['pk']
+        return reverse_lazy('courses', kwargs={'pk': self.kwargs['pk']})
 
 
 class CourseListView(PermissionRequiredMixin, ListView):
     permission = PermissionType.courses_view_all
-    model = Course
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["program_id"] = self.kwargs['pk']
+        return context
+
+    def get_queryset(self, **kwargs):
+        self.program = get_object_or_404(Program, pk=self.kwargs['pk'])
+        return Course.objects.filter(program=self.program)
