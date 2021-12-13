@@ -2,14 +2,15 @@ from crispy_forms import layout
 from crispy_forms.helper import FormHelper
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
-from django.core.exceptions import ValidationError
+from django.core.exceptions import FieldError, ValidationError
 from django.db import transaction
 from django.forms import ModelForm, inlineformset_factory
 
 from common.constants import REGISTRATION_USER_TYPE_CHOICES, GradeLevel
-from common.forms import CrispyFormMixin, HiddenOrderingInputFormset
+from common.forms import CrispyFormMixin, HiddenOrderingInputFormset, MultiFormMixin
 from common.models import User
-from esp.constants import CourseTagCategory
+from esp.constants import CourseTagCategory, CourseDifficulty, TeacherRegistrationStepType, \
+    StudentRegistrationStepType
 from esp.models.course_scheduling import ClassroomTimeSlot, CourseSection
 from esp.models.program import Course, CourseTag, Program, ProgramStage
 from esp.models.program_registration import (ProgramRegistrationStep,
@@ -206,6 +207,50 @@ class AddCoTeacherForm(CrispyFormMixin, forms.Form):
         ).distinct()
 
 
+class QuerySendEmailForm(MultiFormMixin, forms.Form):
+    submit_label = "Send"
+    submit_name = "query_form"
+    query = forms.CharField(label='Query', widget=forms.TextInput(attrs={'placeholder': 'user_type=student, registrations__completed_steps__step=edit_assigned_courses'}))
+    subject = forms.CharField(label='Subject Line')
+    body = forms.CharField(label='Email Body', widget=forms.Textarea(attrs={'placeholder': 'Hello {{ first_name }} {{ last_name }}, your account {{ username }} has not yet paid registration fees...'}))
+
+    def clean_query(self):
+        query = self.cleaned_data['query'].replace(' ', '')
+        try:
+            kwargs = {}
+            for arg in query.split(','):
+                x, y = arg.split('=')
+                kwargs[x] = y
+            to_users = User.objects.filter(**kwargs)
+        except (FieldError, ValueError) as e:
+            print('ERROR: ', e)
+            raise ValidationError(e)
+        self.cleaned_data["users"] = to_users
+        return kwargs
+
+class TeacherSendEmailForm(MultiFormMixin, forms.Form):
+    submit_label = "Send"
+    submit_name = "teacher_form"
+    program = forms.ModelChoiceField(queryset=Program.objects.all())
+    submit_one_class = forms.BooleanField(required=False, label='Submitted at least one class')
+    difficulty = forms.ChoiceField(required=False, choices=[('', '---------'), *CourseDifficulty.choices], label='Teaches a course of a certain difficulty')
+    registration_step = forms.ChoiceField(required=False, choices=[('', '---------'), *TeacherRegistrationStepType.choices], label='Completed this registration step')
+
+    subject = forms.CharField(label='Subject Line')
+    body = forms.CharField(label='Email Body', widget=forms.Textarea(attrs={'placeholder': 'Hello {{ first_name }} {{ last_name }}, your account {{ username }} has not yet paid registration fees...'}))
+
+
+class StudentSendEmailForm(MultiFormMixin, forms.Form):
+    submit_label = "Send"
+    submit_name = "student_form"
+    only_guardians = forms.BooleanField(required=False, label='Send emails only to guardians', help_text='Note: this will also change first_name, last_name, and email merge fields')
+    program = forms.ModelChoiceField(queryset=Program.objects.all())
+    registration_step = forms.ChoiceField(required=False, choices=[('', '---------'), *StudentRegistrationStepType.choices], label='Completed this registration step')
+
+    subject = forms.CharField(label='Subject Line')
+    body = forms.CharField(label='Email Body', widget=forms.Textarea(attrs={'placeholder': 'Hello {{ first_name }} {{ last_name }}, your account {{ username }} has not yet paid registration fees...'}))
+
+    
 class AssignClassroomTimeSlotsForm(forms.Form):
     data = forms.JSONField()
 

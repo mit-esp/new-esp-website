@@ -11,6 +11,7 @@ django-cors-headers
 django-ses
 django-compressor
 django-sass-processor
+django-multiform-views
 libsass
 
 django-simple-history

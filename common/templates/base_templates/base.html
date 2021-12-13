@@ -56,11 +56,10 @@
         </div>
       </div>
     </nav>
-    <div class="container">
+    <div class="container my-2">
       {% for message in messages %}
-        <div class="alert {% if message.tags %}{{ message.tags }}{% endif %} alert-dismissible" role="alert">
-          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
+        <div class="alert {% if message.tags %}{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
           </button>
           {{ message }}
         </div>
