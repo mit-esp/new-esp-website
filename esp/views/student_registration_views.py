@@ -239,9 +239,11 @@ class PayProgramFeesView(RegistrationStepBaseView):
         return context
 
     def post(self, request, *args, **kwargs):
-        return redirect(
-            "complete_registration_step", registration_id=self.object.id, step_id=self.registration_step.id
-        )
+        print(request.POST)
+        return redirect(self.request.path)
+        # return redirect(
+        #     "complete_registration_step", registration_id=self.object.id, step_id=self.registration_step.id
+        # )
 
 
 class CompleteSurveysView(RegistrationStepPlaceholderView):
