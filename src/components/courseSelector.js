@@ -1,8 +1,11 @@
+import {LoadingSpinner} from "./loadingSpinner";
+
 export function CourseSelector(props) {
   const {
     classroomTimeSlots,
     courses,
     filters,
+    loading,
     selected,
     setSelected,
     DEFAULT_SELECTED,
@@ -12,32 +15,36 @@ export function CourseSelector(props) {
     <div className='card'>
       <div className='card-body'>
         <h5 className='card-title'>Courses</h5>
-        <p className='card-subtitle mb-2 text-muted'>Please select a course</p>
-        <div className='course-list d-grid'>
-          {courses.length
-            ? courses.map((course) => (
-              <div
-                className={getCourseClassNames(course)}
-                key={course.id}
-                onClick={() => selectCourse(course)}
-              >
-                <span>{course.name} ({getScheduledSectionsCount(course)}/{course.sections_count})</span>
-                <div className={`d-grid mt-2 ${course.id === selected.course?.id ? '' : 'd-none'}`}>
-                  {course.sections.map((section) => (
-                    <div
-                      className={getCourseSectionClassNames(section)}
-                      key={section.id}
-                      onClick={(event) => selectCourseSection(section, event)}
-                    >
-                      Section {section.display_id}
+        {loading ? <LoadingSpinner /> : (
+          <>
+            <p className='card-subtitle mb-2 text-muted'>Please select a course</p>
+            <div className='course-list d-grid'>
+              {courses.length
+                ? courses.map((course) => (
+                  <div
+                    className={getCourseClassNames(course)}
+                    key={course.id}
+                    onClick={() => selectCourse(course)}
+                  >
+                    <span>{course.name} ({getScheduledSectionsCount(course)}/{course.sections_count})</span>
+                    <div className={`d-grid mt-2 ${course.id === selected.course?.id ? '' : 'd-none'}`}>
+                      {course.sections.map((section) => (
+                        <div
+                          className={getCourseSectionClassNames(section)}
+                          key={section.id}
+                          onClick={(event) => selectCourseSection(section, event)}
+                        >
+                          Section {section.display_id}
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
-              </div>
-            ))
-            : <span>(No Courses)</span>
-          }
-        </div>
+                  </div>
+                ))
+                : <span>(No Courses)</span>
+              }
+            </div>
+          </>
+        )}
       </div>
     </div>
   )
