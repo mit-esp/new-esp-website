@@ -171,6 +171,24 @@
     }
   }
 
+  & .loading-spinner {
+    &.centered {
+      align-items: center;
+      display: flex;
+      height: 100%;
+      justify-content: center;
+    }
+
+    &:not(.centered) .text {
+      position: relative;
+      top: -8px;
+    }
+
+    & .text {
+      margin-left: 8px;
+    }
+  }
+
   & .toast {
     bottom: 12px;
     position: fixed;

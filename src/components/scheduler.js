@@ -1,11 +1,13 @@
 import {useMemo} from "react";
 import {DAYS_OF_WEEK} from "../constants";
+import {LoadingSpinner} from "./loadingSpinner";
 
 export function Scheduler(props) {
   const {
     classrooms,
     classroomTimeSlots,
     filters,
+    loading,
     selected,
     setSelected,
     timeSlots,
@@ -34,54 +36,56 @@ export function Scheduler(props) {
 
   return (
     <div className='card'>
-      {classroomTimeSlots.length || classrooms.length || timeSlots.length
-        ? (
-          <div className='table-responsive'>
-            <table className='table'>
-              <thead>
-              <tr>
-                <th className='sticky column header' scope='col' />
-                {classrooms.map((classroom) => (
-                  <th
-                    className={getClassroomClassNames(classroom, true)}
-                    key={classroom.id}
-                    scope='col'
-                  >
-                    {classroom.name}
-                  </th>
-                ))}
-              </tr>
-              </thead>
-              <tbody>
-              {timeSlots.map((timeSlot) => (
-                <tr className={shouldShowTimeSlot(timeSlot) ? '' : 'd-none'} key={timeSlot.id}>
-                  <td
-                    className='sticky column'
-                    dangerouslySetInnerHTML={{__html: timeSlotDisplay(timeSlot, true)}}
-                  />
-                  {classrooms.map((classroom) => {
-                    const classroomTimeSlot = getClassroomTimeSlot(timeSlot.id, classroom.id)
-                    return (
-                      <td
-                        className={getClassroomTimeSlotClassNames(classroomTimeSlot, classroom)}
-                        key={`${timeSlot.id}-${classroom.id}`}
-                        onClick={
-                          isClickable(classroomTimeSlot)
-                            ? () => selectClassroomTimeSlot(classroomTimeSlot)
-                            : null
-                        }
-                      >
-                        {getClassroomTimeSlotDisplay(classroomTimeSlot)}
-                      </td>
-                    )
-                  })}
+      {loading
+        ? <LoadingSpinner centered={true} />
+        : classroomTimeSlots.length === 0 || classrooms.length === 0 || timeSlots.length === 0
+          ? <p>(No available classroom time slots)</p>
+          : (
+            <div className='table-responsive'>
+              <table className='table'>
+                <thead>
+                <tr>
+                  <th className='sticky column header' scope='col' />
+                  {classrooms.map((classroom) => (
+                    <th
+                      className={getClassroomClassNames(classroom, true)}
+                      key={classroom.id}
+                      scope='col'
+                    >
+                      {classroom.name}
+                    </th>
+                  ))}
                 </tr>
-              ))}
-              </tbody>
-            </table>
-          </div>
-        )
-        : <div>(No Time Slots)</div>
+                </thead>
+                <tbody>
+                {timeSlots.map((timeSlot) => (
+                  <tr className={shouldShowTimeSlot(timeSlot) ? '' : 'd-none'} key={timeSlot.id}>
+                    <td
+                      className='sticky column'
+                      dangerouslySetInnerHTML={{__html: timeSlotDisplay(timeSlot, true)}}
+                    />
+                    {classrooms.map((classroom) => {
+                      const classroomTimeSlot = getClassroomTimeSlot(timeSlot.id, classroom.id)
+                      return (
+                        <td
+                          className={getClassroomTimeSlotClassNames(classroomTimeSlot, classroom)}
+                          key={`${timeSlot.id}-${classroom.id}`}
+                          onClick={
+                            isClickable(classroomTimeSlot)
+                              ? () => selectClassroomTimeSlot(classroomTimeSlot)
+                              : null
+                          }
+                        >
+                          {getClassroomTimeSlotDisplay(classroomTimeSlot)}
+                        </td>
+                      )
+                    })}
+                  </tr>
+                ))}
+                </tbody>
+              </table>
+            </div>
+          )
       }
     </div>
   )
