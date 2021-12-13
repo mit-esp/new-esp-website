@@ -1,23 +1,33 @@
+import timeit
+
+from django.contrib import messages
+from django.core.exceptions import FieldError
+from django.core.mail import send_mail
 from django.db.models import Count, Max
+from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
+from django.template import Template, Context
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views.generic import (CreateView, FormView, ListView, TemplateView,
                                   UpdateView)
 from django.views.generic.detail import SingleObjectMixin
+from multiform_views.edit import FormsView
 
 from common.constants import PermissionType, UserType
 from common.forms import CrispyFormsetHelper
 from common.models import User
 from common.views import PermissionRequiredMixin
+from config.settings import DEFAULT_FROM_EMAIL
 from esp.forms import (ProgramForm, ProgramRegistrationStepFormset,
-                       ProgramStageForm, TeacherCourseForm)
+                       ProgramStageForm, TeacherCourseForm, QuerySendEmailForm,
+                       StudentSendEmailForm, TeacherSendEmailForm)
 from esp.lottery import run_program_lottery
-from esp.models.program import Course, Program, ProgramStage
+from esp.models.program_models import Course, Program, ProgramStage
 ######################################
 # ADMIN DASHBOARD
 ######################################
-from esp.models.program_registration import ClassRegistration
+from esp.models.program_registration_models import ClassRegistration
 
 
 class AdminDashboardView(TemplateView):
@@ -98,7 +108,8 @@ class ProgramStageFormsetMixin:
         return redirect_link
 
 
-class ProgramStageCreateView(PermissionRequiredMixin, SingleObjectMixin, ProgramStageFormsetMixin, FormView):
+class ProgramStageCreateView(PermissionRequiredMixin, SingleObjectMixin, ProgramStageFormsetMixin,
+                             FormView):
     permission = PermissionType.programs_edit_all
     model = Program
     form_class = ProgramStageForm
@@ -159,6 +170,95 @@ class ProgramLotteryView(PermissionRequiredMixin, SingleObjectMixin, TemplateVie
         return redirect("program_lottery", pk=self.kwargs["pk"])
 
 
+class SendEmailsView(PermissionRequiredMixin, FormsView):
+    permission = PermissionType.send_email
+    template_name = "esp/send_email.html"
+    success_url = reverse_lazy('send_email')
+    mailing_list = None
+    form_classes = {
+        'query_form': QuerySendEmailForm,
+        'teacher_form': TeacherSendEmailForm,
+        'student_form': StudentSendEmailForm,
+    }
+
+    def query_form_valid(self, form):
+        users = form.cleaned_data['users']
+        self._send_emails(users, form)
+        return HttpResponseRedirect(self.success_url)
+
+    def teacher_form_valid(self, form):
+        # print(form.cleaned_data)
+        teachers = User.objects.filter(user_type=UserType.teacher)
+        if form.cleaned_data['program']:
+            # print(form.cleaned_data['program'])
+            teachers = teachers.filter(teacher_registrations__program=form.cleaned_data['program'])
+        if form.cleaned_data['submit_one_class']:
+            teachers = teachers.annotate(num_courses=Count('teacher_registrations__courses')).filter(num_courses__gte=1)
+        if form.cleaned_data['difficulty']:
+            teachers = teachers.filter(
+                teacher_registrations__courses__course__difficulty=form.cleaned_data['difficulty'])
+        if form.cleaned_data['registration_step']:
+            teachers = teachers.filter(
+                teacher_registrations__completed_steps__step__step_key=form.cleaned_data['registration_step'])
+        self._send_emails(teachers, form)
+        return HttpResponseRedirect(self.success_url)
+
+    def student_form_valid(self, form):
+        students = User.objects.filter(user_type=UserType.student)
+        if form.cleaned_data['program']:
+            students = students.filter(registrations__program=form.cleaned_data['program'])
+        if form.cleaned_data['registration_step']:
+            students = students.filter(
+                registrations__completed_steps__step__step_key=form.cleaned_data['registration_step'])
+        only_guardians = form.cleaned_data['only_guardians']
+        self._send_emails(students, form, only_guardians)
+        return HttpResponseRedirect(self.success_url)
+
+    def _send_emails(self, to_users, form, only_guardians=False, emergency_contacts=False):
+        subject = form.cleaned_data['subject']
+        from_email = DEFAULT_FROM_EMAIL
+        template = Template(form.cleaned_data['body'])
+
+        for to_user in to_users:
+            # This dict contains the available merge fields that you can use in sending emails
+            # add to this dict to add to the available fields you can use in the email body ex.
+            # to insert a user's first name into an email, type '{{ first_name }}'. You may
+            # access any field or related object of a user with dot notation ex. {{
+            # user.teacher_profile.graduation_year }}. If a merge field is used in the body that
+            # is not present in the context_dict then that field will be replaced by the empty
+            # string
+            # NOTE: merge fields currently ony available for use in the email body. To use in the
+            # subject line or elsewhere, follow the same pattern used for rendering the template
+            # in the body
+            context_dict = {
+                'user': to_user,
+                'first_name': to_user.first_name,
+                'last_name': to_user.last_name,
+                'username': to_user.username,
+                'email': to_user.email,
+            }
+            if only_guardians:
+                context_dict['first_name'] = to_user.student_profile.guardian_first_name
+                context_dict['last_name'] = to_user.student_profile.guardian_last_name
+                context_dict['email'] = to_user.student_profile.guardian_email or to_user.email
+                body = template.render(Context(context_dict))
+                to_emails = [to_user.student_profile.guardian_email]
+            else:
+                body = template.render(Context(context_dict))
+                to_emails = [to_user.email]
+
+            send_mail(
+                subject,
+                body,
+                from_email,
+                to_emails,
+                fail_silently=False,
+            )
+
+        email_count = to_users.count()
+        messages.success(self.request, f'An email was sent to {email_count} email address{"" if email_count == 1 else "es"}')
+
+
 ###########################################################
 
 
@@ -176,6 +276,10 @@ class CourseCreateView(PermissionRequiredMixin, CreateView):
         program_id = self.kwargs['pk']
         return reverse_lazy('courses', kwargs={'pk': program_id})
 
+    def form_valid(self, form):
+        self.program = get_object_or_404(Program, pk=self.kwargs['pk'])
+        form.instance.program = self.program
+        return super().form_valid(form)
 
 class CourseUpdateView(PermissionRequiredMixin, UpdateView):
     permission = PermissionType.courses_edit_all

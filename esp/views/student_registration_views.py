@@ -15,15 +15,15 @@ from common.constants import PermissionType
 from common.views import PermissionRequiredMixin
 from esp.constants import StudentRegistrationStepType
 from esp.forms import UpdateStudentProfileForm
-from esp.models.course_scheduling import CourseSection
-from esp.models.program import (Course, PreferenceEntryCategory,
-                                PreferenceEntryRound, Program, TimeSlot)
-from esp.models.program_registration import (ClassRegistration,
-                                             CompletedRegistrationStep,
-                                             ProgramRegistration,
-                                             ProgramRegistrationStep,
-                                             PurchasedItem,
-                                             StudentAvailability)
+from esp.models.course_scheduling_models import CourseSection
+from esp.models.program_models import (Course, PreferenceEntryCategory,
+                                       PreferenceEntryRound, Program, TimeSlot)
+from esp.models.program_registration_models import (ClassRegistration,
+                                                    CompletedRegistrationStep,
+                                                    ProgramRegistration,
+                                                    ProgramRegistrationStep,
+                                                    PurchasedItem,
+                                                    StudentAvailability)
 from esp.serializers import ClassPreferenceSerializer
 
 ########################################################

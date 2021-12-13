@@ -256,7 +256,7 @@ if LOCALHOST:
     DEFAULT_FROM_EMAIL = "webmaster@localhost"
     RESTRICT_EMAILS = True
 else:
-    # TODO: Add mailman email backend
+    # TODO(tj): Add mailman email backend
     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
     DEFAULT_FROM_EMAIL = "webmaster@localhost"
     RESTRICT_EMAILS = True

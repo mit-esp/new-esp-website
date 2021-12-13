@@ -8,8 +8,8 @@ from common.constants import PermissionType, UserType
 from common.views import PermissionRequiredMixin
 from esp.forms import (RegisterUserForm, StudentProfileForm,
                        TeacherProfileForm, UpdateStudentProfileForm)
-from esp.models.program import Program
-from esp.models.program_registration import StudentProfile, TeacherProfile
+from esp.models.program_models import Program
+from esp.models.program_registration_models import StudentProfile, TeacherProfile
 
 ######################################
 # SHARED PAGES
@@ -135,7 +135,7 @@ class TeacherProfileUpdateView(PermissionRequiredMixin, UpdateView):
     success_url = reverse_lazy("teacher_dashboard")
 
 
-class TeacherDashboardView(TemplateView):
+class TeacherDashboardView(PermissionRequiredMixin, TemplateView):
     permission = PermissionType.teacher_dashboard_view
     template_name = "teacher/teacher_dashboard.html"
 
@@ -159,6 +159,6 @@ class GuardianDashboardView(TemplateView):
     template_name = 'dashboards/guardian_dashboard.html'
 
 
-class VolunteerDashboardView(TemplateView):
+class VolunteerDashboardView(PermissionRequiredMixin, TemplateView):
     permission = PermissionType.volunteer_program_dashboard_view
     template_name = 'dashboards/volunteer_dashboard.html'

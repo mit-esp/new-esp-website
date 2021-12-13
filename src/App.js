@@ -605,7 +605,7 @@ export default function App() {
     if (selected.course?.id === course.id) {
       setSelected(DEFAULT_SELECTED)
     } else {
-      const newAssignments = {...selected.assignments}
+      const newAssignments = {...DEFAULT_SELECTED.assignments}
       for (const classroomTimeSlot of classroomTimeSlots) {
         if (classroomTimeSlot.course_id === course.id) {
           newAssignments[classroomTimeSlot.id] = classroomTimeSlot.course_section
