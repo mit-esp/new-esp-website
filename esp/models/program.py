@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 from django.db import models
 from django.db.models import Max, Min
 from django.utils import timezone
@@ -139,6 +141,21 @@ class TimeSlot(BaseModel):
     class Meta(BaseModel.Meta):
         ordering = ["start_datetime"]
         unique_together = [("program_id", "start_datetime")]
+
+    def course_teacher_availabilities(self):
+        from esp.serializers import UserSerializer
+        mapping = defaultdict(list)
+        for teacher_availability in self.teacher_availabilities.all():
+            for course_teacher in teacher_availability.registration.courses.all():
+                user = teacher_availability.registration.user
+                if user in mapping[course_teacher.course_id]:
+                    continue
+                mapping[course_teacher.course_id].append(user)
+        mapping_jsonable = {
+            str(course_id): UserSerializer(users, many=True).data
+            for course_id, users in mapping.items()
+        }
+        return mapping_jsonable
 
 
 class Classroom(BaseModel):
