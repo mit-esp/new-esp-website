@@ -4,13 +4,22 @@
 
 {% block body %}
   <div>
-    <h3>Django Query Email Form</h3>
-    {% crispy query_form %}
-    <br>
-    <h3>Teacher Email form</h3>
-    {% crispy teacher_form %}
-    <br>
-    <h3>Student Email form</h3>
-    {% crispy student_form %}
+    <div class="my-3">
+        <h3>Student-Only Email Form</h3>
+        <p>Send students an email.</p>
+        {% crispy student_form %}
+    </div>
+    <hr>
+    <div class="my-3">
+        <h3>Teachers-Only Email Form</h3>
+        <p>Send teachers an email.</p>
+        {% crispy teacher_form %}
+    </div>
+    <hr>
+    <div class="my-3">
+      <h3>Custom Django Query Email Form</h3>
+      <p>Send users that match your custom query an email.</p>
+      {% crispy query_form %}
+    </div>
   </div>
 {% endblock %}

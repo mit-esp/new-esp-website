@@ -212,7 +212,7 @@ class QuerySendEmailForm(MultiFormMixin, forms.Form):
     submit_name = "query_form"
     query = forms.CharField(label='Query', widget=forms.TextInput(attrs={'placeholder': 'user_type=student, registrations__completed_steps__step=edit_assigned_courses'}))
     subject = forms.CharField(label='Subject Line')
-    body = forms.CharField(label='Email Body', widget=forms.Textarea(attrs={'placeholder': 'Hello {{ first_name }}...'}))
+    body = forms.CharField(label='Email Body', widget=forms.Textarea(attrs={'placeholder': 'Hello {{ first_name }} {{ last_name }}, your account {{ username }} has not yet paid registration fees...'}))
 
     def clean_query(self):
         query = self.cleaned_data['query'].replace(' ', '')
@@ -237,19 +237,18 @@ class TeacherSendEmailForm(MultiFormMixin, forms.Form):
     registration_step = forms.ChoiceField(required=False, choices=[('', '---------'), *TeacherRegistrationStepType.choices], label='Completed this registration step')
 
     subject = forms.CharField(label='Subject Line')
-    body = forms.CharField(label='Email Body', widget=forms.Textarea(attrs={'placeholder': 'Hello {{ first_name }}...'}))
+    body = forms.CharField(label='Email Body', widget=forms.Textarea(attrs={'placeholder': 'Hello {{ first_name }} {{ last_name }}, your account {{ username }} has not yet paid registration fees...'}))
 
 
 class StudentSendEmailForm(MultiFormMixin, forms.Form):
     submit_label = "Send"
     submit_name = "student_form"
-    guardians = forms.BooleanField(required=False, label='Send to guardians', help_text='Note: this will also change first_name, last_name, and email merge fields')
-    emergency_contact = forms.BooleanField(required=False, label='Send to emergency contact', help_text='Note: this will also change first_name, last_name, and email merge fields')
+    only_guardians = forms.BooleanField(required=False, label='Send emails only to guardians', help_text='Note: this will also change first_name, last_name, and email merge fields')
     program = forms.ModelChoiceField(queryset=Program.objects.all())
     registration_step = forms.ChoiceField(required=False, choices=[('', '---------'), *StudentRegistrationStepType.choices], label='Completed this registration step')
 
     subject = forms.CharField(label='Subject Line')
-    body = forms.CharField(label='Email Body', widget=forms.Textarea(attrs={'placeholder': 'Hello {{ first_name }}...'}))
+    body = forms.CharField(label='Email Body', widget=forms.Textarea(attrs={'placeholder': 'Hello {{ first_name }} {{ last_name }}, your account {{ username }} has not yet paid registration fees...'}))
 
     
 class AssignClassroomTimeSlotsForm(forms.Form):

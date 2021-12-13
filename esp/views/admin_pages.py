@@ -173,7 +173,7 @@ class ProgramLotteryView(PermissionRequiredMixin, SingleObjectMixin, TemplateVie
 class SendEmailsView(PermissionRequiredMixin, FormsView):
     permission = PermissionType.send_email
     template_name = "esp/send_email.html"
-    success_url = reverse_lazy('admin_dashboard')
+    success_url = reverse_lazy('send_email')
     mailing_list = None
     form_classes = {
         'query_form': QuerySendEmailForm,
@@ -187,10 +187,10 @@ class SendEmailsView(PermissionRequiredMixin, FormsView):
         return HttpResponseRedirect(self.success_url)
 
     def teacher_form_valid(self, form):
-        print(form.cleaned_data)
+        # print(form.cleaned_data)
         teachers = User.objects.filter(user_type=UserType.teacher)
         if form.cleaned_data['program']:
-            print(form.cleaned_data['program'])
+            # print(form.cleaned_data['program'])
             teachers = teachers.filter(teacher_registrations__program=form.cleaned_data['program'])
         if form.cleaned_data['submit_one_class']:
             teachers = teachers.annotate(num_courses=Count('teacher_registrations__courses')).filter(num_courses__gte=1)
@@ -199,7 +199,7 @@ class SendEmailsView(PermissionRequiredMixin, FormsView):
                 teacher_registrations__courses__course__difficulty=form.cleaned_data['difficulty'])
         if form.cleaned_data['registration_step']:
             teachers = teachers.filter(
-                teacher_registrations__completed_steps__step=form.cleaned_data['registration_step'])
+                teacher_registrations__completed_steps__step__step_key=form.cleaned_data['registration_step'])
         self._send_emails(teachers, form)
         return HttpResponseRedirect(self.success_url)
 
@@ -209,17 +209,16 @@ class SendEmailsView(PermissionRequiredMixin, FormsView):
             students = students.filter(registrations__program=form.cleaned_data['program'])
         if form.cleaned_data['registration_step']:
             students = students.filter(
-                registrations__completed_steps__step=form.cleaned_data['registration_step'])
-        guardians = form.cleaned_data['guardians']
-        emergency_contacts = form.cleaned_data['emergency_contact']
-        self._send_emails(students, form, guardians, emergency_contacts)
+                registrations__completed_steps__step__step_key=form.cleaned_data['registration_step'])
+        only_guardians = form.cleaned_data['only_guardians']
+        self._send_emails(students, form, only_guardians)
         return HttpResponseRedirect(self.success_url)
 
-    def _send_emails(self, to_users, form, guardians=False, emergency_contacts=False):
+    def _send_emails(self, to_users, form, only_guardians=False, emergency_contacts=False):
         subject = form.cleaned_data['subject']
         from_email = DEFAULT_FROM_EMAIL
         template = Template(form.cleaned_data['body'])
-        to_emails = to_users.values_list('email', flat=True)
+
         for to_user in to_users:
             # This dict contains the available merge fields that you can use in sending emails
             # add to this dict to add to the available fields you can use in the email body ex.
@@ -235,44 +234,29 @@ class SendEmailsView(PermissionRequiredMixin, FormsView):
                 'user': to_user,
                 'first_name': to_user.first_name,
                 'last_name': to_user.last_name,
+                'username': to_user.username,
                 'email': to_user.email,
             }
-            body = template.render(Context(context_dict))
+            if only_guardians:
+                context_dict['first_name'] = to_user.student_profile.guardian_first_name
+                context_dict['last_name'] = to_user.student_profile.guardian_last_name
+                context_dict['email'] = to_user.student_profile.guardian_email or to_user.email
+                body = template.render(Context(context_dict))
+                to_emails = [to_user.student_profile.guardian_email]
+            else:
+                body = template.render(Context(context_dict))
+                to_emails = [to_user.email]
+
             send_mail(
                 subject,
                 body,
                 from_email,
-                [to_user.email],
+                to_emails,
                 fail_silently=False,
             )
-            if guardians:
-                context_dict['first_name'] = to_user.student_profile.guardian_first_name
-                context_dict['last_name'] = to_user.student_profile.guardian_last_name
-                context_dict['email'] = to_user.student_profile.guardian_email
-                body = template.render(Context(context_dict))
-                send_mail(
-                    subject,
-                    body,
-                    from_email,
-                    [user.student_profile.guardian_email],
-                    fail_silently=False,
-                )
-                to_emails.append(to_users.values_list('student_profile__guardian_email', flat=True))
-            if emergency_contacts:
-                context_dict['first_name'] = to_user.student_profile.emergency_contact_first_name
-                context_dict['last_name'] = to_user.student_profile.emergency_contact_last_name
-                context_dict['email'] = to_user.student_profile.emergency_contact_email
-                body = template.render(Context(context_dict))
-                send_mail(
-                    subject,
-                    body,
-                    from_email,
-                    [user.student_profile.emergency_contact_email],
-                    fail_silently=False,
-                )
-                to_emails.append(to_users.values_list('student_profile__emergency_contact_email', flat=True))
-        email_count = to_emails.count()
-        messages.info(self.request, f'An email was sent to {email_count} email address{"" if email_count == 1 else "es"}')
+
+        email_count = to_users.count()
+        messages.success(self.request, f'An email was sent to {email_count} email address{"" if email_count == 1 else "es"}')
 
 
 ###########################################################
