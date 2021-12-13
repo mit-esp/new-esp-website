@@ -22,10 +22,11 @@
     <div class="col-lg-6">
       <div class="card">
         <div class="card-body">
-          <div class="card-title">Admin actions</div>
-          <li><a role="button" href="{% url 'program_lottery' pk=program.id %}">Run lottery</a></li>
-          <li><a role="button" href="{% url 'courses' pk=program.id %}">Manage Classes</a></li>
-          <li><a role="button" href="{% url 'scheduler' %}?program_id={{program.id}} ">Scheduler</a></li>
+          <h5 class="card-title">Admin actions</h5>
+          <a class="btn btn-outline-success mx-1 my-1" role="button" href="">Manage Students</a>
+          <a class="btn btn-outline-success mx-1 my-1" role="button" href="{% url 'courses' pk=program.id %}">Manage Courses</a>
+          <a class="btn btn-outline-success mx-1 my-1" role="button" href="{% url 'scheduler' %}?program_id={{program.id}} ">Course Scheduler</a>
+          <a class="btn btn-outline-success mx-1 my-1" role="button" href="{% url 'program_lottery' pk=program.id %}">Run lottery</a>
         </div>
       </div>
     </div>
