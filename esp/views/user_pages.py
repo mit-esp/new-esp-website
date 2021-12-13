@@ -135,7 +135,7 @@ class TeacherProfileUpdateView(PermissionRequiredMixin, UpdateView):
     success_url = reverse_lazy("teacher_dashboard")
 
 
-class TeacherDashboardView(TemplateView):
+class TeacherDashboardView(PermissionRequiredMixin, TemplateView):
     permission = PermissionType.teacher_dashboard_view
     template_name = "teacher/teacher_dashboard.html"
 
@@ -159,6 +159,6 @@ class GuardianDashboardView(TemplateView):
     template_name = 'dashboards/guardian_dashboard.html'
 
 
-class VolunteerDashboardView(TemplateView):
+class VolunteerDashboardView(PermissionRequiredMixin, TemplateView):
     permission = PermissionType.volunteer_program_dashboard_view
     template_name = 'dashboards/volunteer_dashboard.html'
