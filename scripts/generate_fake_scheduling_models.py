@@ -18,7 +18,9 @@ print_action("Creating courses")
 courses = [CourseFactory(program=program) for _ in range(random.randint(3, 12))]
 
 print_action("Creating course sections")
-course_sections = [CourseSectionFactory(course=random.choice(courses)) for _ in range(random.randint(1, 4))]
+course_sections = []
+for course in courses:
+    course_sections += [CourseSectionFactory(course=course) for _ in range(random.randint(1, 5))]
 
 print_action("Creating time slots")
 time_slot_start = datetime.datetime(2022, 1, 1, 0, 0, 0, tzinfo=pytz.UTC)

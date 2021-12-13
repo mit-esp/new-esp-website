@@ -14,6 +14,7 @@ const DEFAULT_FILTERS = {
   dateStart: '',
   hideUnavailableTimeSlots: false,
   hideFullyScheduledCourses: false,
+  teachersAvailable: true,
   timeEnd: '',
   timeStart: '',
   ...Object.fromEntries(DAYS_OF_WEEK.map((dayOfWeek) => [`show${dayOfWeek}`, true])),
@@ -52,12 +53,6 @@ export default function App() {
     classrooms.reduce((accumulator, classroom) => ({...accumulator, [classroom.id]: classroom}), {})
   ), [classrooms])
 
-  // const classroomTimeSlotById = useMemo(() => (
-  //   classroomTimeSlots.reduce((accumulator, classroomTimeSlot) => (
-  //     {...accumulator, [classroomTimeSlot.id]: classroomTimeSlot}
-  //   ), {})
-  // ), [classroomTimeSlots])
-
   /**
    * Create a lookup table for classroomTimeSlot first by timeSlot.id, then by classroom.id
    */
@@ -72,10 +67,6 @@ export default function App() {
       }
     ), {})
   ), [classroomTimeSlots])
-
-  // const timeSlotById = useMemo(() => (
-  //   timeSlots.reduce((accumulator, timeSlot) => ({...accumulator, [timeSlot.id]: timeSlot}), {})
-  // ), [timeSlots])
 
   const classroomTimeSlotsToSubmit = classroomTimeSlots.filter((classroomTimeSlot) => {
     if (!Object.keys(selected.assignments).includes(classroomTimeSlot.id)) {
@@ -240,6 +231,12 @@ export default function App() {
                   filters={filters}
                   filterKey='hideUnavailableTimeSlots'
                   filterLabel='Hide unavailable time slots'
+                  setFilters={setFilters}
+                />
+                <CheckboxFilter
+                  filters={filters}
+                  filterKey='teachersAvailable'
+                  filterLabel='Show only time slots with teacher availability'
                   setFilters={setFilters}
                 />
                 <TextFilter
@@ -706,6 +703,14 @@ export default function App() {
         return false
       }
     }
+
+    // Show only if teachers are available
+    if (filters.teachersAvailable && selected.course !== null) {
+      if (!Object.keys(timeSlot.course_teacher_availabilities).includes(selected.course.id)) {
+        return false
+      }
+    }
+
     return true
   }
 
