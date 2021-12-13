@@ -246,7 +246,7 @@ export default function App() {
                   filters={filters}
                   filterKey='dateStart'
                   filterLabel='Show only on or after date'
-                  inputProps={{pattern: '\d{4}-\d{2}-\d{2}', type: 'date'}}
+                  inputProps={{pattern: '[0-9]{4}-[0-9]{2}-[0-9]{2}', type: 'date'}}
                   setFilters={setFilters}
                 />
                 <TextFilter
@@ -260,7 +260,7 @@ export default function App() {
                   filters={filters}
                   filterKey='dateEnd'
                   filterLabel='Show only before date'
-                  inputProps={{pattern: '\d{4}-\d{2}-\d{2}', type: 'date'}}
+                  inputProps={{pattern: '[0-9]{4}-[0-9]{2}-[0-9]{2}', type: 'date'}}
                   setFilters={setFilters}
                 />
                 <TextFilter
@@ -276,6 +276,7 @@ export default function App() {
                     filters={filters}
                     filterKey={`show${dayOfWeek}`}
                     filterLabel={`Show ${dayOfWeek}`}
+                    key={dayOfWeek}
                     setFilters={setFilters}
                   />
                 ))}
