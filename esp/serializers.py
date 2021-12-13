@@ -145,14 +145,16 @@ class TimeSlotSerializer(serializers.ModelSerializer):
     class Meta:
         model = TimeSlot
         fields = (
+            "course_teacher_availibilities",
+            "end_datetime",
             "id",
             "start_datetime",
-            "end_datetime",
         )
 
     def get_course_teacher_availibilities(self, obj):
-        teacher_availabilities = [ta.registration for ta in obj.teacher_availabilities.filter()]
-        pass
+        # teacher_availabilities = [ta.registration for ta in obj.teacher_availabilities.filter()]
+        return []
+
 
 class TeacherAvailabilitySerializer(serializers.ModelSerializer):
     class Meta:

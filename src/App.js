@@ -1,7 +1,7 @@
 import {useEffect, useMemo, useState} from "react";
 import {Modal, Toast} from 'react-bootstrap';
 import dayjs from "dayjs";
-import {loadData, secureFetch, useStateWithCallback} from "./utils";
+import {getQueryParam, loadData, secureFetch, useStateWithCallback} from "./utils";
 import {BsExclamationCircleFill, BsFillCheckCircleFill, BsInfoCircleFill} from "react-icons/all";
 import {CheckboxFilter, TextFilter} from "./filters";
 
@@ -46,9 +46,7 @@ export default function App() {
   const [toastOptions, setToastOptions] = useStateWithCallback(DEFAULT_TOAST_OPTIONS)
   const [timeSlots, setTimeSlots] = useState([])
 
-  const urlSearchParams = new URLSearchParams(window.location.search)
-  const params = Object.fromEntries(urlSearchParams.entries())
-  const programId = params.program_id
+  const programId = useMemo(() => getQueryParam('program_id'), [])
 
   const classroomById = useMemo(() => (
     classrooms.reduce((accumulator, classroom) => ({...accumulator, [classroom.id]: classroom}), {})
@@ -108,9 +106,11 @@ export default function App() {
       setTimeSlots,
       processTimeSlots,
     )
-  }, [])
+  }, [programId])
 
-  return (
+  return programId === undefined ? (
+    <p>No program specified. Please add `?program_id=&lt;program_id&gt;` to the url.</p>
+  ) : (
     <div className='scheduler'>
       <h1>Scheduler</h1>
       <div className='interface-wrapper'>
