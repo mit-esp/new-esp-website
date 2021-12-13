@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 from django.core.exceptions import ValidationError
 from rest_framework import serializers
 
@@ -138,20 +140,27 @@ class CourseSerializer(serializers.ModelSerializer):
 
 
 class TimeSlotSerializer(serializers.ModelSerializer):
-    course_teacher_availibilities = serializers.SerializerMethodField()
+    course_teacher_availabilities = serializers.SerializerMethodField()
 
     class Meta:
         model = TimeSlot
         fields = (
-            "course_teacher_availibilities",
+            "course_teacher_availabilities",
             "end_datetime",
             "id",
             "start_datetime",
         )
 
-    def get_course_teacher_availibilities(self, obj):
-        # teacher_availabilities = [ta.registration for ta in obj.teacher_availabilities.filter()]
-        return []
+    def get_course_teacher_availabilities(self, obj):
+        # teacher_availabilities = obj.teacher_availabilities
+        mapping = defaultdict(list)
+        for teacher_availability in obj.teacher_availabilities.all():
+            for course in teacher_availability.registration.courses.all():
+                user = teacher_availability.registration.user
+                if user in mapping[course.id]:
+                    continue
+                mapping[course.id].append(user)
+        return mapping
 
 
 class TeacherAvailabilitySerializer(serializers.ModelSerializer):
