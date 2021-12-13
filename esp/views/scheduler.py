@@ -14,7 +14,8 @@ from common.views import PermissionRequiredMixin
 from esp.forms import AssignClassroomTimeSlotsForm
 from esp.models.course_scheduling import ClassroomTimeSlot
 from esp.models.program import Classroom, Course, Program, TimeSlot
-from esp.serializers import ClassroomSerializer, CourseSerializer, TimeSlotSerializer, \
+from esp.models.program_registration import TeacherAvailability
+from esp.serializers import ClassroomSerializer, CourseSerializer, TeacherAvailabilitySerializer, TimeSlotSerializer, \
     ClassroomTimeSlotSerializer
 
 
@@ -84,3 +85,12 @@ class TimeSlotApiView(SerializerResponseMixin, BaseListView):
     def get_queryset(self, **kwargs):
         program = get_object_or_404(Program, pk=self.kwargs['pk'])
         return TimeSlot.objects.filter(program=program)
+
+
+class TeacherAvailabilityApiView(SerializerResponseMixin, BaseListView):
+    # Todo: Protect with auth and admin permissions
+    serializer_class = TeacherAvailabilitySerializer
+
+    def get_queryset(self, **kwargs):
+        program = get_object_or_404(Program, pk=self.kwargs['pk'])
+        return TeacherAvailability.objects.filter(program=program)

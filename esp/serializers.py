@@ -6,7 +6,7 @@ from rest_framework import serializers
 from esp.models.course_scheduling import CourseSection, ClassroomTimeSlot
 from esp.models.program import Course, Classroom, TimeSlot
 from esp.models.program_registration import (ClassPreference,
-                                             PreferenceEntryCategory)
+                                             PreferenceEntryCategory, TeacherAvailability)
 
 
 class ClassPreferenceSerializer(serializers.ModelSerializer):
@@ -140,12 +140,27 @@ class CourseSerializer(serializers.ModelSerializer):
 
 
 class TimeSlotSerializer(serializers.ModelSerializer):
+    course_teacher_availibilities = serializers.SerializerMethodField()
+
     class Meta:
         model = TimeSlot
         fields = (
             "id",
             "start_datetime",
             "end_datetime",
+        )
+
+    def get_course_teacher_availibilities(self, obj):
+        teacher_availabilities = [ta.registration for ta in obj.teacher_availabilities.filter()]
+        pass
+
+class TeacherAvailabilitySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TeacherAvailability
+        fields = (
+            "id",
+            "registration",
+            "time_slot",
         )
 
 
