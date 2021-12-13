@@ -10,6 +10,7 @@ from common.constants import PermissionType, UserType
 from common.forms import CrispyFormsetHelper
 from common.models import User
 from common.views import PermissionRequiredMixin
+from esp.constants import StudentRegistrationStepType
 from esp.forms import (ProgramForm, ProgramRegistrationStepFormset,
                        ProgramStageForm, TeacherCourseForm)
 from esp.lottery import run_program_lottery
@@ -35,6 +36,18 @@ class AdminDashboardView(TemplateView):
         context["active_programs"] = Program.objects.filter(start_date__lte=ts, end_date__gte=ts).order_by('-start_date')
         return context
 
+class AdminManageStudentsView(TemplateView):
+    permission = PermissionType.admin_dashboard_view
+    template_name = 'esp/manage_students.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        StudentRegistrationStepType
+        context["StudentRegistrationStepType"] = StudentRegistrationStepType
+        program = get_object_or_404(Program, pk=self.kwargs['pk'])
+        students = User.objects.filter(user_type=UserType.student, registrations__program=program).select_related('student_profile')
+        context["students"] = ["%s %s (%s)" % (u.first_name, u.last_name, u.username) for u in students]
+        return context
 
 class ProgramCreateView(PermissionRequiredMixin, CreateView):
     permission = PermissionType.programs_edit_all
@@ -202,5 +215,5 @@ class CourseListView(PermissionRequiredMixin, ListView):
         return context
 
     def get_queryset(self, **kwargs):
-        self.program = get_object_or_404(Program, pk=self.kwargs['pk'])
-        return Course.objects.filter(program=self.program)
+        program = get_object_or_404(Program, pk=self.kwargs['pk'])
+        return Course.objects.filter(program=program)
