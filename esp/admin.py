@@ -5,10 +5,10 @@ from esp.models import course_scheduling, program, program_registration
 admin.site.site_header = 'MIT ESP Database Administration'
 admin.site.register(course_scheduling.CourseSection)
 admin.site.register(course_scheduling.ClassroomTimeSlot)
-# admin.site.register(course_scheduling.ClassroomConstraint)
 admin.site.register(program.Classroom)
 admin.site.register(program.CourseTag)
 admin.site.register(program.PreferenceEntryCategory)
+admin.site.register(program.ProgramSaleItem)
 admin.site.register(program.ProgramRegistrationStep)
 admin.site.register(program.ProgramTag)
 admin.site.register(program.TeacherProgramRegistrationStep)

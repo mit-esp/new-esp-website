@@ -317,6 +317,6 @@ class ClassroomTag(BaseModel):
 class ProgramSaleItem(BaseModel):
     program = models.ForeignKey(Program, related_name="purchase_items", on_delete=models.PROTECT)
     item_name = models.CharField(max_length=250)
-    price_in_cents = models.IntegerField()
+    price = models.DecimalField(max_digits=6, decimal_places=2)
     required_for_registration = models.BooleanField(default=False)
     eligible_for_financial_aid = models.BooleanField()

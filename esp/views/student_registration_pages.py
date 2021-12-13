@@ -22,6 +22,7 @@ from esp.models.program_registration import (ClassRegistration,
                                              CompletedRegistrationStep,
                                              ProgramRegistration,
                                              ProgramRegistrationStep,
+                                             PurchasedItem,
                                              StudentAvailability)
 from esp.serializers import ClassPreferenceSerializer
 
@@ -222,8 +223,25 @@ class ConfirmAssignedCoursesView(RegistrationStepBaseView):
         return redirect("complete_registration_step", registration_id=self.object.id, step_id=self.registration_step.id)
 
 
-class PayProgramFeesView(RegistrationStepPlaceholderView):
+class PayProgramFeesView(RegistrationStepBaseView):
     registration_step_key = StudentRegistrationStepType.pay_program_fees
+    template_name = "student/pay_program_fees.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        purchased_items_query = PurchasedItem.objects.filter(user=self.object.user, item__id=OuterRef("id"))
+        purchase_items = self.object.program.purchase_items.annotate(
+            in_cart=Exists(purchased_items_query.filter(purchase_confirmed_on__isnull=True)),
+            purchased=Exists(purchased_items_query.filter(purchase_confirmed_on__isnull=False))
+        )
+        context["required_purchase_items"] = [item for item in purchase_items if item.required_for_registration]
+        context["additional_purchase_items"] = [item for item in purchase_items if not item.required_for_registration]
+        return context
+
+    def post(self, request, *args, **kwargs):
+        return redirect(
+            "complete_registration_step", registration_id=self.object.id, step_id=self.registration_step.id
+        )
 
 
 class CompleteSurveysView(RegistrationStepPlaceholderView):

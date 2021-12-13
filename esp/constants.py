@@ -79,3 +79,10 @@ class ClassroomTagCategory(TextChoices):
     location = "location"
     resource = "resource"
     other = "other"
+
+
+class PaymentMethod(TextChoices):
+    card_online = "card_online"
+    card_in_person = "card_in_person"
+    cash = "cash"
+    financial_aid = "financial_aid"

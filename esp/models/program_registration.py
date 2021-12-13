@@ -7,12 +7,11 @@ from django.utils import timezone
 
 from common.constants import GradeLevel, ShirtSize, USStateEquiv
 from common.models import BaseModel, User
-from esp.constants import HeardAboutVia, MITAffiliation
+from esp.constants import HeardAboutVia, MITAffiliation, PaymentMethod
 from esp.models.course_scheduling import CourseSection
 from esp.models.program import (Course, PreferenceEntryCategory, Program,
-                                ProgramRegistrationStep,
+                                ProgramRegistrationStep, ProgramSaleItem,
                                 TeacherProgramRegistrationStep, TimeSlot)
-
 ####################################################
 # STUDENT REGISTRATIONS
 ####################################################
@@ -135,6 +134,14 @@ class ClassRegistration(BaseModel):
     confirmed_on = models.DateTimeField(null=True)
 
 
+class PurchasedItem(BaseModel):
+    user = models.ForeignKey(User, related_name="purchases", on_delete=models.PROTECT)
+    item = models.ForeignKey(ProgramSaleItem, related_name="purchases", on_delete=models.PROTECT)
+    added_to_cart_on = models.DateTimeField()
+    purchase_confirmed_on = models.DateTimeField(null=True)
+    payment_method = models.CharField(choices=PaymentMethod.choices, max_length=64)
+    amount_paid = models.DecimalField(max_digits=6, decimal_places=2)
+
 #####################################################
 # TEACHER REGISTRATIONS
 #####################################################
@@ -149,7 +156,8 @@ class TeacherProfile(BaseModel):
         max_length=128, blank=True, null=True,
         help_text="If you are currently a student, please provide your major or degree field."
     )
-    graduation_year = models.IntegerField(null=True, blank=True, validators=[validate_graduation_year],
+    graduation_year = models.IntegerField(
+        null=True, blank=True, validators=[validate_graduation_year],
         help_text="If you are currently a student, please provide your graduation year."
     )
     university_or_employer = models.CharField(

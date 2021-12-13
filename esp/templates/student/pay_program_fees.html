@@ -1,0 +1,54 @@
+{% extends "base/student_base.html" %}
+{% load filters %}
+
+{% block title %}
+  Program Fees
+{% endblock %}
+
+{% block nav %}
+  <div class="my-3">
+    <a href="{% url 'current_registration_stage' pk=programregistration.id %}" class="btn btn-secondary">Return to program dashboard</a>
+  </div>
+{% endblock %}
+
+{% block content %}
+  <h1>Pay Program Fees</h1>
+  <p>You may skip payment now and pay in person instead, or request financial aid.</p>
+  <div class="row">
+    {% include 'shared/submit_button.html' with submit_label='Skip and pay in person' submit_name='skip' %}
+    {% include 'shared/submit_button.html' with submit_label='Request financial aid' submit_name='financial_aid' %}
+  </div>
+  <h3>Required Payments</h3>
+  {% for item in required_purchase_items %}
+    <div class="d-flex justify-content-between w-50">
+      <span>{{ item.name }}</span>
+      {% if item.purchased %}
+        <span>Purchased</span>
+      {% else %}
+        <span>{{ item.price_in_cents|format_cents }}</span>
+      {% endif %}
+    </div>
+  {% endfor %}
+  <form method="post">
+  {% if additional_purchase_items %}
+  <h3>Additional Items</h3>
+  {% for item in additional_purchase_item %}
+    <div class="d-flex justify-content-between w-50">
+      <span>{{ item.name }}</span>
+      <span>
+      {% if item.purchased %}
+        <span>Purchased</span>
+      {% else %}
+        <span>{{ item.price_in_cents|format_cents }}</span>
+        <div class="form-check-inline">
+          <label class="form-check-label" for="add-{{ item.name }}">Add to cart</label>
+          <input class="form-check-input" type="checkbox" id="add-{{ item.name }}">
+        </div>
+      {% endif %}
+      </span>
+    </div>
+  {% endfor %}
+  {% endif %}
+  <button type="submit">Pay now</button>
+  </form>
+{% endblock %}
