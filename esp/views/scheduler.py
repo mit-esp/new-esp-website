@@ -84,7 +84,16 @@ class TimeSlotApiView(SerializerResponseMixin, BaseListView):
 
     def get_queryset(self, **kwargs):
         program = get_object_or_404(Program, pk=self.kwargs['pk'])
-        return TimeSlot.objects.filter(program=program)
+        return (
+            TimeSlot
+                .objects
+                .filter(program=program)
+                .prefetch_related(
+                    "teacher_availabilities",
+                    "teacher_availabilities__registration__courses",
+                    "teacher_availabilities__registration__user",
+                )
+        )
 
 
 class TeacherAvailabilityApiView(SerializerResponseMixin, BaseListView):

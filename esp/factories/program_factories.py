@@ -6,6 +6,7 @@ from factory import SubFactory, Faker
 from factory.django import DjangoModelFactory
 
 from esp.models.program import Program, Course, TimeSlot, Classroom, ClassroomTag
+from esp.models.program_registration import TeacherRegistration, TeacherAvailability, CourseTeacher
 
 
 class ClassroomFactory(DjangoModelFactory):
@@ -50,3 +51,28 @@ class TimeSlotFactory(DjangoModelFactory):
 
     class Meta:
         model = TimeSlot
+
+
+class TeacherAvailabilityFactory(DjangoModelFactory):
+    registration = SubFactory("esp.factories.program_factories.TeacherRegistrationFactory")
+    time_slot = SubFactory("esp.factories.program_factories.TimeSlotFactory")
+
+    class Meta:
+        model = TeacherAvailability
+
+
+class CourseTeacherFactory(DjangoModelFactory):
+    course = SubFactory("esp.factories.program_factories.CourseFactory")
+    teacher_registration = SubFactory("esp.factories.program_factories.TeacherRegistrationFactory")
+    is_course_creator = Faker("boolean")
+
+    class Meta:
+        model = CourseTeacher
+
+
+class TeacherRegistrationFactory(DjangoModelFactory):
+    program = SubFactory("esp.factories.program_factories.ProgramFactory")
+    user = SubFactory("common.factories.UserFactory")
+
+    class Meta:
+        model = TeacherRegistration
