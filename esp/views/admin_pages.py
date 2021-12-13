@@ -276,6 +276,10 @@ class CourseCreateView(PermissionRequiredMixin, CreateView):
         program_id = self.kwargs['pk']
         return reverse_lazy('courses', kwargs={'pk': program_id})
 
+    def form_valid(self, form):
+        self.program = get_object_or_404(Program, pk=self.kwargs['pk'])
+        form.instance.program = self.program
+        return super().form_valid(form)
 
 class CourseUpdateView(PermissionRequiredMixin, UpdateView):
     permission = PermissionType.courses_edit_all
