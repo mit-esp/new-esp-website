@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from esp.models import course_scheduling, program, program_registration
+from esp.models import course_scheduling_models, program_models, program_registration_models
 
 admin.site.site_header = 'MIT ESP Database Administration'
 admin.site.register(course_scheduling.CourseSection)

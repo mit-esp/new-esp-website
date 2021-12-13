@@ -5,7 +5,7 @@ from django.db.models import Max, UniqueConstraint
 
 from common.models import BaseModel
 from esp.constants import ClassroomTagCategory
-from esp.models.program import Classroom, ClassroomTag, Course, TimeSlot
+from esp.models.program_models import Classroom, ClassroomTag, Course, TimeSlot
 
 
 class ClassroomConstraint(BaseModel):

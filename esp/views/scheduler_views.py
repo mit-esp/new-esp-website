@@ -12,8 +12,8 @@ from common.constants import PermissionType
 from common.utils import csrf_exempt_localhost
 from common.views import PermissionRequiredMixin
 from esp.forms import AssignClassroomTimeSlotsForm
-from esp.models.course_scheduling import ClassroomTimeSlot
-from esp.models.program import Classroom, Course, Program, TimeSlot
+from esp.models.course_scheduling_models import ClassroomTimeSlot
+from esp.models.program_models import Classroom, Course, Program, TimeSlot
 from esp.serializers import ClassroomSerializer, CourseSerializer, TimeSlotSerializer, \
     ClassroomTimeSlotSerializer
 

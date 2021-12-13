@@ -11,11 +11,11 @@ from common.forms import CrispyFormMixin, HiddenOrderingInputFormset, MultiFormM
 from common.models import User
 from esp.constants import CourseTagCategory, CourseDifficulty, TeacherRegistrationStepType, \
     StudentRegistrationStepType
-from esp.models.course_scheduling import ClassroomTimeSlot, CourseSection
-from esp.models.program import Course, CourseTag, Program, ProgramStage
-from esp.models.program_registration import (ProgramRegistrationStep,
-                                             StudentProfile, TeacherProfile,
-                                             TeacherRegistration)
+from esp.models.course_scheduling_models import ClassroomTimeSlot, CourseSection
+from esp.models.program_models import Course, CourseTag, Program, ProgramStage
+from esp.models.program_registration_models import (ProgramRegistrationStep,
+                                                    StudentProfile, TeacherProfile,
+                                                    TeacherRegistration)
 from esp.serializers import AssignClassroomTimeSlotSerializer
 
 

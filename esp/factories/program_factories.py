@@ -5,7 +5,7 @@ import pytz
 from factory import SubFactory, Faker
 from factory.django import DjangoModelFactory
 
-from esp.models.program import Program, Course, TimeSlot, Classroom, ClassroomTag
+from esp.models.program_models import Program, Course, TimeSlot, Classroom, ClassroomTag
 
 
 class ClassroomFactory(DjangoModelFactory):

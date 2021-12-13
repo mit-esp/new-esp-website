@@ -23,11 +23,11 @@ from esp.forms import (ProgramForm, ProgramRegistrationStepFormset,
                        ProgramStageForm, TeacherCourseForm, QuerySendEmailForm,
                        StudentSendEmailForm, TeacherSendEmailForm)
 from esp.lottery import run_program_lottery
-from esp.models.program import Course, Program, ProgramStage
+from esp.models.program_models import Course, Program, ProgramStage
 ######################################
 # ADMIN DASHBOARD
 ######################################
-from esp.models.program_registration import ClassRegistration
+from esp.models.program_registration_models import ClassRegistration
 
 
 class AdminDashboardView(TemplateView):

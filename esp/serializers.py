@@ -3,10 +3,10 @@ from copy import deepcopy
 from django.core.exceptions import ValidationError
 from rest_framework import serializers
 
-from esp.models.course_scheduling import CourseSection, ClassroomTimeSlot
-from esp.models.program import Course, Classroom, TimeSlot
-from esp.models.program_registration import (ClassPreference,
-                                             PreferenceEntryCategory)
+from esp.models.course_scheduling_models import CourseSection, ClassroomTimeSlot
+from esp.models.program_models import Course, Classroom, TimeSlot
+from esp.models.program_registration_models import (ClassPreference,
+                                                    PreferenceEntryCategory)
 
 
 class ClassPreferenceSerializer(serializers.ModelSerializer):

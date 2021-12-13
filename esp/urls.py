@@ -1,24 +1,24 @@
 from django.urls import path
 
 from esp.constants import StudentRegistrationStepType
-from esp.views.admin_pages import (AdminDashboardView, CourseCreateView,
+from esp.views.admin_views import (AdminDashboardView, CourseCreateView,
                                    CourseListView, CourseUpdateView,
                                    ProgramCreateView, ProgramListView,
                                    ProgramLotteryView, ProgramStageCreateView,
                                    ProgramStageUpdateView, ProgramUpdateView, SendEmailsView)
-from esp.views.scheduler import (AssignClassroomTimeSlotsApiView, ClassroomApiView, ClassroomTimeSlotApiView,
-                                 CourseApiView, SchedulerView, TimeSlotApiView)
-from esp.views.student_registration_pages import (
+from esp.views.scheduler_views import (AssignClassroomTimeSlotsApiView, ClassroomApiView, ClassroomTimeSlotApiView,
+                                       CourseApiView, SchedulerView, TimeSlotApiView)
+from esp.views.student_registration_views import (
     CompleteSurveysView, ConfirmAssignedCoursesView,
     ConfirmRegistrationSubmissionView, DeleteCourseRegistrationView,
     EditAssignedCoursesView, InitiatePreferenceEntryView, PayProgramFeesView,
     PreferenceEntryRoundView, ProgramRegistrationCreateView,
     ProgramRegistrationStageView, RegistrationStepCompleteView,
     StudentAvailabilityView, SubmitWaiversView, VerifyStudentProfileView)
-from esp.views.teacher_registration_pages import (
+from esp.views.teacher_registration_views import (
     AddCoTeacherView, TeacherEditCourseView, TeacherProgramDashboardView,
     TeacherProgramRegistrationCreateView, TeacherRegistrationStepRouterView)
-from esp.views.user_pages import (GuardianDashboardView, RegisterAccountView,
+from esp.views.user_views import (GuardianDashboardView, RegisterAccountView,
                                   StudentDashboardView,
                                   StudentProfileCreateView,
                                   StudentProfileUpdateView,

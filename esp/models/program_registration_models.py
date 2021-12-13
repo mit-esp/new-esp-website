@@ -8,10 +8,10 @@ from django.utils import timezone
 from common.constants import GradeLevel, ShirtSize, USStateEquiv
 from common.models import BaseModel, User
 from esp.constants import HeardAboutVia, MITAffiliation
-from esp.models.course_scheduling import CourseSection
-from esp.models.program import (Course, PreferenceEntryCategory, Program,
-                                ProgramRegistrationStep,
-                                TeacherProgramRegistrationStep, TimeSlot)
+from esp.models.course_scheduling_models import CourseSection
+from esp.models.program_models import (Course, PreferenceEntryCategory, Program,
+                                       ProgramRegistrationStep,
+                                       TeacherProgramRegistrationStep, TimeSlot)
 
 ####################################################
 # STUDENT REGISTRATIONS

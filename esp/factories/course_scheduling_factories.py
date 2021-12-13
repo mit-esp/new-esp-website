@@ -4,7 +4,7 @@ ESP model factories
 from factory import SubFactory, Faker
 from factory.django import DjangoModelFactory
 
-from esp.models.course_scheduling import ClassroomTimeSlot, CourseSection, ClassroomConstraint
+from esp.models.course_scheduling_models import ClassroomTimeSlot, CourseSection, ClassroomConstraint
 
 
 class ClassroomConstraintFactory(DjangoModelFactory):

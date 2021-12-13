@@ -8,8 +8,8 @@ from common.constants import PermissionType, UserType
 from common.views import PermissionRequiredMixin
 from esp.forms import (RegisterUserForm, StudentProfileForm,
                        TeacherProfileForm, UpdateStudentProfileForm)
-from esp.models.program import Program
-from esp.models.program_registration import StudentProfile, TeacherProfile
+from esp.models.program_models import Program
+from esp.models.program_registration_models import StudentProfile, TeacherProfile
 
 ######################################
 # SHARED PAGES
