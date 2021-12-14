@@ -70,7 +70,9 @@ LOCALHOST=False
 ```
 and `.env` e.g.
 ```
+# should be set to base url
 REACT_APP_API_BASE_URL=https://esp-dev.mit.edu
+PUBLIC_URL=https://esp-dev.mit.edu
 ```
 
 Deployment commands:

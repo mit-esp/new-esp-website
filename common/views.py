@@ -1,5 +1,6 @@
 from django.contrib.auth import logout
 from django.contrib.auth.mixins import UserPassesTestMixin
+from django.core.exceptions import ImproperlyConfigured
 from django.shortcuts import redirect
 from django.views.generic.base import TemplateView, View
 
@@ -20,7 +21,7 @@ class PermissionRequiredMixin(UserPassesTestMixin):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if not self.permission:
-            raise NotImplementedError("No permissions set")
+            raise ImproperlyConfigured("No permissions set")
 
     def test_func(self):
         if not self.request.user.is_authenticated:

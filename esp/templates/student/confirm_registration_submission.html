@@ -10,6 +10,12 @@
 
 {% block content %}
   <h1>Confirm your registration for {{ programregistration.program }}</h1>
-  <p>This will confirm your preferences for inclusion in the course lottery.</p>
-  {% include 'shared/submit_button.html' with submit_label='Confirm Registration' %}
+  <p>Your course schedule is summarized below. Please check for mistakes.</p>
+  {% comment %}
+    TODO: Add registration summary
+  {% endcomment %}
+  <form method="post">
+    {% csrf_token %}
+    <button class="btn btn-primary" type="submit">Confirm Registration</button>
+  </form>
 {% endblock %}

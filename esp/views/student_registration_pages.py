@@ -1,8 +1,6 @@
 import json
 
-from django.contrib import messages
-from django.db import transaction
-from django.db.models import Count, Exists, F, Min, OuterRef, Subquery
+from django.db.models import OuterRef, Subquery
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
@@ -17,9 +15,8 @@ from esp.constants import StudentRegistrationStepType
 from esp.forms import UpdateStudentProfileForm
 from esp.models.course_scheduling import CourseSection
 from esp.models.program import (Course, PreferenceEntryCategory,
-                                PreferenceEntryRound, Program, TimeSlot)
-from esp.models.program_registration import (ClassRegistration,
-                                             CompletedRegistrationStep,
+                                PreferenceEntryRound, Program)
+from esp.models.program_registration import (CompletedRegistrationStep,
                                              ProgramRegistration,
                                              ProgramRegistrationStep,
                                              StudentAvailability)
@@ -57,9 +54,7 @@ class ProgramRegistrationStageView(PermissionRequiredMixin, DetailView):
     template_name = "student/program_registration_dashboard.html"
 
     def permission_enabled_for_view(self):
-        self.object = self.get_object()
-        self.program_stage = self.object.get_program_stage()
-        return self.program_stage is not None
+        return self.get_object().get_program_stage() is not None
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -69,20 +64,8 @@ class ProgramRegistrationStageView(PermissionRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["program"] = self.object.program
-        context["program_stage"] = self.program_stage
-        context["program_stage_steps"] = self.program_stage.steps.all()
         context["completed_steps"] = self.object.completed_steps.values_list("step_id", flat=True)
-        course_registrations = list(
-            self.object.class_registrations.filter(confirmed_on__isnull=False)
-            .annotate(start_time=Min("course_section__time_slots__time_slot__start_datetime"))
-            .order_by("start_time")
-            .select_related("course_section", "course_section__course", "course_section__course__program")
-            .prefetch_related(
-                "course_section__time_slots__time_slot", "course_section__course__teachers__teacher_registration__user"
-            )
-        )
-        context["course_registrations"] = course_registrations
+        context["course_registrations"] = list(self.object.class_registrations.all())
         return context
 
 
@@ -91,7 +74,7 @@ class ProgramRegistrationStageView(PermissionRequiredMixin, DetailView):
 ######################################################################
 
 
-class RegistrationStepBaseView(PermissionRequiredMixin, SingleObjectMixin, TemplateView):
+class RegistrationStepBaseView(PermissionRequiredMixin, DetailView):
     permission = PermissionType.student_register_for_program
     model = ProgramRegistration
     pk_url_kwarg = "registration_id"
@@ -111,7 +94,7 @@ class RegistrationStepBaseView(PermissionRequiredMixin, SingleObjectMixin, Templ
         return queryset
 
 
-class RegistrationStepPlaceholderView(RegistrationStepBaseView):
+class RegistrationStepPlaceholderView(RegistrationStepBaseView, TemplateView):
     permission = PermissionType.student_register_for_program
     template_name = "esp/registration_step_placeholder.html"
 
@@ -197,29 +180,21 @@ class InitiatePreferenceEntryView(RegistrationStepBaseView):
 
 class ConfirmRegistrationSubmissionView(RegistrationStepBaseView):
     registration_step_key = StudentRegistrationStepType.submit_registration
-    template_name = "student/confirm_courses.html"
+    template_name = "student/confirm_registration_submission.html"
 
     def post(self, *args, **kwargs):
+        registration = self.get_object()
+        registration.courses.all().update(confirmed_on=timezone.now())
         # TODO: Send confirmation email
         return redirect("complete_registration_step", registration_id=self.object.id, step_id=self.registration_step.id)
 
 
-class ConfirmAssignedCoursesView(RegistrationStepBaseView):
+class EditAssignedCoursesView(RegistrationStepPlaceholderView):
+    registration_step_key = StudentRegistrationStepType.edit_assigned_courses
+
+
+class ConfirmAssignedCoursesView(RegistrationStepPlaceholderView):
     registration_step_key = StudentRegistrationStepType.confirm_assigned_courses
-    template_name = "student/confirm_courses.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["course_registrations"] = (
-            self.object.class_registrations.select_related("course_section", "course_section__course")
-            .prefetch_related("course_section__course__teachers__teacher_registration__user")
-        )
-        return context
-
-    def post(self, *args, **kwargs):
-        self.object.class_registrations.all().update(confirmed_on=timezone.now())
-        # TODO: Send confirmation email
-        return redirect("complete_registration_step", registration_id=self.object.id, step_id=self.registration_step.id)
 
 
 class PayProgramFeesView(RegistrationStepPlaceholderView):
@@ -335,93 +310,6 @@ class PreferenceEntryRoundView(PermissionRequiredMixin, DetailView):
                 is_deleted=False
             ).values("category_id")[:1])
         )
-
-
-class EditAssignedCoursesView(PermissionRequiredMixin, SingleObjectMixin, TemplateView):
-    permission = PermissionType.student_register_for_program
-    model = ProgramRegistration
-    pk_url_kwarg = "registration_id"
-    template_name = "student/swap_courses.html"
-
-    def permission_enabled_for_view(self):
-        self.object = self.get_object()
-        return self.object.class_registrations.exists()
-
-    def get_queryset(self):
-        if self.request.user.has_permission(PermissionType.student_registrations_edit_all):
-            return super().get_queryset()
-        return super().get_queryset().filter(program_registration__user=self.request.user)
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data()
-        swap_id = self.request.GET.get('swap')
-        if swap_id:
-            context["registration_to_swap"] = ClassRegistration.objects.get(id=swap_id)
-        context["available_courses"] = self.get_available_courses(swap_id)
-        return context
-
-    def post(self, request, *args, **kwargs):
-        course_section_id = self.request.POST.get("course_section_id")
-        if not course_section_id:
-            messages.error(self.request, message='Invalid submission')
-        with transaction.atomic():
-            ClassRegistration.objects.filter(
-                program_registration__program_id=self.object.program_id).select_for_update()
-            context = self.get_context_data()
-            try:
-                context["available_courses"].get(id=course_section_id)
-                ClassRegistration.objects.create(
-                    course_section_id=course_section_id, program_registration_id=self.object.id,
-                    created_by_lottery=False, confirmed_on=timezone.now()
-                )
-                if context.get("registration_to_swap"):
-                    registration = context["registration_to_swap"]
-                    registration.delete()
-                if self.request.GET.get('next'):
-                    return redirect(self.request.GET.get('next'))
-                return redirect('current_registration_stage')
-            except CourseSection.DoesNotExist:
-                messages.error(self.request, 'This course is no longer available')
-
-    def get_available_courses(self, swap_id):
-        student_unavailable_timeslots = (
-            self.object.class_registrations.exclude(id=swap_id).values("course_section__time_slots__time_slot_id")
-        )
-        student_courses = self.object.class_registrations.exclude(id=swap_id).values('course_section__course_id')
-        return (
-            CourseSection.objects.exclude(registrations__id=swap_id, registrations__isnull=False)
-            .filter(course__program_id=self.object.program_id)
-            .exclude(course_id__in=student_courses).distinct()
-            .annotate(num_registrations=Count("registrations"))
-            .filter(num_registrations__lt=F('course__max_section_size'))
-            .annotate(start_time=Min("time_slots__time_slot__start_datetime"))
-            .order_by("start_time")
-            .annotate(student_unavailable=Exists(
-                TimeSlot.objects.filter(
-                    id__in=student_unavailable_timeslots, classrooms__course_section_id=OuterRef('id')
-                ))
-            )
-        )
-
-
-class DeleteCourseRegistrationView(PermissionRequiredMixin, SingleObjectMixin, View):
-    permission = PermissionType.student_register_for_program
-    model = ClassRegistration
-
-    def get_queryset(self):
-        if self.request.user.has_permission(PermissionType.student_registrations_edit_all):
-            return super().get_queryset()
-        return super().get_queryset().filter(program_registration__user=self.request.user)
-
-    def post(self, request, *args, **kwargs):
-        try:
-            course_registration = self.get_object()
-            course_registration.delete()
-        except ClassRegistration.DoesNotExist:
-            messages.error(request, message='Action not allowed')
-        if self.request.GET.get('next'):
-            return redirect(self.request.GET.get('next'))
-        return redirect('current_registration_stage')
 
 
 class RegistrationStepCompleteView(PermissionRequiredMixin, SingleObjectMixin, View):

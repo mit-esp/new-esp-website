@@ -9,7 +9,7 @@ from common.models import User
 
 class UserFactory(DjangoModelFactory):
     email = Faker("email")
-    username = Faker("user_name")
+    username = Faker("username")
 
     class Meta:
         model = User
