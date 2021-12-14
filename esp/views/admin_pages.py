@@ -1,6 +1,7 @@
 from django.db.models import Count, Max
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
+from django.utils import timezone
 from django.views.generic import (CreateView, FormView, ListView, TemplateView,
                                   UpdateView)
 from django.views.generic.detail import SingleObjectMixin
@@ -25,10 +26,13 @@ class AdminDashboardView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
+        ts = timezone.now()
         context["users_count"] = User.objects.count()
         context["students_count"] = User.objects.filter(user_type=UserType.student).count()
         context["teachers_count"] = User.objects.filter(user_type=UserType.teacher).count()
         context["admins_count"] = User.objects.filter(user_type=UserType.admin, is_active=True).count()
+        context["upcoming_program"] = Program.objects.filter(start_date__gte=ts).latest('-start_date', '-end_date')
+        context["active_programs"] = Program.objects.filter(start_date__lte=ts, end_date__gte=ts).order_by('-start_date')
         return context
 
 
@@ -59,7 +63,15 @@ class ProgramUpdateView(PermissionRequiredMixin, UpdateView):
 
 class ProgramListView(PermissionRequiredMixin, ListView):
     permission = PermissionType.programs_view_all
-    model = Program
+    context_object_name = "data"
+    template_name = "esp/program_list.html"
+
+    def get_queryset(self):
+        data = {
+            "upcoming_programs": Program.objects.filter(end_date__gt=timezone.now()),
+            "past_programs": Program.objects.filter(end_date__lte=timezone.now()),
+        }
+        return data
 
 
 class ProgramStageFormsetMixin:
@@ -104,7 +116,8 @@ class ProgramStageCreateView(PermissionRequiredMixin, SingleObjectMixin, Program
 
     def form_valid(self, form):
         self.object = self.get_object()
-        max_index = self.object.stages.aggregate(Max('index'))["index__max"]
+        # _order from order_with_respect_to
+        max_index = self.object.stages.aggregate(Max('_order'))["_order__max"]
         if max_index:
             form.instance.index = max_index + 1
         form.instance.program = self.object
