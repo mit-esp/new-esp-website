@@ -1,12 +1,17 @@
 <div class="d-flex justify-content-between w-50">
-  <span>{{ item.item_name }}</span>
+  <span>
+    {{ item.item_name }}
+    {% if item.eligible_for_financial_aid %}<span class="fst-italic ms-2">(Eligible for financial aid)</span>{% endif %}
+  </span>
   <span>
   {% if item.purchased %}
     <span>Purchased</span>
+  {% elif item.in_cart %}
+    <span>In cart</span>
   {% else %}
     <div class="form-check-inline">
       <label class="form-check-label" for="add-{{ item.item_name }}">Add to cart</label>
-      <input class="form-check-input" type="checkbox" id="add-{{ item.item_name }}" name="{{ item.id }}">
+      <input class="form-check-input" type="checkbox" id="add-{{ item.item_name }}" name="item-{{ item.id }}">
     </div>
     <span>${{ item.price }}</span>
   {% endif %}

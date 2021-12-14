@@ -1,12 +1,4 @@
-{% extends "base/student_base.html" %}
-
-{% block title %}Enter Class Preferences{% endblock %}
-
-{% block nav %}
-  <div class="my-3">
-    <a href="{% url 'current_registration_stage' pk=registration.id %}" class="btn btn-secondary">Return to program dashboard</a>
-  </div>
-{% endblock %}
+{% extends "student/registration_base.html" %}
 
 {% block content %}
   <h2>{{ round.title }}</h2>

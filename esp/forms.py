@@ -7,14 +7,18 @@ from django.db import transaction
 from django.forms import ModelForm, inlineformset_factory
 
 from common.constants import REGISTRATION_USER_TYPE_CHOICES, GradeLevel
-from common.forms import CrispyFormMixin, HiddenOrderingInputFormset, MultiFormMixin
+from common.forms import (CrispyFormMixin, HiddenOrderingInputFormset,
+                          MultiFormMixin)
 from common.models import User
-from esp.constants import CourseTagCategory, CourseDifficulty, TeacherRegistrationStepType, \
-    StudentRegistrationStepType
-from esp.models.course_scheduling_models import ClassroomTimeSlot, CourseSection
+from esp.constants import (CourseDifficulty, CourseTagCategory,
+                           StudentRegistrationStepType,
+                           TeacherRegistrationStepType)
+from esp.models.course_scheduling_models import (ClassroomTimeSlot,
+                                                 CourseSection)
 from esp.models.program_models import Course, CourseTag, Program, ProgramStage
 from esp.models.program_registration_models import (ProgramRegistrationStep,
-                                                    StudentProfile, TeacherProfile,
+                                                    StudentProfile,
+                                                    TeacherProfile,
                                                     TeacherRegistration)
 from esp.serializers import AssignClassroomTimeSlotSerializer
 
@@ -228,6 +232,7 @@ class QuerySendEmailForm(MultiFormMixin, forms.Form):
         self.cleaned_data["users"] = to_users
         return kwargs
 
+
 class TeacherSendEmailForm(MultiFormMixin, forms.Form):
     submit_label = "Send"
     submit_name = "teacher_form"
@@ -250,7 +255,7 @@ class StudentSendEmailForm(MultiFormMixin, forms.Form):
     subject = forms.CharField(label='Subject Line')
     body = forms.CharField(label='Email Body', widget=forms.Textarea(attrs={'placeholder': 'Hello {{ first_name }} {{ last_name }}, your account {{ username }} has not yet paid registration fees...'}))
 
-    
+
 class AssignClassroomTimeSlotsForm(forms.Form):
     data = forms.JSONField()
 
@@ -289,3 +294,7 @@ class AssignClassroomTimeSlotsForm(forms.Form):
         if len(set(model_ids)) != model_count:
             # Todo: Add sentry notification; this error is not intended for the user
             raise ValidationError("Sorry, something went wrong")
+
+
+class PaymentForm(forms.Form):
+    todo = forms.CharField()

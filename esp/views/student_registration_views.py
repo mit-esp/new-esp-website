@@ -2,10 +2,11 @@ import json
 
 from django.contrib import messages
 from django.db import transaction
-from django.db.models import Count, Exists, F, Min, OuterRef, Subquery
+from django.db.models import Count, Exists, F, Min, OuterRef, Subquery, Sum
+from django.db.models.functions import Coalesce
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.views.generic import FormView
 from django.views.generic.base import TemplateView, View
@@ -14,10 +15,11 @@ from django.views.generic.detail import DetailView, SingleObjectMixin
 from common.constants import PermissionType
 from common.views import PermissionRequiredMixin
 from esp.constants import StudentRegistrationStepType
-from esp.forms import UpdateStudentProfileForm
+from esp.forms import PaymentForm, UpdateStudentProfileForm
 from esp.models.course_scheduling_models import CourseSection
 from esp.models.program_models import (Course, PreferenceEntryCategory,
-                                       PreferenceEntryRound, Program, TimeSlot)
+                                       PreferenceEntryRound, Program,
+                                       ProgramSaleItem, TimeSlot)
 from esp.models.program_registration_models import (ClassRegistration,
                                                     CompletedRegistrationStep,
                                                     ProgramRegistration,
@@ -86,7 +88,6 @@ class ProgramRegistrationStageView(PermissionRequiredMixin, DetailView):
         context["course_registrations"] = course_registrations
         return context
 
-
 ######################################################################
 # STUDENT REGISTRATION STEP HANDLERS
 ######################################################################
@@ -109,7 +110,7 @@ class RegistrationStepBaseView(PermissionRequiredMixin, SingleObjectMixin, Templ
         queryset = super().get_queryset()
         if not self.request.user.has_permission(PermissionType.student_registrations_edit_all):
             queryset = queryset.filter(user_id=self.request.user.id)
-        return queryset
+        return queryset.select_related("program")
 
 
 class RegistrationStepPlaceholderView(RegistrationStepBaseView):
@@ -156,7 +157,7 @@ class VerifyStudentProfileView(RegistrationStepBaseView, FormView):
 
 class SubmitWaiversView(RegistrationStepPlaceholderView):
     registration_step_key = StudentRegistrationStepType.submit_waivers
-    pass
+
 
 
 class StudentAvailabilityView(RegistrationStepBaseView):
@@ -232,18 +233,41 @@ class PayProgramFeesView(RegistrationStepBaseView):
         purchased_items_query = PurchasedItem.objects.filter(user=self.object.user, item__id=OuterRef("id"))
         purchase_items = self.object.program.purchase_items.annotate(
             in_cart=Exists(purchased_items_query.filter(purchase_confirmed_on__isnull=True)),
-            purchased=Exists(purchased_items_query.filter(purchase_confirmed_on__isnull=False))
+            purchased=Exists(purchased_items_query.filter(purchase_confirmed_on__isnull=False)),
         )
         context["required_purchase_items"] = [item for item in purchase_items if item.required_for_registration]
         context["additional_purchase_items"] = [item for item in purchase_items if not item.required_for_registration]
         return context
 
     def post(self, request, *args, **kwargs):
-        print(request.POST)
-        return redirect(self.request.path)
-        # return redirect(
-        #     "complete_registration_step", registration_id=self.object.id, step_id=self.registration_step.id
-        # )
+        new_cart_item_ids = [key[5:] for key in request.POST.keys() if key.startswith('item-')]
+        new_cart_items = ProgramSaleItem.objects.filter(id__in=new_cart_item_ids)
+        purchases_to_create = []
+        for item in new_cart_items:
+            purchases_to_create.append(
+                PurchasedItem(user=self.object.user, item=item, added_to_cart_on=timezone.now())
+            )
+        PurchasedItem.objects.bulk_create(purchases_to_create)
+        messages.info(request, f"{len(purchases_to_create)} items have been added to your cart.")
+        return redirect(self.get_next_url())
+
+    def get_next_url(self):
+        next_urls = {
+            "skip": reverse(
+                "complete_registration_step",
+                kwargs={"registration_id": self.object.id, "step_id": self.registration_step.id}
+            ),
+            "financial_aid": reverse(
+                "request_financial_aid",
+                kwargs={"registration_id": self.object.id, "step_id": self.registration_step.id}
+            ),
+            "pay": reverse("make_payment", kwargs={"registration_id": self.object.id})
+        }
+        submit_type = self.request.POST.get('submit')
+        if not submit_type:
+            messages.error(self.request, 'Invalid request')
+            return self.request.path
+        return next_urls[submit_type]
 
 
 class CompleteSurveysView(RegistrationStepPlaceholderView):
@@ -442,6 +466,25 @@ class DeleteCourseRegistrationView(PermissionRequiredMixin, SingleObjectMixin, V
         if self.request.GET.get('next'):
             return redirect(self.request.GET.get('next'))
         return redirect('current_registration_stage')
+
+
+class RequestFinancialAidView(RegistrationStepBaseView):
+    registration_step_key = StudentRegistrationStepType.pay_program_fees
+    template_name = "student/request_financial_aid.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        eligible_cart_items = self.object.user.purchases.filter(
+            purchase_confirmed_on__isnull=True, item__eligible_for_financial_aid=True, item__program=self.object.program
+        )
+        context["total_eligible_amount"] = eligible_cart_items.aggregate(Sum("item__price"))
+        return context
+
+
+class MakePaymentView(PermissionRequiredMixin, FormView):
+    permission = PermissionType.student_make_payment
+    template_name = "student/make_payments.html"
+    form_class = PaymentForm
 
 
 class RegistrationStepCompleteView(PermissionRequiredMixin, SingleObjectMixin, View):

@@ -5,15 +5,19 @@ from esp.views.admin_views import (AdminDashboardView, CourseCreateView,
                                    CourseListView, CourseUpdateView,
                                    ProgramCreateView, ProgramListView,
                                    ProgramLotteryView, ProgramStageCreateView,
-                                   ProgramStageUpdateView, ProgramUpdateView, SendEmailsView)
-from esp.views.scheduler_views import (AssignClassroomTimeSlotsApiView, ClassroomApiView, ClassroomTimeSlotApiView,
-                                       CourseApiView, SchedulerView, TimeSlotApiView)
+                                   ProgramStageUpdateView, ProgramUpdateView,
+                                   SendEmailsView)
+from esp.views.scheduler_views import (AssignClassroomTimeSlotsApiView,
+                                       ClassroomApiView,
+                                       ClassroomTimeSlotApiView, CourseApiView,
+                                       SchedulerView, TimeSlotApiView)
 from esp.views.student_registration_views import (
     CompleteSurveysView, ConfirmAssignedCoursesView,
     ConfirmRegistrationSubmissionView, DeleteCourseRegistrationView,
-    EditAssignedCoursesView, InitiatePreferenceEntryView, PayProgramFeesView,
-    PreferenceEntryRoundView, ProgramRegistrationCreateView,
-    ProgramRegistrationStageView, RegistrationStepCompleteView,
+    EditAssignedCoursesView, InitiatePreferenceEntryView, MakePaymentView,
+    PayProgramFeesView, PreferenceEntryRoundView,
+    ProgramRegistrationCreateView, ProgramRegistrationStageView,
+    RegistrationStepCompleteView, RequestFinancialAidView,
     StudentAvailabilityView, SubmitWaiversView, VerifyStudentProfileView)
 from esp.views.teacher_registration_views import (
     AddCoTeacherView, TeacherEditCourseView, TeacherProgramDashboardView,
@@ -124,11 +128,17 @@ urlpatterns = [
         'programs/registration/<uuid:registration_id>/surveys/<uuid:step_id>/',
         CompleteSurveysView.as_view(), name=StudentRegistrationStepType.complete_surveys
     ),
+    path('programs/registration/<uuid:registration_id>/pay/', MakePaymentView.as_view(), name="make_payment"),
 
     # Registration step additional views
     path(
         'programs/registration/<uuid:registration_id>/preferences/<uuid:step_id>/round_<int:index>/',
-        PreferenceEntryRoundView.as_view(), name="preference_entry_round"),
+        PreferenceEntryRoundView.as_view(), name="preference_entry_round"
+    ),
+    path(
+        'programs/registration/<uuid:registration_id>/financial_aid/<uuid:step_id>',
+        RequestFinancialAidView.as_view(), name="request_financial_aid",
+    ),
     path(
         'programs/registration/<uuid:registration_id>/step/<uuid:step_id>/complete/',
         RegistrationStepCompleteView.as_view(), name="complete_registration_step",

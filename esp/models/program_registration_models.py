@@ -143,7 +143,17 @@ class PurchasedItem(BaseModel):
     added_to_cart_on = models.DateTimeField()
     purchase_confirmed_on = models.DateTimeField(null=True)
     payment_method = models.CharField(choices=PaymentMethod.choices, max_length=64)
-    amount_paid = models.DecimalField(max_digits=6, decimal_places=2)
+    amount_charged = models.DecimalField(max_digits=6, decimal_places=2, null=True)
+
+
+class FinancialAidRequest(BaseModel):
+    program_registration = models.ForeignKey(
+        ProgramRegistration, related_name="financial_aid_requests", on_delete=models.PROTECT)
+    amount_requested = models.DecimalField(max_digits=6, decimal_places=2)
+    amount_received = models.DecimalField(max_digits=6, decimal_places=2, null=True)
+    comments = models.TextField(null=True)
+    reviewer_comments  = models.TextField(null=True)
+    reviewed_on = models.DateTimeField(null=True)
 
 #####################################################
 # TEACHER REGISTRATIONS

@@ -12,6 +12,7 @@ ADMIN_PERMISSIONS = [
     PermissionType.student_create_profile,
     PermissionType.student_dashboard_view,
     PermissionType.student_profiles_edit_all,
+    PermissionType.student_make_payment,
     PermissionType.student_register_for_program,
     PermissionType.student_registrations_edit_all,
     PermissionType.student_update_profile,
@@ -32,6 +33,7 @@ STUDENT_PERMISSIONS = [
     PermissionType.student_dashboard_view,
     PermissionType.student_update_profile,
     PermissionType.student_register_for_program,
+    PermissionType.student_make_payment,
 ]
 
 
