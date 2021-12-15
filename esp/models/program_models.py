@@ -146,7 +146,7 @@ class TimeSlot(BaseModel):
         from esp.serializers import UserSerializer
         mapping = defaultdict(list)
         for teacher_availability in self.teacher_availabilities.all():
-            for course_teacher in teacher_availability.registration.courses.all():
+            for course_teacher in teacher_availability.registration.course_teachers.all():
                 user = teacher_availability.registration.user
                 if user in mapping[course_teacher.course_id]:
                     continue

@@ -90,7 +90,7 @@ class TimeSlotApiView(SerializerResponseMixin, BaseListView):
                 .filter(program=program)
                 .prefetch_related(
                     "teacher_availabilities",
-                    "teacher_availabilities__registration__courses",
+                    "teacher_availabilities__registration__course_teachers",
                     "teacher_availabilities__registration__user",
                 )
         )

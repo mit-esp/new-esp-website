@@ -203,7 +203,7 @@ class TeacherConfirmScheduleView(TeacherRegistrationStepBaseView):
 
     def post(self, *args, **kwargs):
         registration = self.get_object()
-        registration.courses.all().update(confirmed_on=timezone.now())
+        registration.course_teachers.all().update(confirmed_on=timezone.now())
         # TODO: Send confirmation email
         return redirect(self.get_success_url())
 

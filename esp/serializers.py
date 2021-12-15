@@ -1,8 +1,7 @@
-from collections import defaultdict
-
 from django.core.exceptions import ValidationError
 from rest_framework import serializers
 
+from common.models import User
 from esp.models.course_scheduling_models import CourseSection, ClassroomTimeSlot
 from esp.models.program_models import Course, Classroom, TimeSlot
 from esp.models.program_registration_models import (ClassPreference,

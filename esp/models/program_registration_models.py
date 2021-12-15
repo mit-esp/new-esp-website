@@ -163,6 +163,7 @@ class TeacherProfile(BaseModel):
 class TeacherRegistration(BaseModel):
     program = models.ForeignKey(Program, related_name="teacher_registrations", on_delete=models.PROTECT)
     user = models.ForeignKey(User, related_name="teacher_registrations", on_delete=models.PROTECT)
+    courses = models.ManyToManyField(Course, related_name="teacher_registrations", through="CourseTeacher")
     allow_early_registration_after = models.DateTimeField(null=True)  # Overrides deadlines set on program stages
     allow_late_registration_until = models.DateTimeField(null=True)  # Overrides deadlines set on program stages
 
@@ -210,8 +211,8 @@ class CompletedTeacherRegistrationStep(BaseModel):
 
 
 class CourseTeacher(BaseModel):
-    course = models.ForeignKey(Course, related_name="teachers", on_delete=models.PROTECT)
-    teacher_registration = models.ForeignKey(TeacherRegistration, related_name="courses", on_delete=models.PROTECT)
+    course = models.ForeignKey(Course, related_name="course_teachers", on_delete=models.PROTECT)
+    teacher_registration = models.ForeignKey(TeacherRegistration, related_name="course_teachers", on_delete=models.PROTECT)
     is_course_creator = models.BooleanField()
     confirmed_on = models.DateTimeField(null=True)
 
