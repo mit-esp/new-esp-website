@@ -201,7 +201,7 @@ class AddCoTeacherForm(CrispyFormMixin, forms.Form):
     def __init__(self, *args, course=None, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["teacher"].queryset = TeacherRegistration.objects.exclude(
-            id__in=course.teachers.values("teacher_registration_id")
+            id__in=course.course_teachers.values("teacher_registration_id")
         ).filter(
             program_id=course.program_id, availabilities__isnull=False
         ).distinct()

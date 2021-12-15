@@ -4,6 +4,12 @@ const DEFAULT_HEADERS = {
 //   Cookie: ""
 }
 
+export function getQueryParam(queryParam) {
+  const urlSearchParams = new URLSearchParams(window.location.search)
+  const params = Object.fromEntries(urlSearchParams.entries())
+  return params[queryParam]
+}
+
 /**
  * Todo: implement me
  * */

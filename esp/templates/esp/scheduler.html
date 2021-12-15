@@ -12,15 +12,15 @@
 
 {% block body %}
 
-{% django_setting "REACT_HOTLOAD" as react_hotload %}
-{% if react_hotload %}
- <iframe
-    src="http://localhost:3000"
-    style="border: none; height: calc(100vh - 66px); left: 0; position: absolute; width: 100vw;"
-  ></iframe>
-{% else %}
-  <div style="border: none; height: calc(100vh - 66px); left: 0; position: absolute; width: 100vw;">
-    {% include "scheduler.html" %}
-  </div>
-{% endif %}
+  {% django_setting "REACT_HOTLOAD" as react_hotload %}
+  {% if react_hotload %}
+   <iframe
+      src="http://localhost:3000?{{ request.GET.urlencode }}"
+      style="border: none; height: calc(100vh - 66px); left: 0; position: absolute; width: 100vw;"
+    ></iframe>
+  {% else %}
+    <div style="border: none; height: calc(100vh - 66px); left: 0; position: absolute; width: 100vw;">
+      {% include "build/scheduler.html" %}
+    </div>
+  {% endif %}
 {% endblock %}

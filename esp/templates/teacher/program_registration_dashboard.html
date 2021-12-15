@@ -13,12 +13,12 @@
       </a>
     {% endfor %}
   </div>
-  {% if registration.courses %}
+  {% if registration.course_teachers %}
     <hr>
     <h2>Registered Courses</h2>
     <p>Below is a summary of the courses you have registered to teach for {{ registration.program }}.</p>
     <div class="list-group col-lg-8">
-    {% for course_registration in registration.courses.all %}
+    {% for course_registration in registration.course_teachers.all %}
       <div class="list-group-item d-flex flex-column">
         <div class="list-group-item-heading d-flex">
           <span class="card-title fw-bold">{{ course_registration.course.get_display_name }}</span>
@@ -29,8 +29,8 @@
           <div>Status: {{ course_registration.course.get_status_display }}</div>
           <div>
             (Co-)Teachers:
-            {% for teacher in course_registration.course.teachers.all %}
-              <span {% if not teacher.confirmed_on %}class="text-secondary" title="This teacher has not yet confirmed."{% endif %}>{{ teacher.teacher_registration.user.first_name }} {{ teacher.teacher_registration.user.last_name }}{% if not forloop.last %}, {% endif %}</span>
+            {% for course_teacher in course_registration.course.course_teachers.all %}
+              <span {% if not course_teacher.confirmed_on %}class="text-secondary" title="This teacher has not yet confirmed."{% endif %}>{{ course_teacher.teacher_registration.user.first_name }} {{ course_teacher.teacher_registration.user.last_name }}{% if not forloop.last %}, {% endif %}</span>
             {% endfor %}
           </div>
         </div>
