@@ -106,7 +106,10 @@ class ProgramForm(CrispyFormMixin, ModelForm):
 
     class Meta:
         model = Program
-        fields = ["name", "program_type", "start_date", "end_date", "number_of_weeks", "time_block_minutes", "min_grade_level", "max_grade_level", "description", "notes"]
+        fields = [
+            "name", "program_type", "start_date", "end_date", "number_of_weeks", "time_block_minutes",
+            "min_grade_level", "max_grade_level", "description", "notes"
+        ]
         widgets = {
             'start_date': forms.DateInput(attrs={'type': 'date', 'class': 'datepicker'}),
             'end_date': forms.DateInput(attrs={'type': 'date', 'class': 'datepicker'}),
@@ -214,9 +217,19 @@ class AddCoTeacherForm(CrispyFormMixin, forms.Form):
 class QuerySendEmailForm(MultiFormMixin, forms.Form):
     submit_label = "Send"
     submit_name = "query_form"
-    query = forms.CharField(label='Query', widget=forms.TextInput(attrs={'placeholder': 'user_type=student, registrations__completed_steps__step=edit_assigned_courses'}))
+    query = forms.CharField(
+        label='Query',
+        widget=forms.TextInput(
+            attrs={'placeholder': 'user_type=student, registrations__completed_steps__step=edit_assigned_courses'}
+        )
+    )
     subject = forms.CharField(label='Subject Line')
-    body = forms.CharField(label='Email Body', widget=forms.Textarea(attrs={'placeholder': 'Hello {{ first_name }} {{ last_name }}, your account {{ username }} has not yet paid registration fees...'}))
+    body = forms.CharField(label='Email Body', widget=forms.Textarea(
+        attrs={
+            'placeholder':
+            'Hello {{ first_name }} {{ last_name }}, your account {{ username }} has not yet paid registration fees...'
+        })
+    )
 
     def clean_query(self):
         query = self.cleaned_data['query'].replace(' ', '')
@@ -238,22 +251,45 @@ class TeacherSendEmailForm(MultiFormMixin, forms.Form):
     submit_name = "teacher_form"
     program = forms.ModelChoiceField(queryset=Program.objects.all())
     submit_one_class = forms.BooleanField(required=False, label='Submitted at least one class')
-    difficulty = forms.ChoiceField(required=False, choices=[('', '---------'), *CourseDifficulty.choices], label='Teaches a course of a certain difficulty')
-    registration_step = forms.ChoiceField(required=False, choices=[('', '---------'), *TeacherRegistrationStepType.choices], label='Completed this registration step')
+    difficulty = forms.ChoiceField(
+        required=False,
+        choices=[('', '---------'), *CourseDifficulty.choices],
+        label='Teaches a course of a certain difficulty'
+    )
+    registration_step = forms.ChoiceField(
+        required=False,
+        choices=[('', '---------'), *TeacherRegistrationStepType.choices], label='Completed this registration step'
+    )
 
     subject = forms.CharField(label='Subject Line')
-    body = forms.CharField(label='Email Body', widget=forms.Textarea(attrs={'placeholder': 'Hello {{ first_name }} {{ last_name }}, your account {{ username }} has not yet paid registration fees...'}))
+    body = forms.CharField(
+        label='Email Body',
+        widget=forms.Textarea(attrs={
+            'placeholder': 'Hello {{ first_name }} {{ last_name }}, your account {{ username }} has an updated...'
+        }))
 
 
 class StudentSendEmailForm(MultiFormMixin, forms.Form):
     submit_label = "Send"
     submit_name = "student_form"
-    only_guardians = forms.BooleanField(required=False, label='Send emails only to guardians', help_text='Note: this will also change first_name, last_name, and email merge fields')
+    only_guardians = forms.BooleanField(
+        required=False,
+        label='Send emails only to guardians',
+        help_text='Note: this will also change first_name, last_name, and email merge fields'
+    )
     program = forms.ModelChoiceField(queryset=Program.objects.all())
-    registration_step = forms.ChoiceField(required=False, choices=[('', '---------'), *StudentRegistrationStepType.choices], label='Completed this registration step')
+    registration_step = forms.ChoiceField(
+        required=False, choices=[('', '---------'), *StudentRegistrationStepType.choices],
+        label='Completed this registration step'
+    )
 
     subject = forms.CharField(label='Subject Line')
-    body = forms.CharField(label='Email Body', widget=forms.Textarea(attrs={'placeholder': 'Hello {{ first_name }} {{ last_name }}, your account {{ username }} has not yet paid registration fees...'}))
+    body = forms.CharField(
+        label='Email Body',
+        widget=forms.Textarea(attrs={
+            'placeholder': 'Hello {{ first_name }} {{ last_name }}, your account {{ username }} has an updated...'
+        })
+    )
 
 
 class AssignClassroomTimeSlotsForm(forms.Form):
@@ -280,10 +316,9 @@ class AssignClassroomTimeSlotsForm(forms.Form):
         with transaction.atomic():
             for datum in self.cleaned_data["data"]:
                 (
-                    ClassroomTimeSlot
-                        .objects
-                        .filter(id=datum["classroom_time_slot_id"])
-                        .update(course_section_id=datum["course_section_id"])
+                    ClassroomTimeSlot.objects
+                    .filter(id=datum["classroom_time_slot_id"])
+                    .update(course_section_id=datum["course_section_id"])
                 )
 
     def _validate_ids(self, Model, id_field_name, data, ignore_none=False):
@@ -296,5 +331,6 @@ class AssignClassroomTimeSlotsForm(forms.Form):
             raise ValidationError("Sorry, something went wrong")
 
 
-class PaymentForm(forms.Form):
-    todo = forms.CharField()
+class PaymentForm(CrispyFormMixin, forms.Form):
+    submit_label = "Confirm payment"
+    todo = forms.CharField(required=False)

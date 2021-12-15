@@ -10,7 +10,7 @@
   <h2>Active Registrations</h2>
   {% for registration in registrations %}
       <div>{{ registration.program.name }}:
-        <a href="{% url "current_registration_stage" pk=registration.id %}">
+        <a href="{% url "current_registration_stage" registration_id=registration.id %}">
           {{ registration.get_program_stage.name }}
         </a>
       </div>

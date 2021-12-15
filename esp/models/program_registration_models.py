@@ -137,13 +137,12 @@ class ClassRegistration(BaseModel):
     confirmed_on = models.DateTimeField(null=True)
 
 
-class PurchasedItem(BaseModel):
-    user = models.ForeignKey(User, related_name="purchases", on_delete=models.PROTECT)
-    item = models.ForeignKey(ProgramSaleItem, related_name="purchases", on_delete=models.PROTECT)
-    added_to_cart_on = models.DateTimeField()
-    purchase_confirmed_on = models.DateTimeField(null=True)
+class UserPayment(BaseModel):
+    user = models.ForeignKey(User, related_name="payments", on_delete=models.PROTECT)
     payment_method = models.CharField(choices=PaymentMethod.choices, max_length=64)
-    amount_charged = models.DecimalField(max_digits=6, decimal_places=2, null=True)
+    total_amount = models.DecimalField(max_digits=6, decimal_places=2, null=True)
+    vendor_authorization_id = models.CharField(max_length=124, null=True)
+    transaction_datetime = models.DateTimeField()
 
 
 class FinancialAidRequest(BaseModel):
@@ -152,8 +151,20 @@ class FinancialAidRequest(BaseModel):
     amount_requested = models.DecimalField(max_digits=6, decimal_places=2)
     amount_received = models.DecimalField(max_digits=6, decimal_places=2, null=True)
     comments = models.TextField(null=True)
-    reviewer_comments  = models.TextField(null=True)
+    reviewer_comments = models.TextField(null=True)
     reviewed_on = models.DateTimeField(null=True)
+
+
+class PurchaseLineItem(BaseModel):
+    user = models.ForeignKey(User, related_name="purchases", on_delete=models.PROTECT)
+    item = models.ForeignKey(ProgramSaleItem, related_name="purchases", on_delete=models.PROTECT)
+    payment = models.ForeignKey(UserPayment, related_name="line_items", on_delete=models.PROTECT, null=True)
+    financial_aid_request = models.ForeignKey(
+        FinancialAidRequest, related_name="line_items", on_delete=models.PROTECT, null=True
+    )
+    added_to_cart_on = models.DateTimeField()
+    purchase_confirmed_on = models.DateTimeField(null=True)
+    charge_amount = models.DecimalField(max_digits=6, decimal_places=2)
 
 #####################################################
 # TEACHER REGISTRATIONS

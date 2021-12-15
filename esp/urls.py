@@ -79,7 +79,7 @@ urlpatterns = [
     # Student program registration views
     path("programs/<uuid:pk>/register/", ProgramRegistrationCreateView.as_view(), name="create_program_registration"),
     path(
-        'programs/registration/<uuid:pk>/', ProgramRegistrationStageView.as_view(),
+        'programs/registration/<uuid:registration_id>/', ProgramRegistrationStageView.as_view(),
         name="current_registration_stage"
     ),
     path(
@@ -128,7 +128,6 @@ urlpatterns = [
         'programs/registration/<uuid:registration_id>/surveys/<uuid:step_id>/',
         CompleteSurveysView.as_view(), name=StudentRegistrationStepType.complete_surveys
     ),
-    path('programs/registration/<uuid:registration_id>/pay/', MakePaymentView.as_view(), name="make_payment"),
 
     # Registration step additional views
     path(
@@ -136,9 +135,11 @@ urlpatterns = [
         PreferenceEntryRoundView.as_view(), name="preference_entry_round"
     ),
     path(
-        'programs/registration/<uuid:registration_id>/financial_aid/<uuid:step_id>',
+        'programs/registration/<uuid:registration_id>/financial_aid/<uuid:step_id>/',
         RequestFinancialAidView.as_view(), name="request_financial_aid",
     ),
+    path('programs/registration/<uuid:registration_id>/pay/<uuid:step_id>/',
+         MakePaymentView.as_view(), name="make_payment"),
     path(
         'programs/registration/<uuid:registration_id>/step/<uuid:step_id>/complete/',
         RegistrationStepCompleteView.as_view(), name="complete_registration_step",
@@ -149,6 +150,12 @@ urlpatterns = [
     path("api/v0/classrooms/", ClassroomApiView.as_view(), name="classroom_api"),
     path("api/v0/programs/<uuid:pk>/courses/", CourseApiView.as_view(), name="course_api"),
     path("api/v0/programs/<uuid:pk>/time-slots/", TimeSlotApiView.as_view(), name="time_slot_api"),
-    path("api/v0/programs/<uuid:pk>/classroom-time-slots/", ClassroomTimeSlotApiView.as_view(), name="classroom_time_slot_api"),
-    path("api/v0/programs/<uuid:pk>/assign-classroom-time-slots/", AssignClassroomTimeSlotsApiView.as_view(), name="assign_classroom_time_slots_api"),
+    path(
+        "api/v0/programs/<uuid:pk>/classroom-time-slots/",
+        ClassroomTimeSlotApiView.as_view(), name="classroom_time_slot_api"
+    ),
+    path(
+        "api/v0/programs/<uuid:pk>/assign-classroom-time-slots/",
+        AssignClassroomTimeSlotsApiView.as_view(), name="assign_classroom_time_slots_api"
+    ),
 ]

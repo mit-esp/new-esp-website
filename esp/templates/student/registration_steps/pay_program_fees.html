@@ -14,7 +14,7 @@
     {% csrf_token %}
     <h3 class="my-4">Required Payments</h3>
     {% for item in required_purchase_items %}
-      {% include "student/components/purchase_item.html" %}
+      {% include "student/components/purchase_item.html" with required=True %}
     {% endfor %}
     {% if additional_purchase_items %}
       <h3 class="my-4">Additional Items</h3>

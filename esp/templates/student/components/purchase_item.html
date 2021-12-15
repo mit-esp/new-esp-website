@@ -11,7 +11,7 @@
   {% else %}
     <div class="form-check-inline">
       <label class="form-check-label" for="add-{{ item.item_name }}">Add to cart</label>
-      <input class="form-check-input" type="checkbox" id="add-{{ item.item_name }}" name="item-{{ item.id }}">
+      <input class="form-check-input" type="checkbox" id="add-{{ item.item_name }}" name="item-{{ item.id }}" {% if required %}checked{% endif %}>
     </div>
     <span>${{ item.price }}</span>
   {% endif %}
