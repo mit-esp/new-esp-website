@@ -4,10 +4,21 @@
 {% block content %}
   <h1>Pay Program Fees</h1>
   <p>
-    You may skip payment now and pay in person instead.
-    You may also request financial aid for eligible items in your cart.
 
-    You will have the opportunity to purchase additional items later and in person, if supplies allow.
+    You may skip payment now and pay in person instead. Only cash and checks are accepted day-of.
+    <br>
+    {% if financial_aid_approved %}
+      <span class="text-danger">Your financial aid request has been approved and applied to eligible items.</span>
+    {% elif financial_aid_requested %}
+      <span class="text-danger">
+        Your financial aid request will be reviewed soon.
+        If it is approved, the discount will be automatically applied to eligible items.
+      </span>
+    {% else %}
+    You may also request financial aid, which covers the full cost of eligible fees and add-ons.
+    {% endif %}
+    <br>
+    You will have the opportunity to purchase optional add-ons later and in person, if supplies allow.
   </p>
   {% include 'shared/submit_button.html' with submit_label='Skip and pay in person' submit_value='skip' %}
   <form method="post">
@@ -17,7 +28,7 @@
       {% include "student/components/purchase_item.html" with required=True %}
     {% endfor %}
     {% if additional_purchase_items %}
-      <h3 class="my-4">Additional Items</h3>
+      <h3 class="my-4">Optional Add-Ons</h3>
       {% for item in additional_purchase_items %}
         {% include "student/components/purchase_item.html" %}
       {% endfor %}

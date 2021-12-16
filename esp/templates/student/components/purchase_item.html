@@ -5,15 +5,20 @@
   </span>
   <span>
   {% if item.purchased %}
-    <span>Purchased</span>
+    <span>{{ item.purchased }} purchased</span>
   {% elif item.in_cart %}
-    <span>In cart</span>
-  {% else %}
+    <span class="text-danger">{{ item.in_cart }} in cart (${{ item.in_cart_price }})</span>
+  {% endif %}
+  {% if item.purchased|add:item.in_cart < item.max_per_user %}
     <div class="form-check-inline">
       <label class="form-check-label" for="add-{{ item.item_name }}">Add to cart</label>
       <input class="form-check-input" type="checkbox" id="add-{{ item.item_name }}" name="item-{{ item.id }}" {% if required %}checked{% endif %}>
     </div>
-    <span>${{ item.price }}</span>
+    <span>
+      {% if item.eligible_for_financial_aid and financial_aid_approved %}<span class="text-warning">Free</span>
+      {% else %}${{ item.price }}
+      {% endif %}
+    </span>
   {% endif %}
   </span>
 </div>

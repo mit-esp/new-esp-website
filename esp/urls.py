@@ -1,10 +1,11 @@
 from django.urls import path
 
 from esp.constants import StudentRegistrationStepType
-from esp.views.admin_views import (AdminDashboardView, CourseCreateView,
-                                   CourseListView, CourseUpdateView,
-                                   ProgramCreateView, ProgramListView,
-                                   ProgramLotteryView, ProgramStageCreateView,
+from esp.views.admin_views import (AdminDashboardView, ApproveFinancialAidView,
+                                   CourseCreateView, CourseListView,
+                                   CourseUpdateView, ProgramCreateView,
+                                   ProgramListView, ProgramLotteryView,
+                                   ProgramStageCreateView,
                                    ProgramStageUpdateView, ProgramUpdateView,
                                    SendEmailsView)
 from esp.views.scheduler_views import (AssignClassroomTimeSlotsApiView,
@@ -57,6 +58,10 @@ urlpatterns = [
     path('admin/programs/<uuid:pk>/classes/update/<uuid:class_pk>/', CourseUpdateView.as_view(), name='update_course'),
     path('admin/programs/<uuid:pk>/classes/', CourseListView.as_view(), name='courses'),
     path('admin/programs/<uuid:pk>/lottery/', ProgramLotteryView.as_view(), name="program_lottery"),
+    path(
+        'admin/programs/<uuid:pk>/approve_financial_aid/',
+        ApproveFinancialAidView.as_view(), name="approve_financial_aid"
+    ),
 
     path('admin/email/', SendEmailsView.as_view(), name="send_email"),
 

@@ -15,7 +15,8 @@ from requests import HTTPError
 from common.constants import PermissionType
 from common.views import PermissionRequiredMixin
 from esp.constants import PaymentMethod, StudentRegistrationStepType
-from esp.forms import PaymentForm, UpdateStudentProfileForm
+from esp.forms import (FinancialAidRequestForm, PaymentForm,
+                       UpdateStudentProfileForm)
 from esp.integrations.cybersource import authorize_payment
 from esp.models.course_scheduling_models import CourseSection
 from esp.models.program_models import (Course, PreferenceEntryCategory,
@@ -231,16 +232,22 @@ class PayProgramFeesView(RegistrationStepBaseView):
         context = super().get_context_data()
         purchased_items_query = PurchaseLineItem.objects.filter(user=self.object.user, item__id=OuterRef("id"))
         purchase_items = self.object.program.purchase_items.annotate(
-            in_cart=Exists(purchased_items_query.filter(purchase_confirmed_on__isnull=True)),
-            purchased=Exists(purchased_items_query.filter(purchase_confirmed_on__isnull=False)),
+            in_cart=Count(purchased_items_query.filter(purchase_confirmed_on__isnull=True).distinct().values("id")),
+            in_cart_price=Subquery(
+                purchased_items_query.filter(purchase_confirmed_on__isnull=True)[:1].values("charge_amount")
+            ),
+            purchased=Count(purchased_items_query.filter(purchase_confirmed_on__isnull=False).distinct().values("id")),
         )
         context["required_purchase_items"] = [item for item in purchase_items if item.required_for_registration]
         context["additional_purchase_items"] = [item for item in purchase_items if not item.required_for_registration]
+        context["financial_aid_requested"] = self.object.financial_aid_requests.exists()
+        context["financial_aid_approved"] = self.object.financial_aid_requests.filter(approved=True).exists()
         return context
 
     def post(self, request, *args, **kwargs):
+        # Parse item ids from POST data
         new_cart_item_ids = [key[5:] for key in request.POST.keys() if key.startswith('item-')]
-        new_cart_items = ProgramSaleItem.objects.filter(id__in=new_cart_item_ids)
+        new_cart_items = ProgramSaleItem.objects.filter(id__in=new_cart_item_ids, program=self.object.program)
         purchases_to_create = []
         for item in new_cart_items:
             purchases_to_create.append(
@@ -463,20 +470,22 @@ class DeleteCourseRegistrationView(PermissionRequiredMixin, SingleObjectMixin, V
             messages.error(request, message='Action not allowed')
         if self.request.GET.get('next'):
             return redirect(self.request.GET.get('next'))
-        return redirect('current_registration_stage')
+        return redirect(self.request.user.get_dashboard_url())
 
 
-class RequestFinancialAidView(RegistrationStepBaseView):
+class RequestFinancialAidView(RegistrationStepBaseView, FormView):
     registration_step_key = StudentRegistrationStepType.pay_program_fees
     template_name = "student/registration_steps/request_financial_aid.html"
+    form_class = FinancialAidRequestForm
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        eligible_cart_items = self.object.user.purchases.filter(
-            purchase_confirmed_on__isnull=True, item__eligible_for_financial_aid=True, item__program=self.object.program
-        )
-        context["total_eligible_amount"] = eligible_cart_items.aggregate(Sum("item__price"))
-        return context
+        # TODO: Add warning if user has already paid for eligible items
+        return super().get_context_data(**kwargs)
+
+    def form_valid(self, form):
+        form.instance.program_registration = self.object
+        form.save()
+        return redirect("complete_registration_step", registration_id=self.object.id, step_id=self.registration_step.id)
 
 
 class MakePaymentView(RegistrationStepBaseView, FormView):

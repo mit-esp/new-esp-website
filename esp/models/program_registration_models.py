@@ -148,9 +148,22 @@ class UserPayment(BaseModel):
 class FinancialAidRequest(BaseModel):
     program_registration = models.ForeignKey(
         ProgramRegistration, related_name="financial_aid_requests", on_delete=models.PROTECT)
-    amount_requested = models.DecimalField(max_digits=6, decimal_places=2)
-    amount_received = models.DecimalField(max_digits=6, decimal_places=2, null=True)
-    comments = models.TextField(null=True)
+    reduced_lunch = models.BooleanField(
+        verbose_name="Do you receive free/reduced lunch at school?", blank=True, default=False
+    )
+    household_income = models.CharField(
+        verbose_name="Approximately what is your household income (round to the nearest $10,000)?", null=True,
+        blank=True,
+        max_length=12
+    )
+    student_comments = models.TextField(
+        verbose_name="Please describe in detail your financial situation this year.",
+        null=True, blank=True
+    )
+    student_prepared = models.BooleanField(
+        verbose_name="Did anyone besides the student fill out any portions of this form?", blank=True, default=False
+    )
+    approved = models.BooleanField(default=False)
     reviewer_comments = models.TextField(null=True)
     reviewed_on = models.DateTimeField(null=True)
 
@@ -159,9 +172,6 @@ class PurchaseLineItem(BaseModel):
     user = models.ForeignKey(User, related_name="purchases", on_delete=models.PROTECT)
     item = models.ForeignKey(ProgramSaleItem, related_name="purchases", on_delete=models.PROTECT)
     payment = models.ForeignKey(UserPayment, related_name="line_items", on_delete=models.PROTECT, null=True)
-    financial_aid_request = models.ForeignKey(
-        FinancialAidRequest, related_name="line_items", on_delete=models.PROTECT, null=True
-    )
     added_to_cart_on = models.DateTimeField()
     purchase_confirmed_on = models.DateTimeField(null=True)
     charge_amount = models.DecimalField(max_digits=6, decimal_places=2)

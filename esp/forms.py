@@ -17,7 +17,8 @@ from esp.constants import (CourseDifficulty, CourseTagCategory,
 from esp.models.course_scheduling_models import (ClassroomTimeSlot,
                                                  CourseSection)
 from esp.models.program_models import Course, CourseTag, Program, ProgramStage
-from esp.models.program_registration_models import (ProgramRegistrationStep,
+from esp.models.program_registration_models import (FinancialAidRequest,
+                                                    ProgramRegistrationStep,
                                                     StudentProfile,
                                                     TeacherProfile,
                                                     TeacherRegistration)
@@ -330,6 +331,19 @@ class AssignClassroomTimeSlotsForm(forms.Form):
         if len(set(model_ids)) != model_count:
             # Todo: Add sentry notification; this error is not intended for the user
             raise ValidationError("Sorry, something went wrong")
+
+
+class FinancialAidRequestForm(CrispyFormMixin, forms.ModelForm):
+    submit_label = "Submit request"
+
+    class Meta:
+        model = FinancialAidRequest
+        fields = [
+            "reduced_lunch",
+            "household_income",
+            "student_comments",
+            "student_prepared",
+        ]
 
 
 class PaymentForm(CrispyFormMixin, forms.Form):

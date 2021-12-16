@@ -15,7 +15,7 @@
                 <span>{{ purchase_item.item.item_name }}</span>
                 <div>
                   {% if purchase_item.charge_amount != purchase_item.item.price %}
-                    <div class="fa-strikethrough">
+                    <div style="text-decoration: line-through darkred">
                       ${{ purchase_item.item.price}}
                     </div>
                   {% endif %}

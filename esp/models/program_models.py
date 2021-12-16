@@ -321,6 +321,7 @@ class ProgramSaleItem(BaseModel):
     price = models.DecimalField(max_digits=6, decimal_places=2)
     required_for_registration = models.BooleanField(default=False)
     eligible_for_financial_aid = models.BooleanField()
+    max_per_user = models.IntegerField(default=1)
 
     def __str__(self):
         return f"{self.item_name} ({self.program.name})"

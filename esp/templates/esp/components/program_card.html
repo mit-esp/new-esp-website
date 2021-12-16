@@ -23,9 +23,12 @@
       <div class="card">
         <div class="card-body">
           <div class="card-title">Admin actions</div>
-          <li><a role="button" href="{% url 'program_lottery' pk=program.id %}">Run lottery</a></li>
-          <li><a role="button" href="{% url 'courses' pk=program.id %}">Manage Classes</a></li>
-          <li><a role="button" href="{% url 'scheduler' %}?program_id={{program.id}} ">Scheduler</a></li>
+          <ol class="list-group">
+          <li class="list-group-item"><a role="button" href="{% url 'program_lottery' pk=program.id %}">Run lottery</a></li>
+          <li class="list-group-item"><a role="button" href="{% url 'courses' pk=program.id %}">Manage Classes</a></li>
+          <li class="list-group-item"><a role="button" href="{% url 'scheduler' %}?program_id={{program.id}} ">Scheduler</a></li>
+          <li class="list-group-item"><a role="button" href="{% url 'approve_financial_aid' pk=program.id %}">Approve financial aid requests</a></li>
+          </ol>
         </div>
       </div>
     </div>
