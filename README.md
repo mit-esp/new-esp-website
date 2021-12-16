@@ -60,7 +60,7 @@ Install Postgres:
 sudo yum install -y postgresql-devel
 ```
 
-Configure environment variables in `config/.env` e.g.
+Configure environment variables in `config/.env` (backend environment variables file) e.g.
 ```
 HOST=esp-dev.mit.edu
 DEBUG=False
@@ -68,11 +68,9 @@ DEBUG_TOOLBAR=False
 LOCALHOST=False
 ...
 ```
-and `.env` e.g.
+and `.env` (frontend environment variables file) e.g.
 ```
-# should be set to base url
 REACT_APP_API_BASE_URL=https://esp-dev.mit.edu
-PUBLIC_URL=https://esp-dev.mit.edu
 ```
 
 Deployment commands:

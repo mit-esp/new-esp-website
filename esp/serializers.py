@@ -1,12 +1,11 @@
-from copy import deepcopy
-
 from django.core.exceptions import ValidationError
 from rest_framework import serializers
 
+from common.models import User
 from esp.models.course_scheduling_models import CourseSection, ClassroomTimeSlot
 from esp.models.program_models import Course, Classroom, TimeSlot
 from esp.models.program_registration_models import (ClassPreference,
-                                                    PreferenceEntryCategory)
+                                                    PreferenceEntryCategory, TeacherAvailability)
 
 
 class ClassPreferenceSerializer(serializers.ModelSerializer):
@@ -140,15 +139,40 @@ class CourseSerializer(serializers.ModelSerializer):
 
 
 class TimeSlotSerializer(serializers.ModelSerializer):
+    course_teacher_availabilities = serializers.JSONField("course_teacher_availabilities")
+
     class Meta:
         model = TimeSlot
         fields = (
+            "course_teacher_availabilities",
+            "end_datetime",
             "id",
             "start_datetime",
-            "end_datetime",
+        )
+
+
+class TeacherAvailabilitySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TeacherAvailability
+        fields = (
+            "id",
+            "registration",
+            "time_slot",
         )
 
 
 class AssignClassroomTimeSlotSerializer(serializers.Serializer):
     classroom_time_slot_id = serializers.UUIDField(required=True)
     course_section_id = serializers.UUIDField(allow_null=True, required=True)
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = (
+            "id",
+            "first_name",
+            "last_name",
+            "user_type",
+            "verified",
+        )

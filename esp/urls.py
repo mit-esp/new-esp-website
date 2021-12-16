@@ -11,7 +11,9 @@ from esp.views.admin_views import (AdminDashboardView, ApproveFinancialAidView,
 from esp.views.scheduler_views import (AssignClassroomTimeSlotsApiView,
                                        ClassroomApiView,
                                        ClassroomTimeSlotApiView, CourseApiView,
-                                       SchedulerView, TimeSlotApiView)
+                                       SchedulerView,
+                                       TeacherAvailabilityApiView,
+                                       TimeSlotApiView)
 from esp.views.student_registration_views import (
     CompleteSurveysView, ConfirmAssignedCoursesView,
     ConfirmRegistrationSubmissionView, DeleteCourseRegistrationView,
@@ -155,6 +157,10 @@ urlpatterns = [
     path("api/v0/classrooms/", ClassroomApiView.as_view(), name="classroom_api"),
     path("api/v0/programs/<uuid:pk>/courses/", CourseApiView.as_view(), name="course_api"),
     path("api/v0/programs/<uuid:pk>/time-slots/", TimeSlotApiView.as_view(), name="time_slot_api"),
+    path(
+        "api/v0/programs/<uuid:pk>/teacher-availability/",
+        TeacherAvailabilityApiView.as_view(), name="teacher_availability_api"
+    ),
     path(
         "api/v0/programs/<uuid:pk>/classroom-time-slots/",
         ClassroomTimeSlotApiView.as_view(), name="classroom_time_slot_api"
