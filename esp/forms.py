@@ -6,7 +6,8 @@ from django.core.exceptions import FieldError, ValidationError
 from django.db import transaction
 from django.forms import ModelForm, inlineformset_factory
 
-from common.constants import REGISTRATION_USER_TYPE_CHOICES, GradeLevel
+from common.constants import (REGISTRATION_USER_TYPE_CHOICES, GradeLevel,
+                              USStateEquiv)
 from common.forms import (CrispyFormMixin, HiddenOrderingInputFormset,
                           MultiFormMixin)
 from common.models import User
@@ -333,4 +334,42 @@ class AssignClassroomTimeSlotsForm(forms.Form):
 
 class PaymentForm(CrispyFormMixin, forms.Form):
     submit_label = "Confirm payment"
-    todo = forms.CharField(required=False)
+
+    card_number = forms.CharField()
+    expiration_date = forms.CharField()
+    cvc_code = forms.CharField(max_length=3, min_length=3, label="CVC Code")
+    name_on_card = forms.CharField()
+    line_1 = forms.CharField()
+    line_2 = forms.CharField()
+    city = forms.CharField()
+    state = forms.ChoiceField(choices=USStateEquiv.choices)
+    zipcode = forms.CharField(max_length=5)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper.layout = layout.Layout(
+            layout.Fieldset(
+                "Credit Card Info",
+                "card_number",
+                layout.Div(
+                    layout.Div("expiration_date", css_class="me-4"),
+                    layout.Field("cvc_code"),
+                    css_class="d-flex"
+                )
+            ),
+            layout.Fieldset(
+                "Billing Address",
+                "line_1",
+                "line_2",
+                layout.Div(
+                    layout.Field("city"),
+                    layout.Field("state"),
+                    layout.Field("zipcode"),
+                    css_class="d-flex justify-content-between"
+                )
+            )
+        )
+
+    def clean_card_number(self, value):
+        # TODO
+        return value
