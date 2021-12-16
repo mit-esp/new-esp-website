@@ -11,7 +11,7 @@ from esp.constants import HeardAboutVia, MITAffiliation, PaymentMethod
 from esp.models.course_scheduling_models import CourseSection
 from esp.models.program_models import (Course, PreferenceEntryCategory,
                                        Program, ProgramRegistrationStep,
-                                       ProgramSaleItem,
+                                       PurchaseableItem,
                                        TeacherProgramRegistrationStep,
                                        TimeSlot)
 from esp.validators import validate_graduation_year
@@ -170,7 +170,7 @@ class FinancialAidRequest(BaseModel):
 
 class PurchaseLineItem(BaseModel):
     user = models.ForeignKey(User, related_name="purchases", on_delete=models.PROTECT)
-    item = models.ForeignKey(ProgramSaleItem, related_name="purchases", on_delete=models.PROTECT)
+    item = models.ForeignKey(PurchaseableItem, related_name="purchases", on_delete=models.PROTECT)
     payment = models.ForeignKey(UserPayment, related_name="line_items", on_delete=models.PROTECT, null=True)
     added_to_cart_on = models.DateTimeField()
     purchase_confirmed_on = models.DateTimeField(null=True)

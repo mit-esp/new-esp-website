@@ -21,7 +21,7 @@ from esp.integrations.cybersource import authorize_payment
 from esp.models.course_scheduling_models import CourseSection
 from esp.models.program_models import (Course, PreferenceEntryCategory,
                                        PreferenceEntryRound, Program,
-                                       ProgramSaleItem, TimeSlot)
+                                       PurchaseableItem, TimeSlot)
 from esp.models.program_registration_models import (ClassRegistration,
                                                     CompletedRegistrationStep,
                                                     ProgramRegistration,
@@ -247,7 +247,7 @@ class PayProgramFeesView(RegistrationStepBaseView):
     def post(self, request, *args, **kwargs):
         # Parse item ids from POST data
         new_cart_item_ids = [key[5:] for key in request.POST.keys() if key.startswith('item-')]
-        new_cart_items = ProgramSaleItem.objects.filter(id__in=new_cart_item_ids, program=self.object.program)
+        new_cart_items = PurchaseableItem.objects.filter(id__in=new_cart_item_ids, program=self.object.program)
         purchases_to_create = []
         for item in new_cart_items:
             purchases_to_create.append(

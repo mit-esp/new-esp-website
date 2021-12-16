@@ -331,7 +331,7 @@ class ClassroomTag(BaseModel):
         return self.tag
 
 
-class ProgramSaleItem(BaseModel):
+class PurchaseableItem(BaseModel):
     program = models.ForeignKey(Program, related_name="purchase_items", on_delete=models.PROTECT)
     item_name = models.CharField(max_length=250)
     description = models.TextField(blank=True, null=True)
