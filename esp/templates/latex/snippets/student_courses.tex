@@ -8,7 +8,7 @@ User ID: {{ student_registration.id }} \\
 }
 
 \renewcommand{\barcodeblock}{
-\barcode{% templatetag openbrace %}{{ student_registration.id }}{% templatetag closebrace %}
+\barcode{% templatetag openbrace %}{{ student_registration.id|upper }}{% templatetag closebrace %}
 }
 
 \begin{multicols}{3}
@@ -52,7 +52,7 @@ Student Schedule for \\
 \footnotesize{ {% if not class_registration.course_section.time_slots %}N/A{% else %}{{ class_registration.course_section.time_slots.0.classroom.name }}{% endif %} } &
 {{ class_registration.course_section|truncatechars:45|texescape }} \newline
 \footnotesize{ {{class_registration.course_section.course.get_teacher_names|truncatechars:50|texescape }} }  &
-{% comment %}TODO: \texttt{% templatetag openbrace %}{{ cls.emailcode }}{% templatetag closebrace %} \\{% endcomment %}
+\texttt{% templatetag openbrace %}{{ class_registration.id }}{% templatetag closebrace %} \\
 {% endfor %}\hline
 \end{tabularx}
 \end{center}

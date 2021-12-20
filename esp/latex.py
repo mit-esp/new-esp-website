@@ -66,8 +66,8 @@ def render_to_latex(filepath, context_dict=None, filetype='pdf'):
 
     rendered_source = t.render(context_dict)
 
-    contents = gen_latex(rendered_source, filetype)
-    return FileResponse(contents)
+    file_path = gen_latex(rendered_source, filetype)
+    return FileResponse(open(file_path, 'rb'), filename=f"{filepath}.{filetype}")
 
 
 def gen_latex(texcode, type='pdf', stdout=_devnull_sentinel, stderr=subprocess.STDOUT):
@@ -149,7 +149,7 @@ def _gen_latex(texcode, stdout, stderr, type='pdf'):
         # didn't work.
         # TODO(benkraft): Try to extract the actual error out of pdflatex's
         # various output.  Or use stdout, which is a bit less noisy.
-        raise Exception(f'LaTeX failed with code {retcode}; try looking at the log file')
+        raise Exception(f'LaTeX failed with code {retcode}; {tex_log}')
     elif 'No pages of output' in tex_log:
         # One common problem (which LaTeX doesn't treat as an error) is
         # selecting no students, which results in no output (thus a nonexistent
@@ -179,8 +179,7 @@ def _gen_latex(texcode, stdout, stderr, type='pdf'):
         # LaTeX generated no output, or a postprocessor failed, all of which we
         # handle above.  But we'll at least return a specific error.
         raise Exception('No output file %s found; try looking at the log file.' % out_file)
-    with open(out_file) as f:
-        return f.read()
+    return out_file
 
 
 def get_rand_file_base():
