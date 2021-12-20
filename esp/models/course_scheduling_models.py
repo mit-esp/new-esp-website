@@ -51,22 +51,25 @@ class CourseSection(BaseModel):
         return self.__class__.objects.filter(course=self.course).aggregate(max=Max("display_id"))["max"] + 1
 
     def get_section_times(self):
-        time_slots = self.time_slots.order_by("time_slot__start_datetime").values(
-            "time_slot__start_datetime", "time_slot__end_datetime"
+        time_slots = sorted(
+            (
+                {"start": slot.time_slot.start_datetime, "end": slot.time_slot.end_datetime}
+                for slot in self.time_slots.all()
+            ),
+            key=lambda slot: slot["start"]
         )
         start_time = None
         end_time = None
         times = []
         for slot in time_slots:
             if not start_time:
-                start_time = slot["time_slot__start_datetime"]
+                start_time = slot["start"]
             if end_time and (
-                slot["time_slot__start_datetime"]
-                > end_time + timedelta(minutes=self.course.program.time_block_minutes - 1)
+                slot["end"] > end_time + timedelta(minutes=self.course.program.time_block_minutes - 1)
             ):
                 times.append((start_time, end_time))
-                start_time = slot["time_slot__start_datetime"]
-            end_time = slot["time_slot__end_datetime"]
+                start_time = slot["start"]
+            end_time = slot["end"]
         times.append((start_time, end_time))
         return times
 

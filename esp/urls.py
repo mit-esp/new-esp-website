@@ -3,11 +3,17 @@ from django.urls import path
 from esp.constants import StudentRegistrationStepType
 from esp.views.admin_views import (AdminDashboardView, CourseCreateView,
                                    CourseListView, CourseUpdateView,
+                                   PrintStudentSchedulesView,
                                    ProgramCreateView, ProgramListView,
                                    ProgramLotteryView, ProgramStageCreateView,
-                                   ProgramStageUpdateView, ProgramUpdateView, SendEmailsView)
-from esp.views.scheduler_views import (AssignClassroomTimeSlotsApiView, ClassroomApiView, ClassroomTimeSlotApiView,
-                                       CourseApiView, SchedulerView, TeacherAvailabilityApiView, TimeSlotApiView)
+                                   ProgramStageUpdateView, ProgramUpdateView,
+                                   SendEmailsView)
+from esp.views.scheduler_views import (AssignClassroomTimeSlotsApiView,
+                                       ClassroomApiView,
+                                       ClassroomTimeSlotApiView, CourseApiView,
+                                       SchedulerView,
+                                       TeacherAvailabilityApiView,
+                                       TimeSlotApiView)
 from esp.views.student_registration_views import (
     CompleteSurveysView, ConfirmAssignedCoursesView,
     ConfirmRegistrationSubmissionView, DeleteCourseRegistrationView,
@@ -53,6 +59,9 @@ urlpatterns = [
     path('admin/programs/<uuid:pk>/classes/update/<uuid:class_pk>/', CourseUpdateView.as_view(), name='update_course'),
     path('admin/programs/<uuid:pk>/classes/', CourseListView.as_view(), name='courses'),
     path('admin/programs/<uuid:pk>/lottery/', ProgramLotteryView.as_view(), name="program_lottery"),
+    path(
+        'admin/programs/<uuid:pk>/print/schedules/', PrintStudentSchedulesView.as_view(), name="print_student_schedules"
+    ),
 
     path('admin/email/', SendEmailsView.as_view(), name="send_email"),
 

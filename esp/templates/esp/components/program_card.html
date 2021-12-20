@@ -26,6 +26,7 @@
           <li><a role="button" href="{% url 'program_lottery' pk=program.id %}">Run lottery</a></li>
           <li><a role="button" href="{% url 'courses' pk=program.id %}">Manage Classes</a></li>
           <li><a role="button" href="{% url 'scheduler' %}?program_id={{program.id}} ">Scheduler</a></li>
+          <li><a role="button" href="{% url 'print_student_schedules' pk=program.id %}" target="_blank">Print Student Schedules</a></li>
         </div>
       </div>
     </div>

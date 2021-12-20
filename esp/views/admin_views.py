@@ -1,16 +1,14 @@
-import timeit
-
 from django.contrib import messages
-from django.core.exceptions import FieldError
 from django.core.mail import send_mail
 from django.db.models import Count, Max
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
-from django.template import Template, Context
+from django.template import Context, Template
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views.generic import (CreateView, FormView, ListView, TemplateView,
                                   UpdateView)
+from django.views.generic.base import View
 from django.views.generic.detail import SingleObjectMixin
 from multiform_views.edit import FormsView
 
@@ -20,8 +18,10 @@ from common.models import User
 from common.views import PermissionRequiredMixin
 from config.settings import DEFAULT_FROM_EMAIL
 from esp.forms import (ProgramForm, ProgramRegistrationStepFormset,
-                       ProgramStageForm, TeacherCourseForm, QuerySendEmailForm,
-                       StudentSendEmailForm, TeacherSendEmailForm)
+                       ProgramStageForm, QuerySendEmailForm,
+                       StudentSendEmailForm, TeacherCourseForm,
+                       TeacherSendEmailForm)
+from esp.latex import render_to_latex
 from esp.lottery import run_program_lottery
 from esp.models.program_models import Course, Program, ProgramStage
 ######################################
@@ -42,7 +42,9 @@ class AdminDashboardView(TemplateView):
         context["teachers_count"] = User.objects.filter(user_type=UserType.teacher).count()
         context["admins_count"] = User.objects.filter(user_type=UserType.admin, is_active=True).count()
         context["upcoming_program"] = Program.objects.filter(start_date__gte=ts).latest('-start_date', '-end_date')
-        context["active_programs"] = Program.objects.filter(start_date__lte=ts, end_date__gte=ts).order_by('-start_date')
+        context["active_programs"] = (
+            Program.objects.filter(start_date__lte=ts, end_date__gte=ts).order_by('-start_date')
+        )
         return context
 
 
@@ -256,8 +258,26 @@ class SendEmailsView(PermissionRequiredMixin, FormsView):
             )
 
         email_count = to_users.count()
-        messages.success(self.request, f'An email was sent to {email_count} email address{"" if email_count == 1 else "es"}')
+        messages.success(
+            self.request,
+            f'An email was sent to {email_count} email address{"" if email_count == 1 else "es"}'
+        )
 
+
+class PrintStudentSchedulesView(PermissionRequiredMixin, SingleObjectMixin, View):
+    permission = PermissionType.admin_dashboard_view
+    model = Program
+
+    def get_queryset(self):
+        return super().get_queryset().prefetch_related(
+            "registrations__user",
+            "registrations__class_registrations__course_section__time_slots",
+            "registrations__class_registrations__course_section__course__program",
+        )
+
+    def get(self, request, *args, **kwargs):
+        program = self.get_object()
+        return render_to_latex("latex/student_schedules_all.tex", context_dict={"program": program})
 
 ###########################################################
 
@@ -281,6 +301,7 @@ class CourseCreateView(PermissionRequiredMixin, CreateView):
         form.instance.program = self.program
         return super().form_valid(form)
 
+
 class CourseUpdateView(PermissionRequiredMixin, UpdateView):
     permission = PermissionType.courses_edit_all
     model = Course
@@ -294,7 +315,7 @@ class CourseUpdateView(PermissionRequiredMixin, UpdateView):
 
     def get_success_url(self):
         program_id = self.kwargs['pk']
-        return reverse_lazy('courses', kwargs={'pk': self.kwargs['pk']})
+        return reverse_lazy('courses', kwargs={'pk': program_id})
 
 
 class CourseListView(PermissionRequiredMixin, ListView):
