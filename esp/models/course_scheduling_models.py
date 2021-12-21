@@ -65,9 +65,10 @@ class CourseSection(BaseModel):
             if not start_time:
                 start_time = slot["start"]
             if end_time and (
-                slot["end"] > end_time + timedelta(minutes=self.course.program.time_block_minutes - 1)
+                slot["start"] > end_time + timedelta(minutes=self.course.program.time_block_minutes - 1)
             ):
                 times.append((start_time, end_time))
+                print(start_time, end_time)
                 start_time = slot["start"]
             end_time = slot["end"]
         times.append((start_time, end_time))

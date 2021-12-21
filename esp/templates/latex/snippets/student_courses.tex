@@ -3,20 +3,24 @@
 \renewcommand{\nameblock}{
 \textbf{Name: {{ student_registration.user.get_full_name|texescape }} \\
 Username: {{ student_registration.user.username|texescape }} \\
-User ID: {{ student_registration.id }} \\
+Email: {{ student_registration.user.email|texescape }}
 }
 }
 
 \renewcommand{\barcodeblock}{
-\barcode{% templatetag openbrace %}{{ student_registration.id|upper }}{% templatetag closebrace %}
+\barcode{% templatetag openbrace %}{{ student_registration.get_barcode_id }}{% templatetag closebrace %}
 }
+
+\begin{center}
+\barcodeblock
+\end{center}
 
 \begin{multicols}{3}
 
 \begin{flushleft}
 \nameblock
 \vspace{1ex} \hrule \vspace{1ex}
-\textbf{Amount Owed: \fbox{\${% comment %}TODO: Add amount owed{% endcomment %} } }
+\textbf{Amount Owed: \fbox{\$ {{ student_registration.get_amount_owed }} } }
 \end{flushleft}
 
 \columnbreak
@@ -32,7 +36,7 @@ Student Schedule for \\
 \columnbreak
 
 \begin{flushright}
-\barcodeblock
+\qrcode{% templatetag openbrace %}{{ student_registration.id }}{% templatetag closebrace %}
 \end{flushright}
 
 \end{multicols}
@@ -47,12 +51,12 @@ Student Schedule for \\
 \textbf{Time and Room} & \textbf{Class and Teacher} & \textbf{Code} \\
 {% for class_registration in student_registration.class_registrations.all %}\hline
 {% with section_times=class_registration.course_section.get_section_times %}
-{% if section_times|length_is:"0" %}N/A{% else %}{{ section_times|format_time_slots|texescape }}{% endif %} \newline
+\footnotesize{ {% if section_times|length_is:"0" %}N/A{% else %}{{ section_times|format_time_slots|texescape }}{% endif %} }\newline
 {% endwith %}
-\footnotesize{ {% if not class_registration.course_section.time_slots %}N/A{% else %}{{ class_registration.course_section.time_slots.0.classroom.name }}{% endif %} } &
+\footnotesize{ {% if not class_registration.course_section.time_slots %}N/A{% else %}{{ class_registration.course_section.time_slots.all.0.classroom.name }}{% endif %} } &
 {{ class_registration.course_section|truncatechars:45|texescape }} \newline
 \footnotesize{ {{class_registration.course_section.course.get_teacher_names|truncatechars:50|texescape }} }  &
-\texttt{% templatetag openbrace %}{{ class_registration.id }}{% templatetag closebrace %} \\
+\texttt{% templatetag openbrace %}{% comment %}TODO: What is class code?{% endcomment %}TODO{% templatetag closebrace %} \\
 {% endfor %}\hline
 \end{tabularx}
 \end{center}

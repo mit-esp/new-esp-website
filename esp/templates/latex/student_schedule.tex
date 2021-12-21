@@ -1,28 +1,9 @@
 {% autoescape off %}
-{% load latex %}
 
-\documentclass[letterpaper,12pt]{article}
-\usepackage[left=.75in,top=1in,bottom=.75in,right=.75in]{geometry}
-\usepackage[utf8]{inputenc}
-\usepackage{multicol}
-\usepackage{fancyhdr}
-\usepackage{tabularx}
-\usepackage{array}
-\usepackage{setspace}
-\usepackage{amsfonts, amsmath, amsthm, amssymb}
-\usepackage[code=Code39,X=.5mm,ratio=2.25,H=2cm]{makebarcode}
-
-\pagestyle{fancy}
-\fancyhead[C]{\Huge \textsf{\textbf{ {{ program.name|texescape }} } }}
-\setlength\headheight{16pt}
-\renewcommand{\headrulewidth}{3pt}
-\renewcommand{\footrulewidth}{0pt}
-\fancyfoot{}
-
-\newcommand{\nameblock}{}
-\newcommand{\barcodeblock}{}
+{% include 'latex/snippets/schedule_preamble.tex' %}
 
 \begin{document}
 {% include 'latex/snippets/student_courses.tex' %}
 \end{document}
+
 {% endautoescape %}

@@ -1,6 +1,6 @@
 from django.contrib import messages
 from django.core.mail import send_mail
-from django.db.models import Count, Max
+from django.db.models import Count, Max, Min, Prefetch
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
 from django.template import Context, Template
@@ -271,6 +271,9 @@ class PrintStudentSchedulesView(PermissionRequiredMixin, SingleObjectMixin, View
     def get_queryset(self):
         return super().get_queryset().prefetch_related(
             "registrations__user",
+            Prefetch("registrations__class_registrations", queryset=ClassRegistration.objects.annotate(
+                start_time=Min("course_section__time_slots__time_slot__start_datetime")).order_by("start_time")
+            ),
             "registrations__class_registrations__course_section__time_slots",
             "registrations__class_registrations__course_section__course__program",
         )

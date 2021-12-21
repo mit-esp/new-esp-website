@@ -107,7 +107,7 @@ def gen_latex(texcode, type='pdf', stdout=_devnull_sentinel, stderr=subprocess.S
         # right thing will happen if someone were to change the default
         # parameter for `stderr`.
         stdout, stderr = [devnull_file if f is _devnull_sentinel else f for f in [stdout, stderr]]
-
+        print(texcode)
         return _gen_latex(texcode, stdout=stdout, stderr=stderr, type=type)
 
 

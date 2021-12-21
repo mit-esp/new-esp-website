@@ -1,4 +1,5 @@
 from datetime import date
+from decimal import Decimal
 
 from django.db import models
 from django.db.models import Exists, Min, OuterRef, Value
@@ -9,10 +10,10 @@ from common.constants import GradeLevel, ShirtSize, USStateEquiv
 from common.models import BaseModel, User
 from esp.constants import HeardAboutVia, MITAffiliation
 from esp.models.course_scheduling_models import CourseSection
-from esp.models.program_models import (Course, PreferenceEntryCategory, Program,
-                                       ProgramRegistrationStep,
-                                       TeacherProgramRegistrationStep, TimeSlot)
-
+from esp.models.program_models import (Course, PreferenceEntryCategory,
+                                       Program, ProgramRegistrationStep,
+                                       TeacherProgramRegistrationStep,
+                                       TimeSlot)
 ####################################################
 # STUDENT REGISTRATIONS
 ####################################################
@@ -100,6 +101,13 @@ class ProgramRegistration(BaseModel):
                 or (self.allow_late_registration_until and self.allow_late_registration_until > timezone.now())
         )
 
+    def get_barcode_id(self):
+        return "".join((str(self.id)).split('-')).upper()
+
+    def get_amount_owed(self):
+        # TODO: Add after program fees merge
+        return Decimal(0.00)
+
     def __str__(self):
         return f"{self.program} registration for {self.user}"
 
@@ -149,7 +157,8 @@ class TeacherProfile(BaseModel):
         max_length=128, blank=True, null=True,
         help_text="If you are currently a student, please provide your major or degree field."
     )
-    graduation_year = models.IntegerField(null=True, blank=True, validators=[validate_graduation_year],
+    graduation_year = models.IntegerField(
+        null=True, blank=True, validators=[validate_graduation_year],
         help_text="If you are currently a student, please provide your graduation year."
     )
     university_or_employer = models.CharField(
@@ -212,7 +221,9 @@ class CompletedTeacherRegistrationStep(BaseModel):
 
 class CourseTeacher(BaseModel):
     course = models.ForeignKey(Course, related_name="course_teachers", on_delete=models.PROTECT)
-    teacher_registration = models.ForeignKey(TeacherRegistration, related_name="course_teachers", on_delete=models.PROTECT)
+    teacher_registration = models.ForeignKey(
+        TeacherRegistration, related_name="course_teachers", on_delete=models.PROTECT
+    )
     is_course_creator = models.BooleanField()
     confirmed_on = models.DateTimeField(null=True)
 
