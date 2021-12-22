@@ -196,7 +196,7 @@ class SendEmailsView(PermissionRequiredMixin, FormsView):
             teachers = teachers.annotate(num_courses=Count('teacher_registrations__courses')).filter(num_courses__gte=1)
         if form.cleaned_data['difficulty']:
             teachers = teachers.filter(
-                teacher_registrations__courses__course__difficulty=form.cleaned_data['difficulty'])
+                teacher_registrations__courses__difficulty=form.cleaned_data['difficulty'])
         if form.cleaned_data['registration_step']:
             teachers = teachers.filter(
                 teacher_registrations__completed_steps__step__step_key=form.cleaned_data['registration_step'])

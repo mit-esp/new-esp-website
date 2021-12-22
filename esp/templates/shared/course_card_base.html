@@ -11,8 +11,8 @@
     <div>{{ course_section.get_section_times|format_time_slots }}</div>
     <div>
       (Co-)Teachers:
-      {% for course_teacher in course_section.course.course_teachers.all %}
-        {{ course_teacher.teacher_registration.user.first_name }} {{ course_teacher.teacher_registration.user.last_name }}{% if not forloop.last %}, {% endif %}
+      {% for teacher_registration in course_section.course.teacher_registrations.all %}
+        {{ teacher_registration.user.first_name }} {{ teacher_registration.user.last_name }}{% if not forloop.last %}, {% endif %}
       {% endfor %}
     </div>
   </div>

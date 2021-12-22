@@ -80,7 +80,7 @@ class ProgramRegistrationStageView(PermissionRequiredMixin, DetailView):
             .select_related("course_section", "course_section__course", "course_section__course__program")
             .prefetch_related(
                 "course_section__time_slots__time_slot",
-                "course_section__course__course_teachers__teacher_registration__user"
+                "course_section__course__teacher_registrations__user"
             )
         )
         context["course_registrations"] = course_registrations
@@ -213,7 +213,7 @@ class ConfirmAssignedCoursesView(RegistrationStepBaseView):
         context = super().get_context_data(**kwargs)
         context["course_registrations"] = (
             self.object.class_registrations.select_related("course_section", "course_section__course")
-            .prefetch_related("course_section__course__course_teachers__teacher_registration__user")
+            .prefetch_related("course_section__course__teacher_registrations__user")
         )
         return context
 
