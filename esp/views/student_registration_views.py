@@ -158,14 +158,20 @@ class VerifyStudentProfileView(RegistrationStepBaseView, FormView):
 
 class SubmitWaiversView(RegistrationStepBaseView):
     registration_step_key = StudentRegistrationStepType.submit_waivers
-    template_name = "student/submit_waivers.html"
+    template_name = "student/registration_steps/submit_waivers.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["forms"] = self.object.program.external_forms.filter(user_type=UserType.student).annotate(
-            completed=Exists(self.object.completed_forms.filter(id=OuterRef(id), completed_on__isnull=False))
+            completed=Exists(
+                self.object.completed_forms_extra.filter(form_id=OuterRef("id"), completed_on__isnull=False)
+            )
         )
         return context
+
+    def post(self, request, *args, **kwargs):
+        # TODO: Form integrations; handle form completed model creation upon API response/webhook
+        return redirect("complete_registration_step", registration_id=self.object.id, step_id=self.registration_step.id)
 
 
 class StudentAvailabilityView(RegistrationStepBaseView):
