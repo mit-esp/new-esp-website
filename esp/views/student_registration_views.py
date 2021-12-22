@@ -12,7 +12,7 @@ from django.views.generic.base import TemplateView, View
 from django.views.generic.detail import DetailView, SingleObjectMixin
 from requests import HTTPError
 
-from common.constants import PermissionType
+from common.constants import PermissionType, UserType
 from common.views import PermissionRequiredMixin
 from esp.constants import PaymentMethod, StudentRegistrationStepType
 from esp.forms import (FinancialAidRequestForm, PaymentForm,
@@ -156,8 +156,16 @@ class VerifyStudentProfileView(RegistrationStepBaseView, FormView):
         )
 
 
-class SubmitWaiversView(RegistrationStepPlaceholderView):
+class SubmitWaiversView(RegistrationStepBaseView):
     registration_step_key = StudentRegistrationStepType.submit_waivers
+    template_name = "student/submit_waivers.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["forms"] = self.object.program.external_forms.filter(user_type=UserType.student).annotate(
+            completed=Exists(self.object.completed_forms.filter(id=OuterRef(id), completed_on__isnull=False))
+        )
+        return context
 
 
 class StudentAvailabilityView(RegistrationStepBaseView):
