@@ -1,8 +1,11 @@
 from copy import deepcopy
 
 from django.core.exceptions import ValidationError
+from django.db.models import F, Value, QuerySet
+from django.db.models.functions import Concat
 from rest_framework import serializers
 
+from common.models import User
 from esp.models.course_scheduling import CourseSection, ClassroomTimeSlot
 from esp.models.program import Course, Classroom, TimeSlot
 from esp.models.program_registration import (ClassPreference,
@@ -152,3 +155,31 @@ class TimeSlotSerializer(serializers.ModelSerializer):
 class AssignClassroomTimeSlotSerializer(serializers.Serializer):
     classroom_time_slot_id = serializers.UUIDField(required=True)
     course_section_id = serializers.UUIDField(allow_null=True, required=True)
+
+
+class UserSerializer(serializers.ModelSerializer):
+    search_string = serializers.CharField()
+
+    class Meta:
+        model = User
+        fields = (
+            "first_name",
+            "last_name",
+            "id",
+            "username",
+            "search_string",
+        )
+
+    def __new__(cls, *args, **kwargs):
+        if args and isinstance(args[0], QuerySet):
+            queryset = cls._build_queryset(args[0])
+            args = (queryset,) + args[1:]
+        return super().__new__(cls, *args, **kwargs)
+
+    @classmethod
+    def _build_queryset(cls, queryset):
+        # modify the queryset here
+        return queryset.annotate(
+            search_string=Concat(F("first_name"), Value(' '), F("last_name"), Value(', ('), F("username"), Value(')'))
+        )
+

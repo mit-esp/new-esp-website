@@ -1,4 +1,5 @@
-from django.db.models import Count, Max
+from django.db.models import Count, Max, F, Value
+from django.db.models.functions import Concat
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.utils import timezone
@@ -18,7 +19,8 @@ from esp.models.program import Course, Program, ProgramStage
 ######################################
 # ADMIN DASHBOARD
 ######################################
-from esp.models.program_registration import ClassRegistration
+from esp.models.program_registration import ClassRegistration, ProgramRegistration
+from esp.serializers import UserSerializer
 
 
 class AdminDashboardView(TemplateView):
@@ -31,10 +33,15 @@ class AdminDashboardView(TemplateView):
         context["users_count"] = User.objects.count()
         context["students_count"] = User.objects.filter(user_type=UserType.student).count()
         context["teachers_count"] = User.objects.filter(user_type=UserType.teacher).count()
-        context["admins_count"] = User.objects.filter(user_type=UserType.admin, is_active=True).count()
-        context["upcoming_program"] = Program.objects.filter(start_date__gte=ts).latest('-start_date', '-end_date')
-        context["active_programs"] = Program.objects.filter(start_date__lte=ts, end_date__gte=ts).order_by('-start_date')
+        context["admins_count"] = User.objects.filter(user_type=UserType.admin,
+                                                      is_active=True).count()
+        context["upcoming_program"] = Program.objects.filter(start_date__gte=ts).latest(
+            '-start_date', '-end_date')
+        context["active_programs"] = Program.objects.filter(start_date__lte=ts,
+                                                            end_date__gte=ts).order_by(
+            '-start_date')
         return context
+
 
 class AdminManageStudentsView(TemplateView):
     permission = PermissionType.admin_dashboard_view
@@ -42,12 +49,25 @@ class AdminManageStudentsView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
-        StudentRegistrationStepType
         context["StudentRegistrationStepType"] = StudentRegistrationStepType
         program = get_object_or_404(Program, pk=self.kwargs['pk'])
-        students = User.objects.filter(user_type=UserType.student, registrations__program=program).select_related('student_profile')
-        context["students"] = ["%s %s (%s)" % (u.first_name, u.last_name, u.username) for u in students]
+        context["program_id"] = self.kwargs['pk']
+        students = User.objects.filter(user_type=UserType.student,
+                                       registrations__program=program).select_related(
+            'student_profile')
+        students = students.annotate(search_string=Concat(F("first_name"), Value(' '), F("last_name"), Value(', ('), F("username"), Value(')')))
+        print(students.first().search_string)
+        context['students'] = UserSerializer(students, many=True).data
+        student_id = self.kwargs.get('student_id')
+        context['student_id'] = student_id
+        if context['student_id']:
+            context['student_first_name'] = User.objects.get(id=student_id).first_name
+            context['student_last_name'] = User.objects.get(id=student_id).last_name
+            program_registration = ProgramRegistration.objects.get(program=program, user__id=student_id)
+            context['program_registration'] = program_registration
+            context["program_stage_steps"] = program_registration.get_program_stage().steps.all()
         return context
+
 
 class ProgramCreateView(PermissionRequiredMixin, CreateView):
     permission = PermissionType.programs_edit_all
@@ -111,7 +131,8 @@ class ProgramStageFormsetMixin:
         return redirect_link
 
 
-class ProgramStageCreateView(PermissionRequiredMixin, SingleObjectMixin, ProgramStageFormsetMixin, FormView):
+class ProgramStageCreateView(PermissionRequiredMixin, SingleObjectMixin, ProgramStageFormsetMixin,
+                             FormView):
     permission = PermissionType.programs_edit_all
     model = Program
     form_class = ProgramStageForm

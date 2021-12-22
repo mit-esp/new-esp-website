@@ -54,7 +54,10 @@ urlpatterns = [
     path('admin/programs/<uuid:pk>/classes/', CourseListView.as_view(), name='courses'),
     path('admin/programs/<uuid:pk>/lottery/', ProgramLotteryView.as_view(), name="program_lottery"),
 
-    path('admin/programs/<uuid:pk>/manage_students/', AdminManageStudentsView.as_view(), name="manage_students"),
+    path('admin/programs/<uuid:pk>/manage/students/', AdminManageStudentsView.as_view(),
+         name="manage_students"),
+    path('admin/programs/<uuid:pk>/manage/students/<uuid:student_id>/', AdminManageStudentsView.as_view(),
+         name="manage_students_specific"),
 
     # Teacher program registration views
     path(
