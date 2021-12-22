@@ -1,8 +1,10 @@
+from django.contrib import messages
 from django.db.models import Count, Max, F, Value
 from django.db.models.functions import Concat
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.utils import timezone
+from django.views import View
 from django.views.generic import (CreateView, FormView, ListView, TemplateView,
                                   UpdateView)
 from django.views.generic.detail import SingleObjectMixin
@@ -63,14 +65,32 @@ class AdminManageStudentsView(TemplateView):
         if context['student_id']:
             context['student_first_name'] = User.objects.get(id=student_id).first_name
             context['student_last_name'] = User.objects.get(id=student_id).last_name
-            program_registration = ProgramRegistration.objects.get(program=program, user__id=student_id)
+            program_registration = get_object_or_404(ProgramRegistration, program=program, user__id=student_id)
             context['program_registration'] = program_registration
             context["program_stage_steps"] = program_registration.get_program_stage().steps.all()
         return context
 
 
+class StudentCheckin(PermissionRequiredMixin, View):
+    permission = PermissionType.admin_dashboard_actions
+
+    def post(self, request, *args, **kwargs):
+        student_id = self.kwargs.get('student_id')
+        program_id = self.kwargs.get('pk')
+        program_registration = get_object_or_404(ProgramRegistration, program_id=program_id, user_id=student_id)
+        student = get_object_or_404(User, id=student_id)
+        if program_registration.checked_in is False:
+            program_registration.update(checked_in=True)
+            messages.success(request, f"Checked in {student.first_name} {student.last_name}")
+        else:
+            messages.info(request, f"{student.first_name} {student.last_name} is already checked in")
+
+        return redirect('manage_students_specific', pk=program_id, student_id=student_id)
+
+
+
 class ProgramCreateView(PermissionRequiredMixin, CreateView):
-    permission = PermissionType.programs_edit_all
+    permission = PermissionType.admin_dashboard_actions
     model = Program
     form_class = ProgramForm
 

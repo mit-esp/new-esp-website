@@ -5,7 +5,7 @@ from esp.views.admin_pages import (AdminDashboardView, AdminManageStudentsView, 
                                    CourseListView, CourseUpdateView,
                                    ProgramCreateView, ProgramListView,
                                    ProgramLotteryView, ProgramStageCreateView,
-                                   ProgramStageUpdateView, ProgramUpdateView)
+                                   ProgramStageUpdateView, ProgramUpdateView, StudentCheckin)
 from esp.views.scheduler import (AssignClassroomTimeSlotsApiView, ClassroomApiView, ClassroomTimeSlotApiView,
                                  CourseApiView, SchedulerView, TimeSlotApiView)
 from esp.views.student_registration_pages import (
@@ -58,6 +58,8 @@ urlpatterns = [
          name="manage_students"),
     path('admin/programs/<uuid:pk>/manage/students/<uuid:student_id>/', AdminManageStudentsView.as_view(),
          name="manage_students_specific"),
+    path('admin/programs/<uuid:pk>/manage/students/<uuid:student_id>/checkin/', StudentCheckin.as_view(),
+         name="student_check_in"),
 
     # Teacher program registration views
     path(

@@ -31,7 +31,8 @@
     <div class="col-lg-6 my-2" id="studentActions">
       <div class="card">
         <div class="card-body">
-          <input type="submit" value="Check In {{ student_first_name }} {{ student_last_name }}" action="">
+          <p>Status: {{ student_first_name }} {{ student_last_name }} is {% if not program_registration.checked_in %}not {% endif%}checked in.</p>
+          <form method="post" action="{% url 'student_check_in' pk=program_id student_id=student_id %}">{% csrf_token %}<input class="form-control" type="submit" value="Check In {{ student_first_name }} {{ student_last_name }}" {% if program_registration.checked_in %} disabled {% endif%}></form>
           {% for step in program_stage_steps %}
               <li><a href="{% url step.step_key registration_id=program_registration.id step_id=step.id %}" class="btn btn-outline-success mx-1 my-1" role="button">{{ step.get_display_name }}</a></li>
           {% endfor %}
