@@ -1,7 +1,7 @@
 from django.db.models import Count
 
-from esp.models.course_scheduling import CourseSection
-from esp.models.program_registration import ClassRegistration
+from esp.models.course_scheduling_models import CourseSection
+from esp.models.program_registration_models import ClassRegistration
 
 
 def run_program_lottery(program):

@@ -1,24 +1,25 @@
 from django.urls import path
 
 from esp.constants import StudentRegistrationStepType
-from esp.views.admin_pages import (AdminDashboardView, AdminManageStudentsView, CourseCreateView,
+from esp.views.admin_views import (AdminDashboardView, CourseCreateView,
                                    CourseListView, CourseUpdateView,
                                    ProgramCreateView, ProgramListView,
                                    ProgramLotteryView, ProgramStageCreateView,
-                                   ProgramStageUpdateView, ProgramUpdateView, StudentCheckin)
-from esp.views.scheduler import (AssignClassroomTimeSlotsApiView, ClassroomApiView, ClassroomTimeSlotApiView,
-                                 CourseApiView, SchedulerView, TimeSlotApiView)
-from esp.views.student_registration_pages import (
+                                   ProgramStageUpdateView, ProgramUpdateView, SendEmailsView,
+                                   AdminManageStudentsView, StudentCheckin)
+from esp.views.scheduler_views import (AssignClassroomTimeSlotsApiView, ClassroomApiView, ClassroomTimeSlotApiView,
+                                       CourseApiView, SchedulerView, TeacherAvailabilityApiView, TimeSlotApiView)
+from esp.views.student_registration_views import (
     CompleteSurveysView, ConfirmAssignedCoursesView,
     ConfirmRegistrationSubmissionView, DeleteCourseRegistrationView,
     EditAssignedCoursesView, InitiatePreferenceEntryView, PayProgramFeesView,
     PreferenceEntryRoundView, ProgramRegistrationCreateView,
     ProgramRegistrationStageView, RegistrationStepCompleteView,
     StudentAvailabilityView, SubmitWaiversView, VerifyStudentProfileView)
-from esp.views.teacher_registration_pages import (
+from esp.views.teacher_registration_views import (
     AddCoTeacherView, TeacherEditCourseView, TeacherProgramDashboardView,
     TeacherProgramRegistrationCreateView, TeacherRegistrationStepRouterView)
-from esp.views.user_pages import (GuardianDashboardView, RegisterAccountView,
+from esp.views.user_views import (GuardianDashboardView, RegisterAccountView,
                                   StudentDashboardView,
                                   StudentProfileCreateView,
                                   StudentProfileUpdateView,
@@ -53,6 +54,7 @@ urlpatterns = [
     path('admin/programs/<uuid:pk>/classes/update/<uuid:class_pk>/', CourseUpdateView.as_view(), name='update_course'),
     path('admin/programs/<uuid:pk>/classes/', CourseListView.as_view(), name='courses'),
     path('admin/programs/<uuid:pk>/lottery/', ProgramLotteryView.as_view(), name="program_lottery"),
+    path('admin/email/', SendEmailsView.as_view(), name="send_email"),
 
     path('admin/programs/<uuid:pk>/manage/students/', AdminManageStudentsView.as_view(),
          name="manage_students"),
@@ -144,6 +146,7 @@ urlpatterns = [
     path("api/v0/classrooms/", ClassroomApiView.as_view(), name="classroom_api"),
     path("api/v0/programs/<uuid:pk>/courses/", CourseApiView.as_view(), name="course_api"),
     path("api/v0/programs/<uuid:pk>/time-slots/", TimeSlotApiView.as_view(), name="time_slot_api"),
+    path("api/v0/programs/<uuid:pk>/teacher-availability/", TeacherAvailabilityApiView.as_view(), name="teacher_availability_api"),
     path("api/v0/programs/<uuid:pk>/classroom-time-slots/", ClassroomTimeSlotApiView.as_view(), name="classroom_time_slot_api"),
     path("api/v0/programs/<uuid:pk>/assign-classroom-time-slots/", AssignClassroomTimeSlotsApiView.as_view(), name="assign_classroom_time_slots_api"),
 ]

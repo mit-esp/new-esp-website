@@ -10,11 +10,11 @@ from common.views import PermissionRequiredMixin
 from esp.constants import CourseTagCategory, TeacherRegistrationStepType
 from esp.forms import (AddCoTeacherForm, TeacherCourseForm,
                        UpdateTeacherProfileForm)
-from esp.models.program import Course, Program, TeacherProgramRegistrationStep
-from esp.models.program_registration import (CompletedTeacherRegistrationStep,
-                                             CourseTeacher,
-                                             TeacherAvailability,
-                                             TeacherProfile, TeacherRegistration)
+from esp.models.program_models import Course, Program, TeacherProgramRegistrationStep
+from esp.models.program_registration_models import (CompletedTeacherRegistrationStep,
+                                                    CourseTeacher,
+                                                    TeacherAvailability,
+                                                    TeacherProfile, TeacherRegistration)
 
 
 class TeacherProgramRegistrationCreateView(PermissionRequiredMixin, SingleObjectMixin, TemplateView):
@@ -203,7 +203,7 @@ class TeacherConfirmScheduleView(TeacherRegistrationStepBaseView):
 
     def post(self, *args, **kwargs):
         registration = self.get_object()
-        registration.courses.all().update(confirmed_on=timezone.now())
+        registration.course_teachers.all().update(confirmed_on=timezone.now())
         # TODO: Send confirmation email
         return redirect(self.get_success_url())
 

@@ -1,0 +1,25 @@
+{% extends "base_templates/base.html" %}
+{% load crispy_forms_tags %}
+{% block title %}Send an Email{% endblock %}
+
+{% block body %}
+  <div>
+    <div class="my-3">
+        <h3>Student-Only Email Form</h3>
+        <p>Send students an email.</p>
+        {% crispy student_form %}
+    </div>
+    <hr>
+    <div class="my-3">
+        <h3>Teachers-Only Email Form</h3>
+        <p>Send teachers an email.</p>
+        {% crispy teacher_form %}
+    </div>
+    <hr>
+    <div class="my-3">
+      <h3>Custom Django Query Email Form</h3>
+      <p>Send users that match your custom query an email.</p>
+      {% crispy query_form %}
+    </div>
+  </div>
+{% endblock %}

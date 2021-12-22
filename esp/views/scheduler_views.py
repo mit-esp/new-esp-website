@@ -12,9 +12,10 @@ from common.constants import PermissionType
 from common.utils import csrf_exempt_localhost
 from common.views import PermissionRequiredMixin
 from esp.forms import AssignClassroomTimeSlotsForm
-from esp.models.course_scheduling import ClassroomTimeSlot
-from esp.models.program import Classroom, Course, Program, TimeSlot
-from esp.serializers import ClassroomSerializer, CourseSerializer, TimeSlotSerializer, \
+from esp.models.course_scheduling_models import ClassroomTimeSlot
+from esp.models.program_models import Classroom, Course, Program, TimeSlot
+from esp.models.program_registration_models import TeacherAvailability
+from esp.serializers import ClassroomSerializer, CourseSerializer, TeacherAvailabilitySerializer, TimeSlotSerializer, \
     ClassroomTimeSlotSerializer
 
 
@@ -83,4 +84,23 @@ class TimeSlotApiView(SerializerResponseMixin, BaseListView):
 
     def get_queryset(self, **kwargs):
         program = get_object_or_404(Program, pk=self.kwargs['pk'])
-        return TimeSlot.objects.filter(program=program)
+        return (
+            TimeSlot
+                .objects
+                .filter(program=program)
+                .prefetch_related(
+                    "teacher_availabilities",
+                    "teacher_availabilities__registration__course_teachers",
+                    "teacher_availabilities__registration__user",
+                )
+        )
+
+
+class TeacherAvailabilityApiView(SerializerResponseMixin, BaseListView):
+    # Todo: This view is currently unused; delete if not necessary
+    # Todo: Protect with auth and admin permissions
+    serializer_class = TeacherAvailabilitySerializer
+
+    def get_queryset(self, **kwargs):
+        program = get_object_or_404(Program, pk=self.kwargs['pk'])
+        return TeacherAvailability.objects.filter(program=program)

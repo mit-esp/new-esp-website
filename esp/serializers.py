@@ -1,15 +1,13 @@
-from copy import deepcopy
-
 from django.core.exceptions import ValidationError
 from django.db.models import F, Value, QuerySet
 from django.db.models.functions import Concat
 from rest_framework import serializers
 
 from common.models import User
-from esp.models.course_scheduling import CourseSection, ClassroomTimeSlot
-from esp.models.program import Course, Classroom, TimeSlot
-from esp.models.program_registration import (ClassPreference,
-                                             PreferenceEntryCategory)
+from esp.models.course_scheduling_models import CourseSection, ClassroomTimeSlot
+from esp.models.program_models import Course, Classroom, TimeSlot
+from esp.models.program_registration_models import (ClassPreference,
+                                                    PreferenceEntryCategory, TeacherAvailability)
 
 
 class ClassPreferenceSerializer(serializers.ModelSerializer):
@@ -143,12 +141,25 @@ class CourseSerializer(serializers.ModelSerializer):
 
 
 class TimeSlotSerializer(serializers.ModelSerializer):
+    course_teacher_availabilities = serializers.JSONField("course_teacher_availabilities")
+
     class Meta:
         model = TimeSlot
         fields = (
+            "course_teacher_availabilities",
+            "end_datetime",
             "id",
             "start_datetime",
-            "end_datetime",
+        )
+
+
+class TeacherAvailabilitySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TeacherAvailability
+        fields = (
+            "id",
+            "registration",
+            "time_slot",
         )
 
 
@@ -167,6 +178,8 @@ class UserSerializer(serializers.ModelSerializer):
             "last_name",
             "id",
             "username",
+            "user_type",
+            "verified",
             "search_string",
         )
 
@@ -182,4 +195,3 @@ class UserSerializer(serializers.ModelSerializer):
         return queryset.annotate(
             search_string=Concat(F("first_name"), Value(' '), F("last_name"), Value(', ('), F("username"), Value(')'))
         )
-

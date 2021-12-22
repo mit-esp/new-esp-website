@@ -19,7 +19,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build && mv build/index.html build/scheduler.html",
+    "build": "react-scripts build && mkdir build/build && mv build/index.html build/build/scheduler.html",
     "test": "react-scripts test"
   },
   "eslintConfig": {
