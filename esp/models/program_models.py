@@ -1,6 +1,5 @@
 from collections import defaultdict
 
-from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.db.models import Max, Min
 from django.utils import timezone
