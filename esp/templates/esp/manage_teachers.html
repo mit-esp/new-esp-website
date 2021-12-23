@@ -1,0 +1,21 @@
+{% extends "base_templates/base.html" %}
+
+{% load static %}
+{% load sass_tags %}
+{% load auth %}
+
+
+{% block title %}Manage Teachers{% endblock %}
+
+{% block body %}
+
+  <h2>Teacher Check-in</h2>
+
+  {% for day in timeslot_list %}
+    <ul class="list-group">
+    {% for timeslot in day %}
+      <li class="list-group-item"><a href="{% url 'check_in_teachers' program_id timeslot.id %}">Check in teachers with classes starting on {{ timeslot.start_datetime }}</a></li>
+    {% endfor %}
+    </ul>
+  {% endfor %}
+{% endblock %}

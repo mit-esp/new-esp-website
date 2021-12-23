@@ -143,6 +143,7 @@ class ClassRegistration(BaseModel):
 
 class TeacherProfile(BaseModel):
     user = models.OneToOneField(User, related_name="teacher_profile", on_delete=models.PROTECT)
+    cell_phone = models.CharField(max_length=16)
     mit_affiliation = models.CharField(
         choices=MITAffiliation.choices, max_length=32, verbose_name="What is your affiliation with MIT?"
     )
@@ -167,6 +168,7 @@ class TeacherRegistration(BaseModel):
     courses = models.ManyToManyField(Course, related_name="teacher_registrations", through="CourseTeacher")
     allow_early_registration_after = models.DateTimeField(null=True)  # Overrides deadlines set on program stages
     allow_late_registration_until = models.DateTimeField(null=True)  # Overrides deadlines set on program stages
+    check_in_time = models.DateTimeField(null=True)
 
     class Meta:
         unique_together = [("program_id", "user_id")]

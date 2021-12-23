@@ -1,7 +1,8 @@
+from datetime import datetime
+
 from django.contrib import messages
 from django.db.models import Count, Max, F, Value
 from django.db.models.functions import Concat
-from django.core.exceptions import FieldError
 from django.core.mail import send_mail
 from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import get_object_or_404, redirect
@@ -24,11 +25,13 @@ from esp.forms import (ProgramForm, ProgramRegistrationStepFormset,
                        ProgramStageForm, TeacherCourseForm, QuerySendEmailForm,
                        StudentSendEmailForm, TeacherSendEmailForm)
 from esp.lottery import run_program_lottery
-from esp.models.program_models import Course, Program, ProgramStage
+from esp.models.course_scheduling_models import ClassroomTimeSlot
+from esp.models.program_models import Course, Program, ProgramStage, TimeSlot
 ######################################
 # ADMIN DASHBOARD
 ######################################
-from esp.models.program_registration_models import ClassRegistration, ProgramRegistration
+from esp.models.program_registration_models import ClassRegistration, ProgramRegistration, \
+    TeacherRegistration
 from esp.serializers import UserSerializer
 
 
@@ -65,7 +68,7 @@ class AdminManageStudentsView(PermissionRequiredMixin, SingleObjectMixin, Templa
         context = super().get_context_data()
         context["StudentRegistrationStepType"] = StudentRegistrationStepType
         program = self.get_object()
-        context["program_id"] = self.kwargs['pk']
+        context["program_id"] = program.id
         students = User.objects.filter(user_type=UserType.student,
                                        registrations__program=program).select_related(
             'student_profile')
@@ -101,6 +104,78 @@ class StudentCheckinView(PermissionRequiredMixin, View):
 
         return redirect('manage_students_specific', pk=program_id, student_id=student_id)
 
+
+class AdminManageTeachersView(PermissionRequiredMixin, SingleObjectMixin, TemplateView):
+    permission = PermissionType.admin_dashboard_actions
+    template_name = 'esp/manage_teachers.html'
+    model = Program
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.object = None
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        program = self.get_object()
+        context["program_id"] = program.id
+        timeslots = TimeSlot.objects.filter(program=program).order_by('start_datetime')
+        context["timeslot_list"] = self.get_time_list(timeslots)
+        return context
+
+    def get_time_list(self, timeslots: datetime):
+        """organizes the datetimes into a list of lists with each sublist containing datetimes
+            from a single day"""
+        time_list = [[timeslots[0]]]
+        for time in timeslots[1:]:
+            if time.start_datetime.date() == time_list[-1][-1].start_datetime.date():
+                time_list[-1].append(time)
+            else:
+                time_list.append([time])
+        return time_list
+
+
+class AdminCheckinTeachersView(PermissionRequiredMixin, TemplateView):
+    permission = PermissionType.admin_dashboard_actions
+    template_name = 'esp/check_in_teachers.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        context["program_id"] = self.kwargs["pk"]
+        timeslot_id = self.kwargs["timeslot_id"]
+        context["timeslot_id"] = timeslot_id
+        classroom_timeslots = ClassroomTimeSlot.objects.filter(time_slot_id=timeslot_id)
+        context["courses_list"] = self.get_courses_list(classroom_timeslots)
+        return context
+
+    def get_courses_list(self, classroom_timeslots):
+        courses_list = []
+        for classroom_timeslot in classroom_timeslots:
+            course_dict = {'course': classroom_timeslot.course_section.course, 'classroom': classroom_timeslot.classroom.name, 'teachers': [],}
+            for teacher in classroom_timeslot.course_section.course.teacher_registrations.all():
+                course_dict['teachers'].append(teacher)
+            courses_list.append(course_dict)
+        print(courses_list)
+        return courses_list
+
+
+class TeacherCheckinView(PermissionRequiredMixin, SingleObjectMixin, View):
+    permission = PermissionType.admin_dashboard_actions
+    model = TeacherRegistration
+    pk_url_kwarg = 'teacher_id'
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.object = None
+
+    def post(self, request, *args, **kwargs):
+        teacher_registration = self.get_object()
+        timeslot_id = self.kwargs.get('timeslot_id')
+        if teacher_registration.check_in_time.date() != timezone.now().date():
+            teacher_registration.update(check_in_time=timezone.now())
+            messages.success(request, f"Checked in {teacher_registration.user.first_name} {teacher_registration.user.last_name}")
+        else:
+            messages.info(request, f"{teacher_registration.user.first_name} {teacher_registration.user.last_name} already checked in today")
+        return redirect('check_in_teachers', pk=teacher_registration.program.id, timeslot_id=timeslot_id)
 
 
 class ProgramCreateView(PermissionRequiredMixin, CreateView):
