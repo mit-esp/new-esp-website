@@ -75,10 +75,14 @@
 
 {% if upcoming_program %}
 <div class="my-3">
-  <h3>Upcoming Program</h3>
-  {% with program=upcoming_program %}
-  {% include "esp/components/program_card.html" %}
-  {% endwith %}
+  <div class="row">
+    <div class="col-lg-8">
+    <h3>Upcoming Program</h3>
+    {% with program=upcoming_program %}
+    {% include "esp/components/program_card.html" %}
+    {% endwith %}
+    </div>
+  </div>
 </div>
 {% endif %} 
 

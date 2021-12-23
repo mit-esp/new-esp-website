@@ -1,6 +1,7 @@
 from common.constants import PermissionType, UserType
 
 ADMIN_PERMISSIONS = [
+    PermissionType.admin_dashboard_actions,
     PermissionType.admin_dashboard_view,
     PermissionType.courses_edit_all,
     PermissionType.courses_view_all,

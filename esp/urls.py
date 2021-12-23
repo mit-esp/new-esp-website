@@ -5,7 +5,8 @@ from esp.views.admin_views import (AdminDashboardView, CourseCreateView,
                                    CourseListView, CourseUpdateView,
                                    ProgramCreateView, ProgramListView,
                                    ProgramLotteryView, ProgramStageCreateView,
-                                   ProgramStageUpdateView, ProgramUpdateView, SendEmailsView)
+                                   ProgramStageUpdateView, ProgramUpdateView, SendEmailsView,
+                                   AdminManageStudentsView, StudentCheckinView)
 from esp.views.scheduler_views import (AssignClassroomTimeSlotsApiView, ClassroomApiView, ClassroomTimeSlotApiView,
                                        CourseApiView, SchedulerView, TeacherAvailabilityApiView, TimeSlotApiView)
 from esp.views.student_registration_views import (
@@ -53,8 +54,14 @@ urlpatterns = [
     path('admin/programs/<uuid:pk>/classes/update/<uuid:class_pk>/', CourseUpdateView.as_view(), name='update_course'),
     path('admin/programs/<uuid:pk>/classes/', CourseListView.as_view(), name='courses'),
     path('admin/programs/<uuid:pk>/lottery/', ProgramLotteryView.as_view(), name="program_lottery"),
-
     path('admin/email/', SendEmailsView.as_view(), name="send_email"),
+
+    path('admin/programs/<uuid:pk>/manage/students/', AdminManageStudentsView.as_view(),
+         name="manage_students"),
+    path('admin/programs/<uuid:pk>/manage/students/<uuid:student_id>/', AdminManageStudentsView.as_view(),
+         name="manage_students_specific"),
+    path('admin/programs/<uuid:pk>/manage/students/<uuid:student_id>/checkin/', StudentCheckinView.as_view(),
+         name="student_check_in"),
 
     # Teacher program registration views
     path(
