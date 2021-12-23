@@ -149,7 +149,13 @@ class AdminCheckinTeachersView(PermissionRequiredMixin, TemplateView):
         context["program_id"] = self.kwargs["pk"]
         timeslot_id = self.kwargs["timeslot_id"]
         context["timeslot_id"] = timeslot_id
-        classroom_timeslots = ClassroomTimeSlot.objects.filter(time_slot_id=timeslot_id)
+        if self.kwargs["unit"] == 'day':
+            day = TimeSlot.objects.get(id=timeslot_id).start_datetime.day
+            classroom_timeslots = ClassroomTimeSlot.objects.filter(time_slot__start_datetime__day=day)
+        elif self.kwargs["unit"] == 'slot':
+            classroom_timeslots = ClassroomTimeSlot.objects.filter(time_slot_id=timeslot_id)
+        else:
+            raise Http404
         context["courses_list"] = self.get_courses_list(classroom_timeslots)
         return context
 

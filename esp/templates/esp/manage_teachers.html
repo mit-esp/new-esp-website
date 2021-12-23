@@ -13,9 +13,10 @@
 
   {% for day in timeslot_list %}
     <ul class="list-group">
-    {% for timeslot in day %}
-      <li class="list-group-item"><a href="{% url 'check_in_teachers' program_id timeslot.id %}">Check in teachers with classes starting on {{ timeslot.start_datetime }}</a></li>
-    {% endfor %}
+     {% if day|length > 0 %} <li class="list-group-item"><a href="{% url 'check_in_teachers' program_id day.0.id 'day' %}">Check in teachers with classes starting on {{ day.0.start_datetime.date }}</a></li>{% endif %}
+      {% for timeslot in day %}
+        <li class="list-group-item"><a href="{% url 'check_in_teachers' program_id timeslot.id 'slot' %}">Check in teachers with classes starting at {{ timeslot.start_datetime }}</a></li>
+      {% endfor %}
     </ul>
   {% endfor %}
 {% endblock %}

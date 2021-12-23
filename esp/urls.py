@@ -67,7 +67,7 @@ urlpatterns = [
 
     path('admin/programs/<uuid:pk>/manage/teachers/', AdminManageTeachersView.as_view(),
          name="manage_teachers"),
-    path('admin/programs/<uuid:pk>/manage/teachers/<uuid:timeslot_id>/check_in/', AdminCheckinTeachersView.as_view(),
+    path('admin/programs/<uuid:pk>/manage/teachers/<uuid:timeslot_id>/check_in/<str:unit>/', AdminCheckinTeachersView.as_view(),
          name="check_in_teachers"),
     path('admin/programs/<uuid:teacher_id>/check_in/teacher/<uuid:timeslot_id>/', TeacherCheckinView.as_view(),
          name="teacher_checkin"),
