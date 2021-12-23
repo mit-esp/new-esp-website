@@ -48,7 +48,7 @@ class AdminDashboardView(TemplateView):
         context["admins_count"] = User.objects.filter(user_type=UserType.admin,
                                                       is_active=True).count()
         context["upcoming_program"] = Program.objects.filter(start_date__gte=ts).latest(
-            '-start_date', '-end_date')
+            'start_date', 'end_date')
         context["active_programs"] = Program.objects.filter(start_date__lte=ts,
                                                             end_date__gte=ts).order_by(
             '-start_date')
@@ -72,16 +72,20 @@ class AdminManageStudentsView(PermissionRequiredMixin, SingleObjectMixin, Templa
         students = User.objects.filter(user_type=UserType.student,
                                        registrations__program=program).select_related(
             'student_profile')
-        context['students'] = UserSerializer(students.annotate(search_string=Concat(F("first_name"), Value(' '), F("last_name"), Value(', ('), F("username"), Value(')'),)), many=True).data
+        context['students'] = UserSerializer(students.annotate(
+            search_string=Concat(F("first_name"), Value(' '), F("last_name"), Value(', ('),
+                                 F("username"), Value(')'), )), many=True).data
         student_id = self.kwargs.get('student_id')
         context['student_id'] = student_id
         if context['student_id']:
             context['student_first_name'] = User.objects.get(id=student_id).first_name
             context['student_last_name'] = User.objects.get(id=student_id).last_name
             try:
-                program_registration = get_object_or_404(ProgramRegistration, program=program, user__id=student_id)
+                program_registration = get_object_or_404(ProgramRegistration, program=program,
+                                                         user__id=student_id)
             except Http404:
-                messages.ERROR(f"Program Registration for program {self.kwargs['pk']} and student {student_id} does not exist")
+                messages.ERROR(
+                    f"Program Registration for program {self.kwargs['pk']} and student {student_id} does not exist")
                 redirect('admin_dashboard')
             context['program_registration'] = program_registration
             context["program_stage_steps"] = program_registration.get_program_stage().steps.all()
@@ -94,13 +98,15 @@ class StudentCheckinView(PermissionRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         student_id = self.kwargs.get('student_id')
         program_id = self.kwargs.get('pk')
-        program_registration = get_object_or_404(ProgramRegistration, program_id=program_id, user_id=student_id)
+        program_registration = get_object_or_404(ProgramRegistration, program_id=program_id,
+                                                 user_id=student_id)
         student = get_object_or_404(User, id=student_id)
         if program_registration.checked_in is False:
             program_registration.update(checked_in=True)
             messages.success(request, f"Checked in {student.first_name} {student.last_name}")
         else:
-            messages.info(request, f"{student.first_name} {student.last_name} is already checked in")
+            messages.info(request,
+                          f"{student.first_name} {student.last_name} is already checked in")
 
         return redirect('manage_students_specific', pk=program_id, student_id=student_id)
 
@@ -150,11 +156,12 @@ class AdminCheckinTeachersView(PermissionRequiredMixin, TemplateView):
     def get_courses_list(self, classroom_timeslots):
         courses_list = []
         for classroom_timeslot in classroom_timeslots:
-            course_dict = {'course': classroom_timeslot.course_section.course, 'classroom': classroom_timeslot.classroom.name, 'teachers': [],}
+            course_dict = {'course': classroom_timeslot.course_section.course,
+                           'classroom': classroom_timeslot.classroom.name, 'teachers': [], }
             for teacher in classroom_timeslot.course_section.course.teacher_registrations.all():
-                course_dict['teachers'].append(teacher)
+                checked_in = teacher.check_in_time and teacher.check_in_time.date() == timezone.now().date()
+                course_dict['teachers'].append({'teacher': teacher, 'checked_in': checked_in})
             courses_list.append(course_dict)
-        print(courses_list)
         return courses_list
 
 
@@ -170,12 +177,16 @@ class TeacherCheckinView(PermissionRequiredMixin, SingleObjectMixin, View):
     def post(self, request, *args, **kwargs):
         teacher_registration = self.get_object()
         timeslot_id = self.kwargs.get('timeslot_id')
-        if teacher_registration.check_in_time.date() != timezone.now().date():
-            teacher_registration.update(check_in_time=timezone.now())
-            messages.success(request, f"Checked in {teacher_registration.user.first_name} {teacher_registration.user.last_name}")
+        if teacher_registration.check_in_time and teacher_registration.check_in_time.date() == timezone.now().date():
+            messages.info(request,
+                          f"{teacher_registration.user.first_name} {teacher_registration.user.last_name} already checked in today")
         else:
-            messages.info(request, f"{teacher_registration.user.first_name} {teacher_registration.user.last_name} already checked in today")
-        return redirect('check_in_teachers', pk=teacher_registration.program.id, timeslot_id=timeslot_id)
+            teacher_registration.update(check_in_time=timezone.now())
+            messages.success(request,
+                             f"Checked in {teacher_registration.user.first_name} {teacher_registration.user.last_name}")
+
+        return redirect('check_in_teachers', pk=teacher_registration.program.id,
+                        timeslot_id=timeslot_id)
 
 
 class ProgramCreateView(PermissionRequiredMixin, CreateView):
@@ -325,13 +336,15 @@ class SendEmailsView(PermissionRequiredMixin, FormsView):
             # print(form.cleaned_data['program'])
             teachers = teachers.filter(teacher_registrations__program=form.cleaned_data['program'])
         if form.cleaned_data['submit_one_class']:
-            teachers = teachers.annotate(num_courses=Count('teacher_registrations__courses')).filter(num_courses__gte=1)
+            teachers = teachers.annotate(
+                num_courses=Count('teacher_registrations__courses')).filter(num_courses__gte=1)
         if form.cleaned_data['difficulty']:
             teachers = teachers.filter(
                 teacher_registrations__courses__course__difficulty=form.cleaned_data['difficulty'])
         if form.cleaned_data['registration_step']:
             teachers = teachers.filter(
-                teacher_registrations__completed_steps__step__step_key=form.cleaned_data['registration_step'])
+                teacher_registrations__completed_steps__step__step_key=form.cleaned_data[
+                    'registration_step'])
         self._send_emails(teachers, form)
         return HttpResponseRedirect(self.success_url)
 
@@ -341,7 +354,8 @@ class SendEmailsView(PermissionRequiredMixin, FormsView):
             students = students.filter(registrations__program=form.cleaned_data['program'])
         if form.cleaned_data['registration_step']:
             students = students.filter(
-                registrations__completed_steps__step__step_key=form.cleaned_data['registration_step'])
+                registrations__completed_steps__step__step_key=form.cleaned_data[
+                    'registration_step'])
         only_guardians = form.cleaned_data['only_guardians']
         self._send_emails(students, form, only_guardians)
         return HttpResponseRedirect(self.success_url)
@@ -388,7 +402,8 @@ class SendEmailsView(PermissionRequiredMixin, FormsView):
             )
 
         email_count = to_users.count()
-        messages.success(self.request, f'An email was sent to {email_count} email address{"" if email_count == 1 else "es"}')
+        messages.success(self.request,
+                         f'An email was sent to {email_count} email address{"" if email_count == 1 else "es"}')
 
 
 ###########################################################
@@ -412,6 +427,7 @@ class CourseCreateView(PermissionRequiredMixin, CreateView):
         self.program = get_object_or_404(Program, pk=self.kwargs['pk'])
         form.instance.program = self.program
         return super().form_valid(form)
+
 
 class CourseUpdateView(PermissionRequiredMixin, UpdateView):
     permission = PermissionType.courses_edit_all
