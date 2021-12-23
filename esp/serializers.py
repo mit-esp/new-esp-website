@@ -180,18 +180,10 @@ class UserSerializer(serializers.ModelSerializer):
             "username",
             "user_type",
             "verified",
-            "search_string",
         )
 
     def __new__(cls, *args, **kwargs):
         if args and isinstance(args[0], QuerySet):
-            queryset = cls._build_queryset(args[0])
-            args = (queryset,) + args[1:]
+            if hasattr(args[0].first(), "search_string"):
+                UserSerializer.Meta.fields += ("search_string",)
         return super().__new__(cls, *args, **kwargs)
-
-    @classmethod
-    def _build_queryset(cls, queryset):
-        # modify the queryset here
-        return queryset.annotate(
-            search_string=Concat(F("first_name"), Value(' '), F("last_name"), Value(', ('), F("username"), Value(')'))
-        )

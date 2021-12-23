@@ -10,7 +10,6 @@
 {% block head %}
   <link href="{% sass_src 'styles/manage_students.scss' %}" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tarekraafat/autocomplete.js@10.2.6/dist/css/autoComplete.min.css">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 {% endblock %}
 
 {% block body %}
@@ -86,9 +85,9 @@
   document.querySelector("#autoComplete").addEventListener("selection", function (event) {
     // "event.detail" carries the autoComplete.js "feedback" object
     let student_id = event.detail.selection.value.id;
-    // this is hardcoded because the django url template tag gets rendered before this code is
-      // reached, so the student_id would be obtained too late
-    location.href = '/admin/programs/{{ program_id }}/manage/students/STUDENT_ID/'.replace('STUDENT_ID', student_id)
+    // have to append student_id to end since django url gets rendered before this code is reached,
+      // and therefore before student_id is initialized
+    location.href = "{% url 'manage_students' program_id %}" + `${student_id}/`
   });
   </script>
 {% endblock %}

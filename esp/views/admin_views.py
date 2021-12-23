@@ -3,7 +3,7 @@ from django.db.models import Count, Max, F, Value
 from django.db.models.functions import Concat
 from django.core.exceptions import FieldError
 from django.core.mail import send_mail
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import get_object_or_404, redirect
 from django.template import Template, Context
 from django.urls import reverse_lazy
@@ -52,33 +52,40 @@ class AdminDashboardView(TemplateView):
         return context
 
 
-class AdminManageStudentsView(TemplateView):
-    permission = PermissionType.admin_dashboard_view
+class AdminManageStudentsView(PermissionRequiredMixin, SingleObjectMixin, TemplateView):
+    permission = PermissionType.admin_dashboard_actions
     template_name = 'esp/manage_students.html'
+    model = Program
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.object = None
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
         context["StudentRegistrationStepType"] = StudentRegistrationStepType
-        program = get_object_or_404(Program, pk=self.kwargs['pk'])
+        program = self.get_object()
         context["program_id"] = self.kwargs['pk']
         students = User.objects.filter(user_type=UserType.student,
                                        registrations__program=program).select_related(
             'student_profile')
-        students = students.annotate(search_string=Concat(F("first_name"), Value(' '), F("last_name"), Value(', ('), F("username"), Value(')')))
-        print(students.first().search_string)
-        context['students'] = UserSerializer(students, many=True).data
+        context['students'] = UserSerializer(students.annotate(search_string=Concat(F("first_name"), Value(' '), F("last_name"), Value(', ('), F("username"), Value(')'),)), many=True).data
         student_id = self.kwargs.get('student_id')
         context['student_id'] = student_id
         if context['student_id']:
             context['student_first_name'] = User.objects.get(id=student_id).first_name
             context['student_last_name'] = User.objects.get(id=student_id).last_name
-            program_registration = get_object_or_404(ProgramRegistration, program=program, user__id=student_id)
+            try:
+                program_registration = get_object_or_404(ProgramRegistration, program=program, user__id=student_id)
+            except Http404:
+                messages.ERROR(f"Program Registration for program {self.kwargs['pk']} and student {student_id} does not exist")
+                redirect('admin_dashboard')
             context['program_registration'] = program_registration
             context["program_stage_steps"] = program_registration.get_program_stage().steps.all()
         return context
 
 
-class StudentCheckin(PermissionRequiredMixin, View):
+class StudentCheckinView(PermissionRequiredMixin, View):
     permission = PermissionType.admin_dashboard_actions
 
     def post(self, request, *args, **kwargs):
