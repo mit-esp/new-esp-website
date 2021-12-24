@@ -7,16 +7,18 @@ from django.utils import timezone
 
 from common.constants import GradeLevel, ShirtSize, USStateEquiv
 from common.models import BaseModel, User
-from esp.constants import HeardAboutVia, MITAffiliation
+from esp.constants import HeardAboutVia, MITAffiliation, PaymentMethod
 from esp.models.course_scheduling_models import CourseSection
-from esp.models.program_models import (Course, PreferenceEntryCategory, Program,
-                                       ProgramRegistrationStep,
-                                       TeacherProgramRegistrationStep, TimeSlot)
+from esp.models.program_models import (Course, PreferenceEntryCategory,
+                                       Program, ProgramRegistrationStep,
+                                       PurchaseableItem,
+                                       TeacherProgramRegistrationStep,
+                                       TimeSlot)
+from esp.validators import validate_graduation_year
 
 ####################################################
 # STUDENT REGISTRATIONS
 ####################################################
-from esp.validators import validate_graduation_year
 
 
 class StudentProfile(BaseModel):
@@ -136,6 +138,45 @@ class ClassRegistration(BaseModel):
     confirmed_on = models.DateTimeField(null=True)
 
 
+class UserPayment(BaseModel):
+    user = models.ForeignKey(User, related_name="payments", on_delete=models.PROTECT)
+    payment_method = models.CharField(choices=PaymentMethod.choices, max_length=64)
+    total_amount = models.DecimalField(max_digits=6, decimal_places=2, null=True)
+    vendor_authorization_id = models.CharField(max_length=124, null=True)
+    transaction_datetime = models.DateTimeField()
+
+
+class FinancialAidRequest(BaseModel):
+    program_registration = models.ForeignKey(
+        ProgramRegistration, related_name="financial_aid_requests", on_delete=models.PROTECT)
+    reduced_lunch = models.BooleanField(
+        verbose_name="Do you receive free/reduced lunch at school?", blank=True, default=False
+    )
+    household_income = models.CharField(
+        verbose_name="Approximately what is your household income (round to the nearest $10,000)?", null=True,
+        blank=True,
+        max_length=12
+    )
+    student_comments = models.TextField(
+        verbose_name="Please describe in detail your financial situation this year.",
+        null=True, blank=True
+    )
+    student_prepared = models.BooleanField(
+        verbose_name="Did anyone besides the student fill out any portions of this form?", blank=True, default=False
+    )
+    approved = models.BooleanField(default=False)
+    reviewer_comments = models.TextField(null=True)
+    reviewed_on = models.DateTimeField(null=True)
+
+
+class PurchaseLineItem(BaseModel):
+    user = models.ForeignKey(User, related_name="purchases", on_delete=models.PROTECT)
+    item = models.ForeignKey(PurchaseableItem, related_name="purchases", on_delete=models.PROTECT)
+    payment = models.ForeignKey(UserPayment, related_name="line_items", on_delete=models.PROTECT, null=True)
+    added_to_cart_on = models.DateTimeField()
+    purchase_confirmed_on = models.DateTimeField(null=True)
+    charge_amount = models.DecimalField(max_digits=6, decimal_places=2)
+
 #####################################################
 # TEACHER REGISTRATIONS
 #####################################################
@@ -150,7 +191,8 @@ class TeacherProfile(BaseModel):
         max_length=128, blank=True, null=True,
         help_text="If you are currently a student, please provide your major or degree field."
     )
-    graduation_year = models.IntegerField(null=True, blank=True, validators=[validate_graduation_year],
+    graduation_year = models.IntegerField(
+        null=True, blank=True, validators=[validate_graduation_year],
         help_text="If you are currently a student, please provide your graduation year."
     )
     university_or_employer = models.CharField(
@@ -213,7 +255,9 @@ class CompletedTeacherRegistrationStep(BaseModel):
 
 class CourseTeacher(BaseModel):
     course = models.ForeignKey(Course, related_name="course_teachers", on_delete=models.PROTECT)
-    teacher_registration = models.ForeignKey(TeacherRegistration, related_name="course_teachers", on_delete=models.PROTECT)
+    teacher_registration = models.ForeignKey(
+        TeacherRegistration, related_name="course_teachers", on_delete=models.PROTECT
+    )
     is_course_creator = models.BooleanField()
     confirmed_on = models.DateTimeField(null=True)
 

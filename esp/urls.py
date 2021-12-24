@@ -1,20 +1,26 @@
 from django.urls import path
 
 from esp.constants import StudentRegistrationStepType
-from esp.views.admin_views import (AdminDashboardView, CourseCreateView,
+from esp.views.admin_views import (AdminDashboardView, AdminManageStudentsView,
+                                   ApproveFinancialAidView, CourseCreateView,
                                    CourseListView, CourseUpdateView,
                                    ProgramCreateView, ProgramListView,
                                    ProgramLotteryView, ProgramStageCreateView,
-                                   ProgramStageUpdateView, ProgramUpdateView, SendEmailsView,
-                                   AdminManageStudentsView, StudentCheckinView)
-from esp.views.scheduler_views import (AssignClassroomTimeSlotsApiView, ClassroomApiView, ClassroomTimeSlotApiView,
-                                       CourseApiView, SchedulerView, TeacherAvailabilityApiView, TimeSlotApiView)
+                                   ProgramStageUpdateView, ProgramUpdateView,
+                                   SendEmailsView, StudentCheckinView)
+from esp.views.scheduler_views import (AssignClassroomTimeSlotsApiView,
+                                       ClassroomApiView,
+                                       ClassroomTimeSlotApiView, CourseApiView,
+                                       SchedulerView,
+                                       TeacherAvailabilityApiView,
+                                       TimeSlotApiView)
 from esp.views.student_registration_views import (
     CompleteSurveysView, ConfirmAssignedCoursesView,
     ConfirmRegistrationSubmissionView, DeleteCourseRegistrationView,
-    EditAssignedCoursesView, InitiatePreferenceEntryView, PayProgramFeesView,
-    PreferenceEntryRoundView, ProgramRegistrationCreateView,
-    ProgramRegistrationStageView, RegistrationStepCompleteView,
+    EditAssignedCoursesView, InitiatePreferenceEntryView, MakePaymentView,
+    PayProgramFeesView, PreferenceEntryRoundView,
+    ProgramRegistrationCreateView, ProgramRegistrationStageView,
+    RegistrationStepCompleteView, RequestFinancialAidView,
     StudentAvailabilityView, SubmitWaiversView, VerifyStudentProfileView)
 from esp.views.teacher_registration_views import (
     AddCoTeacherView, TeacherEditCourseView, TeacherProgramDashboardView,
@@ -54,6 +60,11 @@ urlpatterns = [
     path('admin/programs/<uuid:pk>/classes/update/<uuid:class_pk>/', CourseUpdateView.as_view(), name='update_course'),
     path('admin/programs/<uuid:pk>/classes/', CourseListView.as_view(), name='courses'),
     path('admin/programs/<uuid:pk>/lottery/', ProgramLotteryView.as_view(), name="program_lottery"),
+    path(
+        'admin/programs/<uuid:pk>/approve_financial_aid/',
+        ApproveFinancialAidView.as_view(), name="approve_financial_aid"
+    ),
+
     path('admin/email/', SendEmailsView.as_view(), name="send_email"),
 
     path('admin/programs/<uuid:pk>/manage/students/', AdminManageStudentsView.as_view(),
@@ -82,7 +93,7 @@ urlpatterns = [
     # Student program registration views
     path("programs/<uuid:pk>/register/", ProgramRegistrationCreateView.as_view(), name="create_program_registration"),
     path(
-        'programs/registration/<uuid:pk>/', ProgramRegistrationStageView.as_view(),
+        'programs/registration/<uuid:registration_id>/', ProgramRegistrationStageView.as_view(),
         name="current_registration_stage"
     ),
     path(
@@ -135,7 +146,14 @@ urlpatterns = [
     # Registration step additional views
     path(
         'programs/registration/<uuid:registration_id>/preferences/<uuid:step_id>/round_<int:index>/',
-        PreferenceEntryRoundView.as_view(), name="preference_entry_round"),
+        PreferenceEntryRoundView.as_view(), name="preference_entry_round"
+    ),
+    path(
+        'programs/registration/<uuid:registration_id>/financial_aid/<uuid:step_id>/',
+        RequestFinancialAidView.as_view(), name="request_financial_aid",
+    ),
+    path('programs/registration/<uuid:registration_id>/pay/<uuid:step_id>/',
+         MakePaymentView.as_view(), name="make_payment"),
     path(
         'programs/registration/<uuid:registration_id>/step/<uuid:step_id>/complete/',
         RegistrationStepCompleteView.as_view(), name="complete_registration_step",
@@ -146,7 +164,16 @@ urlpatterns = [
     path("api/v0/classrooms/", ClassroomApiView.as_view(), name="classroom_api"),
     path("api/v0/programs/<uuid:pk>/courses/", CourseApiView.as_view(), name="course_api"),
     path("api/v0/programs/<uuid:pk>/time-slots/", TimeSlotApiView.as_view(), name="time_slot_api"),
-    path("api/v0/programs/<uuid:pk>/teacher-availability/", TeacherAvailabilityApiView.as_view(), name="teacher_availability_api"),
-    path("api/v0/programs/<uuid:pk>/classroom-time-slots/", ClassroomTimeSlotApiView.as_view(), name="classroom_time_slot_api"),
-    path("api/v0/programs/<uuid:pk>/assign-classroom-time-slots/", AssignClassroomTimeSlotsApiView.as_view(), name="assign_classroom_time_slots_api"),
+    path(
+        "api/v0/programs/<uuid:pk>/teacher-availability/",
+        TeacherAvailabilityApiView.as_view(), name="teacher_availability_api"
+    ),
+    path(
+        "api/v0/programs/<uuid:pk>/classroom-time-slots/",
+        ClassroomTimeSlotApiView.as_view(), name="classroom_time_slot_api"
+    ),
+    path(
+        "api/v0/programs/<uuid:pk>/assign-classroom-time-slots/",
+        AssignClassroomTimeSlotsApiView.as_view(), name="assign_classroom_time_slots_api"
+    ),
 ]

@@ -1,11 +1,10 @@
 from django.contrib import messages
-from django.db.models import Count, Max, F, Value
-from django.db.models.functions import Concat
-from django.core.exceptions import FieldError
 from django.core.mail import send_mail
-from django.http import HttpResponseRedirect, Http404
+from django.db.models import Count, F, Max, Value
+from django.db.models.functions import Concat
+from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
-from django.template import Template, Context
+from django.template import Context, Template
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views import View
@@ -18,18 +17,23 @@ from common.constants import PermissionType, UserType
 from common.forms import CrispyFormsetHelper
 from common.models import User
 from common.views import PermissionRequiredMixin
-from esp.constants import StudentRegistrationStepType
 from config.settings import DEFAULT_FROM_EMAIL
+from esp.constants import StudentRegistrationStepType
 from esp.forms import (ProgramForm, ProgramRegistrationStepFormset,
-                       ProgramStageForm, TeacherCourseForm, QuerySendEmailForm,
-                       StudentSendEmailForm, TeacherSendEmailForm)
+                       ProgramStageForm, QuerySendEmailForm,
+                       StudentSendEmailForm, TeacherCourseForm,
+                       TeacherSendEmailForm)
 from esp.lottery import run_program_lottery
 from esp.models.program_models import Course, Program, ProgramStage
+from esp.models.program_registration_models import (ClassRegistration,
+                                                    FinancialAidRequest,
+                                                    ProgramRegistration,
+                                                    PurchaseLineItem)
+from esp.serializers import UserSerializer
+
 ######################################
 # ADMIN DASHBOARD
 ######################################
-from esp.models.program_registration_models import ClassRegistration, ProgramRegistration
-from esp.serializers import UserSerializer
 
 
 class AdminDashboardView(TemplateView):
@@ -42,13 +46,11 @@ class AdminDashboardView(TemplateView):
         context["users_count"] = User.objects.count()
         context["students_count"] = User.objects.filter(user_type=UserType.student).count()
         context["teachers_count"] = User.objects.filter(user_type=UserType.teacher).count()
-        context["admins_count"] = User.objects.filter(user_type=UserType.admin,
-                                                      is_active=True).count()
-        context["upcoming_program"] = Program.objects.filter(start_date__gte=ts).latest(
-            '-start_date', '-end_date')
-        context["active_programs"] = Program.objects.filter(start_date__lte=ts,
-                                                            end_date__gte=ts).order_by(
-            '-start_date')
+        context["admins_count"] = User.objects.filter(user_type=UserType.admin, is_active=True).count()
+        context["upcoming_programs"] = Program.objects.filter(start_date__gte=ts).order_by('start_date', 'end_date')[:2]
+        context["active_programs"] = (
+            Program.objects.filter(start_date__lte=ts, end_date__gte=ts).order_by('-start_date')
+        )
         return context
 
 
@@ -69,7 +71,12 @@ class AdminManageStudentsView(PermissionRequiredMixin, SingleObjectMixin, Templa
         students = User.objects.filter(user_type=UserType.student,
                                        registrations__program=program).select_related(
             'student_profile')
-        context['students'] = UserSerializer(students.annotate(search_string=Concat(F("first_name"), Value(' '), F("last_name"), Value(', ('), F("username"), Value(')'),)), many=True).data
+        context['students'] = UserSerializer(
+            students.annotate(search_string=Concat(
+                F("first_name"), Value(' '), F("last_name"), Value(', ('), F("username"), Value(')'),)
+            ),
+            many=True
+        ).data
         student_id = self.kwargs.get('student_id')
         context['student_id'] = student_id
         if context['student_id']:
@@ -77,11 +84,14 @@ class AdminManageStudentsView(PermissionRequiredMixin, SingleObjectMixin, Templa
             context['student_last_name'] = User.objects.get(id=student_id).last_name
             try:
                 program_registration = get_object_or_404(ProgramRegistration, program=program, user__id=student_id)
+                context['program_registration'] = program_registration
+                context["program_stage_steps"] = program_registration.get_program_stage().steps.all()
             except Http404:
-                messages.ERROR(f"Program Registration for program {self.kwargs['pk']} and student {student_id} does not exist")
+                messages.error(
+                    self.request,
+                    f"Program Registration for program {self.kwargs['pk']} and student {student_id} does not exist"
+                )
                 redirect('admin_dashboard')
-            context['program_registration'] = program_registration
-            context["program_stage_steps"] = program_registration.get_program_stage().steps.all()
         return context
 
 
@@ -100,7 +110,6 @@ class StudentCheckinView(PermissionRequiredMixin, View):
             messages.info(request, f"{student.first_name} {student.last_name} is already checked in")
 
         return redirect('manage_students_specific', pk=program_id, student_id=student_id)
-
 
 
 class ProgramCreateView(PermissionRequiredMixin, CreateView):
@@ -313,8 +322,39 @@ class SendEmailsView(PermissionRequiredMixin, FormsView):
             )
 
         email_count = to_users.count()
-        messages.success(self.request, f'An email was sent to {email_count} email address{"" if email_count == 1 else "es"}')
+        messages.success(
+            self.request, f'An email was sent to {email_count} email address{"" if email_count == 1 else "es"}'
+        )
 
+
+class ApproveFinancialAidView(PermissionRequiredMixin, SingleObjectMixin, TemplateView):
+    model = Program
+    permission = PermissionType.admin_dashboard_view
+    template_name = "esp/approve_financial_aid.html"
+
+    def get_context_data(self, **kwargs):
+        self.object = self.get_object()
+        context = super().get_context_data(**kwargs)
+        context["financial_aid_requests_count"] = (
+            FinancialAidRequest.objects
+            .filter(program_registration__program=self.object, reviewed_on__isnull=True)
+            .count()
+        )
+        return context
+
+    def post(self, request, *args, **kwargs):
+        program = self.get_object()
+        requests = FinancialAidRequest.objects.filter(program_registration__program=program, reviewed_on__isnull=True)
+        # Update all eligible items already in requesters' carts
+        PurchaseLineItem.objects.filter(
+            purchase_confirmed_on__isnull=True,
+            payment__isnull=True,
+            user__in=requests.values("program_registration__user_id"),
+            item__program__in=requests.values("program_registration__program_id"),
+            item__eligible_for_financial_aid=True,
+        ).update(charge_amount=0, purchase_confirmed_on=timezone.now())
+        requests.update(reviewed_on=timezone.now(), approved=True)
+        return redirect("admin_dashboard")
 
 ###########################################################
 
@@ -338,6 +378,7 @@ class CourseCreateView(PermissionRequiredMixin, CreateView):
         form.instance.program = self.program
         return super().form_valid(form)
 
+
 class CourseUpdateView(PermissionRequiredMixin, UpdateView):
     permission = PermissionType.courses_edit_all
     model = Course
@@ -351,7 +392,7 @@ class CourseUpdateView(PermissionRequiredMixin, UpdateView):
 
     def get_success_url(self):
         program_id = self.kwargs['pk']
-        return reverse_lazy('courses', kwargs={'pk': self.kwargs['pk']})
+        return reverse_lazy('courses', kwargs={'pk': program_id})
 
 
 class CourseListView(PermissionRequiredMixin, ListView):

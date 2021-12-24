@@ -1,6 +1,7 @@
 from django.contrib import admin
 
-from esp.models import course_scheduling_models, program_models, program_registration_models
+from esp.models import (course_scheduling_models, program_models,
+                        program_registration_models)
 
 admin.site.site_header = 'MIT ESP Database Administration'
 admin.site.register(course_scheduling_models.CourseSection)
@@ -9,6 +10,7 @@ admin.site.register(course_scheduling_models.ClassroomTimeSlot)
 admin.site.register(program_models.Classroom)
 admin.site.register(program_models.CourseTag)
 admin.site.register(program_models.PreferenceEntryCategory)
+admin.site.register(program_models.PurchaseableItem)
 admin.site.register(program_models.ProgramRegistrationStep)
 admin.site.register(program_models.ProgramTag)
 admin.site.register(program_models.TeacherProgramRegistrationStep)

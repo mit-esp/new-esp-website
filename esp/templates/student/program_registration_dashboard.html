@@ -12,7 +12,7 @@
   <div class="list-group col-md-6">
     {% for step in program_stage_steps %}
       {% if step.display_after_completion or step.id not in completed_steps %}
-        <a href="{% url step.step_key registration_id=programregistration.id step_id=step.id %}" class="list-group-item d-flex{% if step.id in completed_steps and not step.allow_changes_after_completion %} disabled{% endif %}">
+        <a href="{% url step.step_key registration_id=registration.id step_id=step.id %}" class="list-group-item d-flex{% if step.id in completed_steps and not step.allow_changes_after_completion %} disabled{% endif %}">
           <span {% if step.required_for_stage_completion %}class="fw-bold" {% endif %}>{{ step.get_display_name }}</span>
           {% if step.id in completed_steps %}<div class="ms-auto badge bg-success rounded-pill">Completed</div>{% endif %}
         </a>
@@ -23,7 +23,7 @@
   {% if course_registrations %}
     <h2 class="d-flex">
       Registered Courses
-      <a class="btn btn-outline-primary ms-auto" href="{% url 'edit_student_courses' registration_id=programregistration.id %}">
+      <a class="btn btn-outline-primary ms-auto" href="{% url 'edit_student_courses' registration_id=registration.id %}">
         Add courses
       </a>
     </h2>

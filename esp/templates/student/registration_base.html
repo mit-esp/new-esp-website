@@ -1,0 +1,9 @@
+{% extends "base/student_base.html" %}
+
+{% block title %}
+  {{ registration.program.name }} | Registration
+{% endblock %}
+
+{% block nav %}
+  {% include "student/components/registration_step_nav.html" %}
+{% endblock %}

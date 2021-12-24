@@ -53,7 +53,10 @@ class Program(BaseModel):
     def show_to_teachers(self):
         if not self.teacher_registration_steps.exists():
             return False
-        if timezone.now() < self.teacher_registration_steps.aggregate(Min("access_start_date"))["access_start_date__min"]:
+        if (
+            timezone.now()
+            < self.teacher_registration_steps.aggregate(Min("access_start_date"))["access_start_date__min"]
+        ):
             return False
         if self.archive_on is not None and self.archive_on < timezone.now():
             return False
@@ -319,10 +322,23 @@ class CourseTag(BaseModel):
 
 class ClassroomTag(BaseModel):
     classrooms = models.ManyToManyField(Classroom, related_name="tags", blank=True)
-    tag = models.CharField(max_length=256)
+    tag = models.CharField(max_length=256, unique=True)
     tag_category = models.CharField(
         choices=ClassroomTagCategory.choices, max_length=128, default=ClassroomTagCategory.other
     )
 
     def __str__(self):
         return self.tag
+
+
+class PurchaseableItem(BaseModel):
+    program = models.ForeignKey(Program, related_name="purchase_items", on_delete=models.PROTECT)
+    item_name = models.CharField(max_length=250)
+    description = models.TextField(blank=True, null=True)
+    price = models.DecimalField(max_digits=6, decimal_places=2)
+    required_for_registration = models.BooleanField(default=False)
+    eligible_for_financial_aid = models.BooleanField()
+    max_per_user = models.IntegerField(default=1)
+
+    def __str__(self):
+        return f"{self.item_name} ({self.program.name})"
