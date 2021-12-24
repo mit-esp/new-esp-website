@@ -1,13 +1,13 @@
 from django.urls import path
 
 from esp.constants import StudentRegistrationStepType
-from esp.views.admin_views import (AdminDashboardView, ApproveFinancialAidView,
-                                   CourseCreateView, CourseListView,
-                                   CourseUpdateView, ProgramCreateView,
-                                   ProgramListView, ProgramLotteryView,
-                                   ProgramStageCreateView,
+from esp.views.admin_views import (AdminDashboardView, AdminManageStudentsView,
+                                   ApproveFinancialAidView, CourseCreateView,
+                                   CourseListView, CourseUpdateView,
+                                   ProgramCreateView, ProgramListView,
+                                   ProgramLotteryView, ProgramStageCreateView,
                                    ProgramStageUpdateView, ProgramUpdateView,
-                                   SendEmailsView)
+                                   SendEmailsView, StudentCheckinView)
 from esp.views.scheduler_views import (AssignClassroomTimeSlotsApiView,
                                        ClassroomApiView,
                                        ClassroomTimeSlotApiView, CourseApiView,
@@ -66,6 +66,13 @@ urlpatterns = [
     ),
 
     path('admin/email/', SendEmailsView.as_view(), name="send_email"),
+
+    path('admin/programs/<uuid:pk>/manage/students/', AdminManageStudentsView.as_view(),
+         name="manage_students"),
+    path('admin/programs/<uuid:pk>/manage/students/<uuid:student_id>/', AdminManageStudentsView.as_view(),
+         name="manage_students_specific"),
+    path('admin/programs/<uuid:pk>/manage/students/<uuid:student_id>/checkin/', StudentCheckinView.as_view(),
+         name="student_check_in"),
 
     # Teacher program registration views
     path(

@@ -75,6 +75,7 @@ class ProgramRegistration(BaseModel):
     user = models.ForeignKey(User, on_delete=models.PROTECT, related_name="registrations")
     allow_early_registration_after = models.DateTimeField(null=True)  # Overrides deadlines set on program stages
     allow_late_registration_until = models.DateTimeField(null=True)  # Overrides deadlines set on program stages
+    checked_in = models.BooleanField(default=False)
 
     class Meta:
         unique_together = [("program_id", "user_id")]

@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('esp', '0007_course_teacherregistration_relationship_20211215_2142'),
+        ('esp', '0008_auto_20211222_2242'),
     ]
 
     operations = [
