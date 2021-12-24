@@ -1,3 +1,4 @@
+from django.db.models import Exists, OuterRef
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.utils import timezone
@@ -5,16 +6,16 @@ from django.views.generic import FormView, TemplateView, UpdateView
 from django.views.generic.base import View
 from django.views.generic.detail import DetailView, SingleObjectMixin
 
-from common.constants import PermissionType
+from common.constants import PermissionType, UserType
 from common.views import PermissionRequiredMixin
 from esp.constants import CourseTagCategory, TeacherRegistrationStepType
 from esp.forms import (AddCoTeacherForm, TeacherCourseForm,
                        UpdateTeacherProfileForm)
-from esp.models.program_models import Course, Program, TeacherProgramRegistrationStep
-from esp.models.program_registration_models import (CompletedTeacherRegistrationStep,
-                                                    CourseTeacher,
-                                                    TeacherAvailability,
-                                                    TeacherProfile, TeacherRegistration)
+from esp.models.program_models import (Course, Program,
+                                       TeacherProgramRegistrationStep)
+from esp.models.program_registration_models import (
+    CompletedTeacherRegistrationStep, CourseTeacher, TeacherAvailability,
+    TeacherProfile, TeacherRegistration)
 
 
 class TeacherProgramRegistrationCreateView(PermissionRequiredMixin, SingleObjectMixin, TemplateView):
@@ -75,8 +76,9 @@ class TeacherRegistrationStepRouterView(PermissionRequiredMixin, View):
             TeacherRegistrationStepType.time_availability: TeacherAvailabilityView,
             TeacherRegistrationStepType.submit_courses: SubmitCoursesView,
             TeacherRegistrationStepType.confirm_course_schedule: TeacherConfirmScheduleView,
+            TeacherRegistrationStepType.submit_signatures: TeacherSubmitSignaturesView
         }
-        return step_key_to_view.get(step_key, TeacherRegistrationStepPlaceholderView).as_view()
+        return step_key_to_view[step_key].as_view()
 
 
 class TeacherRegistrationStepBaseView(PermissionRequiredMixin, DetailView):
@@ -118,17 +120,6 @@ class TeacherRegistrationStepBaseView(PermissionRequiredMixin, DetailView):
                 "teacher_registration_step", kwargs={"registration_id": self.object.id, "step_id": next_step.id}
             )
         return reverse("teacher_program_dashboard", kwargs={"pk": self.object.id})
-
-
-class TeacherRegistrationStepPlaceholderView(TeacherRegistrationStepBaseView):
-    """Placeholder for registration steps while development is ongoing"""
-    template_name = "esp/registration_step_placeholder.html"
-
-    def post(self, request, *args, **kwargs):
-        CompletedTeacherRegistrationStep.objects.update_or_create(
-            registration=self.object, step=self.registration_step, defaults={"completed_on": timezone.now()}
-        )
-        return redirect("teacher_program_dashboard", pk=self.object.id)
 
 
 class VerifyTeacherProfileView(TeacherRegistrationStepBaseView, FormView):
@@ -173,6 +164,23 @@ class TeacherAvailabilityView(TeacherRegistrationStepBaseView):
                 )
             else:
                 TeacherAvailability.objects.filter(time_slot=time_slot, registration=self.object).delete()
+        return redirect(self.get_success_url())
+
+
+class TeacherSubmitSignaturesView(TeacherRegistrationStepBaseView):
+    template_name = "teacher/submit_signatures.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["forms"] = self.object.program.external_forms.filter(user_type=UserType.teacher).annotate(
+            completed=Exists(
+                self.object.completed_forms_extra.filter(form_id=OuterRef("id"), completed_on__isnull=False)
+            )
+        )
+        return context
+
+    def post(self, request, *args, **kwargs):
+        # TODO: Form integrations; handle form completed model creation upon API response/webhook
         return redirect(self.get_success_url())
 
 

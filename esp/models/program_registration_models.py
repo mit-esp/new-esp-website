@@ -9,13 +9,12 @@ from common.constants import GradeLevel, ShirtSize, USStateEquiv
 from common.models import BaseModel, User
 from esp.constants import HeardAboutVia, MITAffiliation, PaymentMethod
 from esp.models.course_scheduling_models import CourseSection
-from esp.models.program_models import (Course, PreferenceEntryCategory,
-                                       Program, ProgramRegistrationStep,
-                                       PurchaseableItem,
+from esp.models.program_models import (Course, ExternalProgramForm,
+                                       PreferenceEntryCategory, Program,
+                                       ProgramRegistrationStep, PurchaseableItem,
                                        TeacherProgramRegistrationStep,
                                        TimeSlot)
 from esp.validators import validate_graduation_year
-
 ####################################################
 # STUDENT REGISTRATIONS
 ####################################################
@@ -73,6 +72,9 @@ class ProgramRegistration(BaseModel):
     """ProgramRegistration represents a user's registration for a program."""
     program = models.ForeignKey(Program, related_name="registrations", on_delete=models.PROTECT)
     user = models.ForeignKey(User, on_delete=models.PROTECT, related_name="registrations")
+    completed_forms = models.ManyToManyField(
+        ExternalProgramForm, related_name="completed_student_registrations", through="CompletedStudentForm"
+    )
     allow_early_registration_after = models.DateTimeField(null=True)  # Overrides deadlines set on program stages
     allow_late_registration_until = models.DateTimeField(null=True)  # Overrides deadlines set on program stages
     checked_in = models.BooleanField(default=False)
@@ -177,6 +179,18 @@ class PurchaseLineItem(BaseModel):
     purchase_confirmed_on = models.DateTimeField(null=True)
     charge_amount = models.DecimalField(max_digits=6, decimal_places=2)
 
+
+class CompletedForm(BaseModel):
+    form = models.ForeignKey(ExternalProgramForm, on_delete=models.PROTECT, related_name="+")
+    completed_on = models.DateTimeField(null=True)
+    integration_id = models.CharField(max_length=256, null=True)
+
+
+class CompletedStudentForm(CompletedForm):
+    program_registration = models.ForeignKey(
+        ProgramRegistration, on_delete=models.PROTECT, related_name="completed_forms_extra"
+    )
+
 #####################################################
 # TEACHER REGISTRATIONS
 #####################################################
@@ -207,6 +221,9 @@ class TeacherRegistration(BaseModel):
     program = models.ForeignKey(Program, related_name="teacher_registrations", on_delete=models.PROTECT)
     user = models.ForeignKey(User, related_name="teacher_registrations", on_delete=models.PROTECT)
     courses = models.ManyToManyField(Course, related_name="teacher_registrations", through="CourseTeacher")
+    completed_forms = models.ManyToManyField(
+        ExternalProgramForm, related_name="completed_teacher_registrations", through="CompletedTeacherForm"
+    )
     allow_early_registration_after = models.DateTimeField(null=True)  # Overrides deadlines set on program stages
     allow_late_registration_until = models.DateTimeField(null=True)  # Overrides deadlines set on program stages
 
@@ -265,3 +282,9 @@ class CourseTeacher(BaseModel):
 class TeacherAvailability(BaseModel):
     registration = models.ForeignKey(TeacherRegistration, related_name="availabilities", on_delete=models.PROTECT)
     time_slot = models.ForeignKey(TimeSlot, related_name="teacher_availabilities", on_delete=models.PROTECT)
+
+
+class CompletedTeacherForm(CompletedForm):
+    teacher_registration = models.ForeignKey(
+        TeacherRegistration, on_delete=models.PROTECT, related_name="completed_forms_extra"
+    )

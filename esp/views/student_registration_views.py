@@ -12,7 +12,7 @@ from django.views.generic.base import TemplateView, View
 from django.views.generic.detail import DetailView, SingleObjectMixin
 from requests import HTTPError
 
-from common.constants import PermissionType
+from common.constants import PermissionType, UserType
 from common.views import PermissionRequiredMixin
 from esp.constants import PaymentMethod, StudentRegistrationStepType
 from esp.forms import (FinancialAidRequestForm, PaymentForm,
@@ -156,8 +156,22 @@ class VerifyStudentProfileView(RegistrationStepBaseView, FormView):
         )
 
 
-class SubmitWaiversView(RegistrationStepPlaceholderView):
+class SubmitWaiversView(RegistrationStepBaseView):
     registration_step_key = StudentRegistrationStepType.submit_waivers
+    template_name = "student/registration_steps/submit_waivers.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["forms"] = self.object.program.external_forms.filter(user_type=UserType.student).annotate(
+            completed=Exists(
+                self.object.completed_forms_extra.filter(form_id=OuterRef("id"), completed_on__isnull=False)
+            )
+        )
+        return context
+
+    def post(self, request, *args, **kwargs):
+        # TODO: Form integrations; handle form completed model creation upon API response/webhook
+        return redirect("complete_registration_step", registration_id=self.object.id, step_id=self.registration_step.id)
 
 
 class StudentAvailabilityView(RegistrationStepBaseView):

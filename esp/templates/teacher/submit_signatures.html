@@ -1,0 +1,16 @@
+{% extends "base/teacher_base.html" %}
+
+{% block title %}Submit Signatures{% endblock %}
+
+{% block nav %}
+  <div class="my-3">
+    <a href="{% url 'teacher_program_dashboard' pk=registration.id %}" class="btn btn-secondary">Return to program dashboard</a>
+  </div>
+{% endblock %}
+
+{% block content %}
+  <h1>Submit waivers</h1>
+  {% include "shared/external_form_links.html" %}
+  {% comment %}TODO: form integrations{% endcomment %}
+  {% include "shared/submit_button.html" with submit_label="Mark all forms complete" %}
+{% endblock %}

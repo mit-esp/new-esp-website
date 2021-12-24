@@ -22,8 +22,7 @@ class StudentRegistrationStepType(TextChoices):
 
 class TeacherRegistrationStepType(TextChoices):
     verify_profile = "teacher_verify_profile"
-    submit_waivers = "teacher_submit_waiver"
-    submit_minors_policy_acknowledgement = "teacher_minors_policy"
+    submit_signatures = "teacher_submit_waiver"
     time_availability = "teacher_time_availability"
     submit_courses = "teacher_submit_courses"
     confirm_course_schedule = "teacher_confirm_course_schedule"
@@ -85,3 +84,8 @@ class PaymentMethod(TextChoices):
     card_online = "card_online"
     card_in_person = "card_in_person"
     cash = "cash"
+
+
+class FormIntegration(TextChoices):
+    formstack = "formstack"
+    docusign = "docusign"

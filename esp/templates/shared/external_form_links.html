@@ -1,0 +1,14 @@
+<ul class="list-group my-4 col-lg-6">
+  {% for form in forms %}
+    <a class="list-group-item d-flex" href="{{ form.url }}" target="_blank" {% if form.completed %}disabled{% endif %}>
+      <span>{{ form.display_name }}</span>
+      {% if form.completed %}
+        <div class="ms-auto badge bg-success rounded-pill">Completed</div>
+      {% elif form.required %}
+        <div class="ms-auto badge bg-danger rounded-pill">Required</div>
+      {% endif %}
+    </a>
+  {% empty %}
+    There are no required signatures for this program.
+  {% endfor %}
+</ul>

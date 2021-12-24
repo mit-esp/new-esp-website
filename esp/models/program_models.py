@@ -4,11 +4,12 @@ from django.db import models
 from django.db.models import Max, Min
 from django.utils import timezone
 
-from common.constants import GradeLevel, Weekday
+from common.constants import GradeLevel, UserType, Weekday
 from common.models import BaseModel
 from esp.constants import (ClassroomTagCategory, CourseDifficulty,
-                           CourseStatus, CourseTagCategory, ProgramTagCategory,
-                           ProgramType, StudentRegistrationStepType,
+                           CourseStatus, CourseTagCategory, FormIntegration,
+                           ProgramTagCategory, ProgramType,
+                           StudentRegistrationStepType,
                            TeacherRegistrationStepType)
 
 
@@ -294,6 +295,19 @@ class PreferenceEntryCategory(BaseModel):
 
     def __str__(self):
         return self.tag
+
+
+class ExternalProgramForm(BaseModel):
+    program = models.ForeignKey(Program, related_name="external_forms", on_delete=models.PROTECT)
+    user_type = models.CharField(max_length=64, choices=UserType.choices)
+    integration = models.CharField(max_length=64, choices=FormIntegration.choices)
+    integration_id = models.CharField(max_length=256, null=True, blank=True)
+    url = models.URLField()
+    display_name = models.CharField(max_length=256)
+    required = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.display_name
 
 
 class ProgramTag(BaseModel):
