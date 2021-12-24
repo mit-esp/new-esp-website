@@ -10,10 +10,7 @@
   <div class="list-group-item-text">
     <div>{{ course_section.get_section_times|format_time_slots }}</div>
     <div>
-      (Co-)Teachers:
-      {% for teacher_registration in course_section.course.teacher_registrations.all %}
-        {{ teacher_registration.user.first_name }} {{ teacher_registration.user.last_name }}{% if not forloop.last %}, {% endif %}
-      {% endfor %}
+      (Co-)Teachers: {{ course_section.course.get_teacher_names }}
     </div>
   </div>
 </div>

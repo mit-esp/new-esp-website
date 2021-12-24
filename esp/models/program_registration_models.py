@@ -1,4 +1,5 @@
 from datetime import date
+from decimal import Decimal
 
 from django.db import models
 from django.db.models import Exists, Min, OuterRef, Value
@@ -11,10 +12,12 @@ from esp.constants import HeardAboutVia, MITAffiliation, PaymentMethod
 from esp.models.course_scheduling_models import CourseSection
 from esp.models.program_models import (Course, ExternalProgramForm,
                                        PreferenceEntryCategory, Program,
-                                       ProgramRegistrationStep, PurchaseableItem,
+                                       ProgramRegistrationStep,
+                                       PurchaseableItem,
                                        TeacherProgramRegistrationStep,
                                        TimeSlot)
 from esp.validators import validate_graduation_year
+
 ####################################################
 # STUDENT REGISTRATIONS
 ####################################################
@@ -104,6 +107,13 @@ class ProgramRegistration(BaseModel):
                 (self.allow_early_registration_after and self.allow_early_registration_after < timezone.now())
                 or (self.allow_late_registration_until and self.allow_late_registration_until > timezone.now())
         )
+
+    def get_barcode_id(self):
+        return "".join((str(self.id)).split('-')).upper()
+
+    def get_amount_owed(self):
+        # TODO: Add after program fees merge
+        return Decimal(0.00)
 
     def __str__(self):
         return f"{self.program} registration for {self.user}"

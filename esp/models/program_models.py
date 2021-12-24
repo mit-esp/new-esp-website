@@ -54,10 +54,7 @@ class Program(BaseModel):
     def show_to_teachers(self):
         if not self.teacher_registration_steps.exists():
             return False
-        if (
-            timezone.now()
-            < self.teacher_registration_steps.aggregate(Min("access_start_date"))["access_start_date__min"]
-        ):
+        if timezone.now() < self.teacher_registration_steps.aggregate(start=Min("access_start_date"))["start"]:
             return False
         if self.archive_on is not None and self.archive_on < timezone.now():
             return False
@@ -122,6 +119,11 @@ class Course(BaseModel):
         return self.__class__.objects.filter(
             program_id=self.program_id
         ).aggregate(Max("display_id"))["display_id__max"] + 1
+
+    def get_teacher_names(self):
+        return ", ".join(
+            course_teacher.teacher_registration.user.get_full_name() for course_teacher in self.course_teachers.all()
+        )
 
     def save(self, *args, **kwargs):
         if not self.display_id:

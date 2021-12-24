@@ -4,6 +4,7 @@ from esp.constants import StudentRegistrationStepType
 from esp.views.admin_views import (AdminDashboardView, AdminManageStudentsView,
                                    ApproveFinancialAidView, CourseCreateView,
                                    CourseListView, CourseUpdateView,
+                                   PrintStudentSchedulesView,
                                    ProgramCreateView, ProgramListView,
                                    ProgramLotteryView, ProgramStageCreateView,
                                    ProgramStageUpdateView, ProgramUpdateView,
@@ -50,6 +51,7 @@ urlpatterns = [
     path('dashboard/volunteer/', VolunteerDashboardView.as_view(), name="volunteer_dashboard"),
 
     # Admin views
+    path('admin/email/', SendEmailsView.as_view(), name="send_email"),
     path('admin/programs/create/', ProgramCreateView.as_view(), name='create_program'),
     path('admin/programs/update/<uuid:pk>/', ProgramUpdateView.as_view(), name='update_program'),
     path('admin/programs/<uuid:pk>/stages/create/', ProgramStageCreateView.as_view(), name="create_program_stage"),
@@ -64,9 +66,9 @@ urlpatterns = [
         'admin/programs/<uuid:pk>/approve_financial_aid/',
         ApproveFinancialAidView.as_view(), name="approve_financial_aid"
     ),
-
-    path('admin/email/', SendEmailsView.as_view(), name="send_email"),
-
+    path(
+        'admin/programs/<uuid:pk>/print/schedules/', PrintStudentSchedulesView.as_view(), name="print_student_schedules"
+    ),
     path('admin/programs/<uuid:pk>/manage/students/', AdminManageStudentsView.as_view(),
          name="manage_students"),
     path('admin/programs/<uuid:pk>/manage/students/<uuid:student_id>/', AdminManageStudentsView.as_view(),

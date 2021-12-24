@@ -1,15 +1,15 @@
 from django.contrib import messages
 from django.core.mail import send_mail
-from django.db.models import Count, F, Max, Value
+from django.db.models import Count, F, Max, Min, Prefetch, Value
 from django.db.models.functions import Concat
 from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
 from django.template import Context, Template
 from django.urls import reverse_lazy
 from django.utils import timezone
-from django.views import View
 from django.views.generic import (CreateView, FormView, ListView, TemplateView,
                                   UpdateView)
+from django.views.generic.base import View
 from django.views.generic.detail import SingleObjectMixin
 from multiform_views.edit import FormsView
 
@@ -23,6 +23,7 @@ from esp.forms import (ProgramForm, ProgramRegistrationStepFormset,
                        ProgramStageForm, QuerySendEmailForm,
                        StudentSendEmailForm, TeacherCourseForm,
                        TeacherSendEmailForm)
+from esp.legacy.latex import render_to_latex
 from esp.lottery import run_program_lottery
 from esp.models.program_models import Course, Program, ProgramStage
 from esp.models.program_registration_models import (ClassRegistration,
@@ -325,6 +326,25 @@ class SendEmailsView(PermissionRequiredMixin, FormsView):
         messages.success(
             self.request, f'An email was sent to {email_count} email address{"" if email_count == 1 else "es"}'
         )
+
+
+class PrintStudentSchedulesView(PermissionRequiredMixin, SingleObjectMixin, View):
+    permission = PermissionType.admin_dashboard_view
+    model = Program
+
+    def get_queryset(self):
+        return super().get_queryset().prefetch_related(
+            "registrations__user",
+            Prefetch("registrations__class_registrations", queryset=ClassRegistration.objects.annotate(
+                start_time=Min("course_section__time_slots__time_slot__start_datetime")).order_by("start_time")
+            ),
+            "registrations__class_registrations__course_section__time_slots",
+            "registrations__class_registrations__course_section__course__program",
+        )
+
+    def get(self, request, *args, **kwargs):
+        program = self.get_object()
+        return render_to_latex("latex/student_schedules_all.tex", context_dict={"program": program})
 
 
 class ApproveFinancialAidView(PermissionRequiredMixin, SingleObjectMixin, TemplateView):

@@ -1,0 +1,24 @@
+{% load latex %}
+
+\documentclass[letterpaper,12pt]{article}
+\usepackage[left=.75in,top=1in,bottom=.75in,right=.75in]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage{multicol}
+\usepackage{fancyhdr}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{setspace}
+\usepackage{amsfonts, amsmath, amsthm, amssymb}
+\usepackage[code=Code39,X=.2mm,ratio=2,H=1cm]{makebarcode}
+\usepackage{qrcode}
+\qrset{height=2cm}
+
+\pagestyle{fancy}
+\fancyhead[C]{\Huge \textsf{\textbf{ {{ program.name|texescape }} } }}
+\setlength\headheight{16pt}
+\renewcommand{\headrulewidth}{3pt}
+\renewcommand{\footrulewidth}{0pt}
+\fancyfoot{}
+
+\newcommand{\nameblock}{}
+\newcommand{\barcodeblock}{}
