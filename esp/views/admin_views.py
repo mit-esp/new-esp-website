@@ -21,7 +21,7 @@ from esp.forms import (ProgramForm, ProgramRegistrationStepFormset,
                        ProgramStageForm, QuerySendEmailForm,
                        StudentSendEmailForm, TeacherCourseForm,
                        TeacherSendEmailForm)
-from esp.latex import render_to_latex
+from esp.legacy.latex import render_to_latex
 from esp.lottery import run_program_lottery
 from esp.models.program_models import Course, Program, ProgramStage
 ######################################
