@@ -1,4 +1,6 @@
 from django.core.exceptions import ValidationError
+from django.db.models import F, Value, QuerySet
+from django.db.models.functions import Concat
 from rest_framework import serializers
 
 from common.models import User
@@ -167,12 +169,21 @@ class AssignClassroomTimeSlotSerializer(serializers.Serializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
+    search_string = serializers.CharField()
+
     class Meta:
         model = User
         fields = (
-            "id",
             "first_name",
             "last_name",
+            "id",
+            "username",
             "user_type",
             "verified",
         )
+
+    def __new__(cls, *args, **kwargs):
+        if args and isinstance(args[0], QuerySet):
+            if hasattr(args[0].first(), "search_string"):
+                UserSerializer.Meta.fields += ("search_string",)
+        return super().__new__(cls, *args, **kwargs)

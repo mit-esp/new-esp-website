@@ -35,12 +35,14 @@ class PermissionType(TextChoices):
     student_registrations_edit_all = "student_registrations_view_all"
     teacher_profiles_edit_all = "teacher_profiles_edit_all"
     teacher_registrations_edit_all = "teacher_registrations_edit_all"
+    admin_dashboard_actions = "admin_dashboard_actions"
 
     # Student actions
     student_create_profile = "create_student_profile"
     student_dashboard_view = "view_student_dashboard"
     student_register_for_program = "student_register_for_program"
     student_update_profile = "student_update_profile"
+    student_make_payment = "student_make_payment"
 
     # Teacher actions
     teacher_dashboard_view = "view_teacher_dashboard"

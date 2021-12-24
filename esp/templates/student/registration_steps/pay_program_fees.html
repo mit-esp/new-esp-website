@@ -1,0 +1,41 @@
+{% extends "student/registration_base.html" %}
+{% load filters %}
+
+{% block content %}
+  <h1>Pay Program Fees</h1>
+  <p>
+
+    You may skip payment now and pay in person instead. Only cash and checks are accepted day-of.
+    <br>
+    {% if financial_aid_approved %}
+      <span class="text-danger">Your financial aid request has been approved and applied to eligible items.</span>
+    {% elif financial_aid_requested %}
+      <span class="text-danger">
+        Your financial aid request will be reviewed soon.
+        If it is approved, the discount will be automatically applied to eligible items.
+      </span>
+    {% else %}
+    You may also request financial aid, which covers the full cost of eligible fees and add-ons.
+    {% endif %}
+    <br>
+    You will have the opportunity to purchase optional add-ons later and in person, if supplies allow.
+  </p>
+  {% include 'shared/submit_button.html' with submit_label='Skip and pay in person' submit_value='skip' %}
+  <form method="post">
+    {% csrf_token %}
+    <h3 class="my-4">Required Payments</h3>
+    {% for item in required_purchase_items %}
+      {% include "student/components/purchase_item.html" with required=True %}
+    {% endfor %}
+    {% if additional_purchase_items %}
+      <h3 class="my-4">Optional Add-Ons</h3>
+      {% for item in additional_purchase_items %}
+        {% include "student/components/purchase_item.html" %}
+      {% endfor %}
+    {% endif %}
+    <div class="d-flex mt-3">
+      <button type="submit" class="btn btn-secondary me-2" name="submit" value="financial_aid">Request financial aid</button>
+      <button type="submit" class="btn btn-primary" name="submit" value="pay">Pay now</button>
+    </div>
+  </form>
+{% endblock %}

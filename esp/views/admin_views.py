@@ -1,7 +1,8 @@
 from django.contrib import messages
 from django.core.mail import send_mail
-from django.db.models import Count, Max, Min, Prefetch
-from django.http import HttpResponseRedirect
+from django.db.models import Count, F, Max, Min, Prefetch, Value
+from django.db.models.functions import Concat
+from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
 from django.template import Context, Template
 from django.urls import reverse_lazy
@@ -17,6 +18,7 @@ from common.forms import CrispyFormsetHelper
 from common.models import User
 from common.views import PermissionRequiredMixin
 from config.settings import DEFAULT_FROM_EMAIL
+from esp.constants import StudentRegistrationStepType
 from esp.forms import (ProgramForm, ProgramRegistrationStepFormset,
                        ProgramStageForm, QuerySendEmailForm,
                        StudentSendEmailForm, TeacherCourseForm,
@@ -24,10 +26,15 @@ from esp.forms import (ProgramForm, ProgramRegistrationStepFormset,
 from esp.legacy.latex import render_to_latex
 from esp.lottery import run_program_lottery
 from esp.models.program_models import Course, Program, ProgramStage
+from esp.models.program_registration_models import (ClassRegistration,
+                                                    FinancialAidRequest,
+                                                    ProgramRegistration,
+                                                    PurchaseLineItem)
+from esp.serializers import UserSerializer
+
 ######################################
 # ADMIN DASHBOARD
 ######################################
-from esp.models.program_registration_models import ClassRegistration
 
 
 class AdminDashboardView(TemplateView):
@@ -41,15 +48,73 @@ class AdminDashboardView(TemplateView):
         context["students_count"] = User.objects.filter(user_type=UserType.student).count()
         context["teachers_count"] = User.objects.filter(user_type=UserType.teacher).count()
         context["admins_count"] = User.objects.filter(user_type=UserType.admin, is_active=True).count()
-        context["upcoming_program"] = Program.objects.filter(start_date__gte=ts).latest('-start_date', '-end_date')
+        context["upcoming_programs"] = Program.objects.filter(start_date__gte=ts).order_by('start_date', 'end_date')[:2]
         context["active_programs"] = (
             Program.objects.filter(start_date__lte=ts, end_date__gte=ts).order_by('-start_date')
         )
         return context
 
 
+class AdminManageStudentsView(PermissionRequiredMixin, SingleObjectMixin, TemplateView):
+    permission = PermissionType.admin_dashboard_actions
+    template_name = 'esp/manage_students.html'
+    model = Program
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.object = None
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        context["StudentRegistrationStepType"] = StudentRegistrationStepType
+        program = self.get_object()
+        context["program_id"] = self.kwargs['pk']
+        students = User.objects.filter(user_type=UserType.student,
+                                       registrations__program=program).select_related(
+            'student_profile')
+        context['students'] = UserSerializer(
+            students.annotate(search_string=Concat(
+                F("first_name"), Value(' '), F("last_name"), Value(', ('), F("username"), Value(')'),)
+            ),
+            many=True
+        ).data
+        student_id = self.kwargs.get('student_id')
+        context['student_id'] = student_id
+        if context['student_id']:
+            context['student_first_name'] = User.objects.get(id=student_id).first_name
+            context['student_last_name'] = User.objects.get(id=student_id).last_name
+            try:
+                program_registration = get_object_or_404(ProgramRegistration, program=program, user__id=student_id)
+                context['program_registration'] = program_registration
+                context["program_stage_steps"] = program_registration.get_program_stage().steps.all()
+            except Http404:
+                messages.error(
+                    self.request,
+                    f"Program Registration for program {self.kwargs['pk']} and student {student_id} does not exist"
+                )
+                redirect('admin_dashboard')
+        return context
+
+
+class StudentCheckinView(PermissionRequiredMixin, View):
+    permission = PermissionType.admin_dashboard_actions
+
+    def post(self, request, *args, **kwargs):
+        student_id = self.kwargs.get('student_id')
+        program_id = self.kwargs.get('pk')
+        program_registration = get_object_or_404(ProgramRegistration, program_id=program_id, user_id=student_id)
+        student = get_object_or_404(User, id=student_id)
+        if program_registration.checked_in is False:
+            program_registration.update(checked_in=True)
+            messages.success(request, f"Checked in {student.first_name} {student.last_name}")
+        else:
+            messages.info(request, f"{student.first_name} {student.last_name} is already checked in")
+
+        return redirect('manage_students_specific', pk=program_id, student_id=student_id)
+
+
 class ProgramCreateView(PermissionRequiredMixin, CreateView):
-    permission = PermissionType.programs_edit_all
+    permission = PermissionType.admin_dashboard_actions
     model = Program
     form_class = ProgramForm
 
@@ -198,7 +263,7 @@ class SendEmailsView(PermissionRequiredMixin, FormsView):
             teachers = teachers.annotate(num_courses=Count('teacher_registrations__courses')).filter(num_courses__gte=1)
         if form.cleaned_data['difficulty']:
             teachers = teachers.filter(
-                teacher_registrations__courses__course__difficulty=form.cleaned_data['difficulty'])
+                teacher_registrations__courses__difficulty=form.cleaned_data['difficulty'])
         if form.cleaned_data['registration_step']:
             teachers = teachers.filter(
                 teacher_registrations__completed_steps__step__step_key=form.cleaned_data['registration_step'])
@@ -259,8 +324,7 @@ class SendEmailsView(PermissionRequiredMixin, FormsView):
 
         email_count = to_users.count()
         messages.success(
-            self.request,
-            f'An email was sent to {email_count} email address{"" if email_count == 1 else "es"}'
+            self.request, f'An email was sent to {email_count} email address{"" if email_count == 1 else "es"}'
         )
 
 
@@ -281,6 +345,36 @@ class PrintStudentSchedulesView(PermissionRequiredMixin, SingleObjectMixin, View
     def get(self, request, *args, **kwargs):
         program = self.get_object()
         return render_to_latex("latex/student_schedules_all.tex", context_dict={"program": program})
+
+
+class ApproveFinancialAidView(PermissionRequiredMixin, SingleObjectMixin, TemplateView):
+    model = Program
+    permission = PermissionType.admin_dashboard_view
+    template_name = "esp/approve_financial_aid.html"
+
+    def get_context_data(self, **kwargs):
+        self.object = self.get_object()
+        context = super().get_context_data(**kwargs)
+        context["financial_aid_requests_count"] = (
+            FinancialAidRequest.objects
+            .filter(program_registration__program=self.object, reviewed_on__isnull=True)
+            .count()
+        )
+        return context
+
+    def post(self, request, *args, **kwargs):
+        program = self.get_object()
+        requests = FinancialAidRequest.objects.filter(program_registration__program=program, reviewed_on__isnull=True)
+        # Update all eligible items already in requesters' carts
+        PurchaseLineItem.objects.filter(
+            purchase_confirmed_on__isnull=True,
+            payment__isnull=True,
+            user__in=requests.values("program_registration__user_id"),
+            item__program__in=requests.values("program_registration__program_id"),
+            item__eligible_for_financial_aid=True,
+        ).update(charge_amount=0, purchase_confirmed_on=timezone.now())
+        requests.update(reviewed_on=timezone.now(), approved=True)
+        return redirect("admin_dashboard")
 
 ###########################################################
 
@@ -330,5 +424,5 @@ class CourseListView(PermissionRequiredMixin, ListView):
         return context
 
     def get_queryset(self, **kwargs):
-        self.program = get_object_or_404(Program, pk=self.kwargs['pk'])
-        return Course.objects.filter(program=self.program)
+        program = get_object_or_404(Program, pk=self.kwargs['pk'])
+        return Course.objects.filter(program=program)

@@ -4,11 +4,12 @@ from django.db import models
 from django.db.models import Max, Min
 from django.utils import timezone
 
-from common.constants import GradeLevel, Weekday
+from common.constants import GradeLevel, UserType, Weekday
 from common.models import BaseModel
 from esp.constants import (ClassroomTagCategory, CourseDifficulty,
-                           CourseStatus, CourseTagCategory, ProgramTagCategory,
-                           ProgramType, StudentRegistrationStepType,
+                           CourseStatus, CourseTagCategory, FormIntegration,
+                           ProgramTagCategory, ProgramType,
+                           StudentRegistrationStepType,
                            TeacherRegistrationStepType)
 
 
@@ -298,6 +299,19 @@ class PreferenceEntryCategory(BaseModel):
         return self.tag
 
 
+class ExternalProgramForm(BaseModel):
+    program = models.ForeignKey(Program, related_name="external_forms", on_delete=models.PROTECT)
+    user_type = models.CharField(max_length=64, choices=UserType.choices)
+    integration = models.CharField(max_length=64, choices=FormIntegration.choices)
+    integration_id = models.CharField(max_length=256, null=True, blank=True)
+    url = models.URLField()
+    display_name = models.CharField(max_length=256)
+    required = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.display_name
+
+
 class ProgramTag(BaseModel):
     programs = models.ManyToManyField(Program, related_name="tags", blank=True)
     tag = models.CharField(max_length=256)
@@ -324,10 +338,23 @@ class CourseTag(BaseModel):
 
 class ClassroomTag(BaseModel):
     classrooms = models.ManyToManyField(Classroom, related_name="tags", blank=True)
-    tag = models.CharField(max_length=256)
+    tag = models.CharField(max_length=256, unique=True)
     tag_category = models.CharField(
         choices=ClassroomTagCategory.choices, max_length=128, default=ClassroomTagCategory.other
     )
 
     def __str__(self):
         return self.tag
+
+
+class PurchaseableItem(BaseModel):
+    program = models.ForeignKey(Program, related_name="purchase_items", on_delete=models.PROTECT)
+    item_name = models.CharField(max_length=250)
+    description = models.TextField(blank=True, null=True)
+    price = models.DecimalField(max_digits=6, decimal_places=2)
+    required_for_registration = models.BooleanField(default=False)
+    eligible_for_financial_aid = models.BooleanField()
+    max_per_user = models.IntegerField(default=1)
+
+    def __str__(self):
+        return f"{self.item_name} ({self.program.name})"

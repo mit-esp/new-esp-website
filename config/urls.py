@@ -19,10 +19,14 @@ from django.http import HttpResponse
 from django.urls import path
 from django_ses.views import SESEventWebhookView
 
+from common.views import SiteRedirectView
+
 urlpatterns = [
     path('', include("common.urls")),
     path('', include("esp.urls")),
     path('django_admin/', admin.site.urls, name="django_admin"),
     path("health_check/", lambda request: HttpResponse("ok")),
     path("ses/event-webhook/", SESEventWebhookView.as_view(), name="handle-event-webhook"),
+    # Warning: must come last!
+    path('<path:path>/', SiteRedirectView.as_view(), name="site_redirect"),
 ]

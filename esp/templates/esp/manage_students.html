@@ -1,0 +1,93 @@
+{% extends "base_templates/base.html" %}
+
+{% load static %}
+{% load sass_tags %}
+{% load auth %}
+
+
+{% block title %}Manage Students{% endblock %}
+
+{% block head %}
+  <link href="{% sass_src 'styles/manage_students.scss' %}" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tarekraafat/autocomplete.js@10.2.6/dist/css/autoComplete.min.css">
+{% endblock %}
+
+{% block body %}
+<!--Source https://www.w3schools.com/howto/howto_js_autocomplete.asp-->
+
+<h2>Student Check-in</h2>
+
+<p>Search for students:</p>
+
+<!--Make sure the form has the autocomplete function switched off:-->
+<form autocomplete="off">
+  <div class="autocomplete" style="width:500px;">
+    <input id="autoComplete" type="text" name="student" placeholder="Name">
+  </div>
+</form>
+
+  {% if student_id %}
+    <div class="col-lg-6 my-2" id="studentActions">
+      <div class="card">
+        <div class="card-body">
+          <p>Status: {{ student_first_name }} {{ student_last_name }} is {% if not program_registration.checked_in %}not {% endif%}checked in.</p>
+          <form method="post" action="{% url 'student_check_in' pk=program_id student_id=student_id %}">{% csrf_token %}<input class="form-control" type="submit" value="Check In {{ student_first_name }} {{ student_last_name }}" {% if program_registration.checked_in %} disabled {% endif%}></form>
+          {% for step in program_stage_steps %}
+              <li><a href="{% url step.step_key registration_id=program_registration.id step_id=step.id %}" class="btn btn-outline-success mx-1 my-1" role="button">{{ step.get_display_name }}</a></li>
+          {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
+{% endblock %}
+
+
+{% block script %}
+  <script src="https://cdn.jsdelivr.net/npm/@tarekraafat/autocomplete.js@10.2.6/dist/autoComplete.min.js"></script>
+  {{ students|json_script:"student-data" }}
+  <script>
+    const autoCompleteJS = new autoComplete({
+            placeHolder: "Search for Students",
+            data: {
+                src: JSON.parse(document.getElementById('student-data').textContent),
+                cache: true,
+                keys: ["search_string"],
+            },
+            resultsList: {
+                element: (list, data) => {
+                    if (!data.results.length) {
+                        // Create "No Results" message element
+                        const message = document.createElement("div");
+                        // Add class to the created element
+                        message.setAttribute("class", "no_result");
+                        // Add message text content
+                        message.innerHTML = `<span>Found No Results for "${data.query}"</span>`;
+                        // Append message element to the results list
+                        list.prepend(message);
+                    }
+                },
+                noResults: true,
+            },
+            resultItem: {
+                highlight: true
+            },
+            events: {
+                input: {
+                    selection: (event) => {
+                        const selection = event.detail.selection.value;
+                        autoCompleteJS.input.value = selection.first_name;
+                    }
+                }
+            }
+        })
+  document.querySelector("#autoComplete").addEventListener("selection", function (event) {
+    // "event.detail" carries the autoComplete.js "feedback" object
+    let student_id = event.detail.selection.value.id;
+    // have to append student_id to end since django url gets rendered before this code is reached,
+      // and therefore before student_id is initialized
+    location.href = "{% url 'manage_students' program_id %}" + `${student_id}/`
+  });
+  </script>
+{% endblock %}

@@ -1,0 +1,8 @@
+{% extends "student/registration_base.html" %}
+
+{% block content %}
+  <h1>Submit waivers</h1>
+  {% include "shared/external_form_links.html" %}
+  {% comment %}TODO: form integrations{% endcomment %}
+  {% include "shared/submit_button.html" with submit_label="Mark all forms complete" %}
+{% endblock %}
