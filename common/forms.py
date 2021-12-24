@@ -1,6 +1,13 @@
+from urllib.parse import urlparse
+
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
-from django.forms import BaseInlineFormSet, HiddenInput
+from django.core.exceptions import ValidationError
+from django.core.validators import URLValidator
+from django.forms import BaseInlineFormSet, HiddenInput, ModelForm
+from django.urls import NoReverseMatch, resolve, reverse
+
+from common.models import SiteRedirectPath
 
 
 class CrispyFormMixin(object):
@@ -39,3 +46,46 @@ class CrispyFormsetHelper(FormHelper):
         self.form_style = "inline"
         self.form_class = "form-inline"
         self.template = "bootstrap4/table_inline_formset.html"
+
+
+class SiteRedirectPathForm(ModelForm):
+    class Meta:
+        model = SiteRedirectPath
+        fields = [
+            "path",
+            "redirect_url_name",
+            "redirect_full_url",
+        ]
+
+    def clean_path(self):
+        path = self.cleaned_data["path"].strip("/")
+        match = resolve(f"/{path}/")
+        if match.url_name != "site_redirect":
+            raise ValidationError(f"{path} already exists")
+        return path
+
+    def clean_redirect_url_name(self):
+        redirect_url_name = self.cleaned_data.get("redirect_url_name")
+        if not redirect_url_name:
+            return
+        try:
+            reverse(redirect_url_name)
+        except NoReverseMatch:
+            raise ValidationError("Invalid url name")
+        return redirect_url_name
+
+    def clean_redirect_full_url(self):
+        url = self.cleaned_data.get("redirect_full_url")
+        split_url = urlparse(url)
+        print(split_url)
+        if not split_url.hostname:
+            if not split_url.path:
+                raise ValidationError("Enter valid URL")
+            return f"/{url.lstrip('/')}"
+        return URLValidator()(url)
+
+    def clean(self):
+        cleaned_data = super().clean()
+        if not (cleaned_data.get("redirect_url_name") or cleaned_data.get("redirect_full_url")):
+            raise ValidationError("Set either a redirect URL name or full URL.")
+        return cleaned_data
