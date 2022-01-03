@@ -1,3 +1,4 @@
+from collections import defaultdict
 from datetime import datetime
 
 from django.contrib import messages
@@ -47,8 +48,7 @@ class AdminDashboardView(TemplateView):
         context["teachers_count"] = User.objects.filter(user_type=UserType.teacher).count()
         context["admins_count"] = User.objects.filter(user_type=UserType.admin,
                                                       is_active=True).count()
-        context["upcoming_program"] = Program.objects.filter(start_date__gte=ts).latest(
-            'start_date', 'end_date')
+        context["upcoming_programs"] = Program.objects.filter(start_date__gte=ts).order_by("start_date")[:3]
         context["active_programs"] = Program.objects.filter(start_date__lte=ts,
                                                             end_date__gte=ts).order_by(
             '-start_date')
@@ -116,28 +116,23 @@ class AdminManageTeachersView(PermissionRequiredMixin, SingleObjectMixin, Templa
     template_name = 'esp/manage_teachers.html'
     model = Program
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.object = None
-
     def get_context_data(self, **kwargs):
-        context = super().get_context_data()
+        self.object = self.get_object()
+        context = super().get_context_data(**kwargs)
         program = self.get_object()
         context["program_id"] = program.id
         timeslots = TimeSlot.objects.filter(program=program).order_by('start_datetime')
-        context["timeslot_list"] = self.get_time_list(timeslots)
+        context["timeslot_dict"] = self.get_time_dict(timeslots)
         return context
 
-    def get_time_list(self, timeslots: datetime):
-        """organizes the datetimes into a list of lists with each sublist containing datetimes
-            from a single day"""
-        time_list = [[timeslots[0]]]
-        for time in timeslots[1:]:
-            if time.start_datetime.date() == time_list[-1][-1].start_datetime.date():
-                time_list[-1].append(time)
-            else:
-                time_list.append([time])
-        return time_list
+    def get_time_dict(self, timeslots):
+        """organizes the datetimes into a dict of lists with each key being a date and each list
+            being the datetimes from that day"""
+        time_dict = defaultdict(list)
+        for time in timeslots:
+            time_dict[time.start_datetime.date()].append(time)
+        time_dict.default_factory = None
+        return time_dict
 
 
 class AdminCheckinTeachersView(PermissionRequiredMixin, TemplateView):
@@ -165,7 +160,7 @@ class AdminCheckinTeachersView(PermissionRequiredMixin, TemplateView):
             course_dict = {'course': classroom_timeslot.course_section.course,
                            'classroom': classroom_timeslot.classroom.name, 'teachers': [], }
             for teacher in classroom_timeslot.course_section.course.teacher_registrations.all():
-                checked_in = teacher.check_in_time and teacher.check_in_time.date() == timezone.now().date()
+                checked_in = teacher.checked_in_at and teacher.checked_in_at.date() == timezone.now().date()
                 course_dict['teachers'].append({'teacher': teacher, 'checked_in': checked_in})
             courses_list.append(course_dict)
         return courses_list
@@ -176,18 +171,14 @@ class TeacherCheckinView(PermissionRequiredMixin, SingleObjectMixin, View):
     model = TeacherRegistration
     pk_url_kwarg = 'teacher_id'
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.object = None
-
     def post(self, request, *args, **kwargs):
         teacher_registration = self.get_object()
         timeslot_id = self.kwargs.get('timeslot_id')
-        if teacher_registration.check_in_time and teacher_registration.check_in_time.date() == timezone.now().date():
+        if teacher_registration.checked_in_at and teacher_registration.checked_in_at.date() == timezone.now().date():
             messages.info(request,
                           f"{teacher_registration.user.first_name} {teacher_registration.user.last_name} already checked in today")
         else:
-            teacher_registration.update(check_in_time=timezone.now())
+            teacher_registration.update(checked_in_at=timezone.now())
             messages.success(request,
                              f"Checked in {teacher_registration.user.first_name} {teacher_registration.user.last_name}")
 
