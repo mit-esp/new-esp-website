@@ -1,0 +1,73 @@
+{% load filters %}
+{% load latex %}
+\renewcommand{\nameblock}{
+\textbf{Name: {{ student_registration.user.get_full_name|texescape }} \\
+Username: {{ student_registration.user.username|texescape }} \\
+Email: {{ student_registration.user.email|texescape }}
+}
+}
+
+\renewcommand{\barcodeblock}{
+\barcode{% templatetag openbrace %}{{ student_registration.get_barcode_id }}{% templatetag closebrace %}
+}
+
+\begin{center}
+\barcodeblock
+\end{center}
+
+\begin{multicols}{3}
+
+\begin{flushleft}
+\nameblock
+\vspace{1ex} \hrule \vspace{1ex}
+\textbf{Amount Owed: \fbox{\$ {{ student_registration.get_amount_owed }} } }
+\end{flushleft}
+
+\columnbreak
+\begin{center}
+Student Schedule for \\
+
+\begin{spacing}{1}
+\LARGE \bfseries {{ student_registration.user.get_full_name|texescape }}
+\end{spacing}
+
+\end{center}
+
+\columnbreak
+
+\begin{flushright}
+\qrcode{% templatetag openbrace %}{{ student_registration.id }}{% templatetag closebrace %}
+\end{flushright}
+
+\end{multicols}
+
+\renewcommand\tabularxcolumn[1]{m{#1}}
+
+\begin{center}
+{\large \textbf{Class Schedule} \\}
+\vspace{0.25cm}
+\begin{tabularx}{\textwidth}{|m{1.7in}|X|m{0.55in}|}
+\hline
+\textbf{Time and Room} & \textbf{Class and Teacher} & \textbf{Code} \\
+{% for class_registration in student_registration.class_registrations.all %}\hline
+{% with section_times=class_registration.course_section.get_section_times %}
+\footnotesize{ {% if section_times|length_is:"0" %}N/A{% else %}{{ section_times|format_time_slots|texescape }}{% endif %} }\newline
+{% endwith %}
+\footnotesize{ {% if not class_registration.course_section.time_slots %}N/A{% else %}{{ class_registration.course_section.time_slots.all.0.classroom.name }}{% endif %} } &
+{{ class_registration.course_section|truncatechars:45|texescape }} \newline
+\footnotesize{ {{class_registration.course_section.course.get_teacher_names|truncatechars:50|texescape }} }  &
+\texttt{% templatetag openbrace %}{% comment %}TODO: What is class code?{% endcomment %}TODO{% templatetag closebrace %} \\
+{% endfor %}\hline
+\end{tabularx}
+\end{center}
+\begin{center}
+\begin{tabularx}{17cm}{X c}
+\multicolumn{2}{c}{\small
+\textit{Please see your map for building directions, or ask anyone for help.}
+\normalsize } \\
+\multicolumn{2}{c}{\small
+\textit{If you are not signed up for a full day of classes, we encourage you to add more!}
+\normalsize } \\
+~ & ~
+\end{tabularx}
+\end{center}

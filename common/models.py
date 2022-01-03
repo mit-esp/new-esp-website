@@ -2,6 +2,7 @@ import uuid
 
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.urls import reverse
 from simple_history.models import HistoricalRecords
 
 from common.auth import USER_TYPE_PERMISSIONS
@@ -57,3 +58,21 @@ class User(AbstractUser, BaseModel):
 
     def has_permission(self, permission):
         return permission in USER_TYPE_PERMISSIONS[self.user_type]
+
+
+class SiteRedirectPath(BaseModel):
+    path = models.CharField(max_length=256, unique=True)
+    redirect_url_name = models.CharField(
+        max_length=256, null=True, blank=True,
+        help_text="Must be a valid path name. Will be overridden if full url is set."
+    )
+    redirect_full_url = models.CharField(
+        max_length=256, null=True, blank=True,
+        help_text="May be either an absolute (external) URL or site path."
+    )
+
+    def get_redirect_url(self):
+        return self.redirect_full_url if self.redirect_full_url else reverse(self.redirect_url_name)
+
+    def __str__(self):
+        return f"{self.path} -> {self.get_redirect_url()}"

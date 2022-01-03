@@ -1,4 +1,4 @@
 <form method="post">
   {% csrf_token %}
-  <button class="btn btn-primary" type="submit">{{ submit_label }}</button>
+  <button class="btn btn-primary" type="submit" name="submit" value="{{ submit_value|default:'submit' }}">{{ submit_label }}</button>
 </form>

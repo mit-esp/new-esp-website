@@ -1,0 +1,10 @@
+{% autoescape off %}
+{% include 'latex/snippets/schedule_preamble.tex' %}
+
+\begin{document}
+{% for student_registration in program.registrations.all %}
+{% include 'latex/snippets/student_courses.tex' %}
+{% if not forloop.last %}\pagebreak{% endif %}
+{% endfor %}
+\end{document}
+{% endautoescape %}

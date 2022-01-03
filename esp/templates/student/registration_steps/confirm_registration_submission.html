@@ -1,0 +1,7 @@
+{% extends "student/registration_base.html" %}
+
+{% block content %}
+  <h1>Confirm your registration for {{ registration.program }}</h1>
+  <p>This will confirm your preferences for inclusion in the course lottery.</p>
+  {% include 'shared/submit_button.html' with submit_label='Confirm Registration' %}
+{% endblock %}

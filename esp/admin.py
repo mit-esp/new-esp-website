@@ -1,6 +1,7 @@
 from django.contrib import admin
 
-from esp.models import course_scheduling_models, program_models, program_registration_models
+from esp.models import (course_scheduling_models, program_models,
+                        program_registration_models)
 
 admin.site.site_header = 'MIT ESP Database Administration'
 admin.site.register(course_scheduling_models.CourseSection)
@@ -9,10 +10,12 @@ admin.site.register(course_scheduling_models.ClassroomTimeSlot)
 admin.site.register(program_models.Classroom)
 admin.site.register(program_models.CourseTag)
 admin.site.register(program_models.PreferenceEntryCategory)
+admin.site.register(program_models.PurchaseableItem)
 admin.site.register(program_models.ProgramRegistrationStep)
 admin.site.register(program_models.ProgramTag)
 admin.site.register(program_models.TeacherProgramRegistrationStep)
 admin.site.register(program_models.TimeSlot)
+admin.site.register(program_models.ExternalProgramForm)
 admin.site.register(program_registration_models.ClassPreference)
 admin.site.register(program_registration_models.CompletedRegistrationStep)
 admin.site.register(program_registration_models.StudentProfile)
@@ -48,6 +51,12 @@ class TimeSlotInline(admin.TabularInline):
     show_change_link = True
 
 
+class ExternalProgramFormInline(admin.TabularInline):
+    extra = 0
+    model = program_models.ExternalProgramForm
+    show_change_link = True
+
+
 @admin.register(program_models.Program)
 class ProgramAdmin(admin.ModelAdmin):
     search_fields = ("program_models_type", "name")
@@ -55,6 +64,7 @@ class ProgramAdmin(admin.ModelAdmin):
         ProgramStageInline,
         TeacherRegistrationStepInline,
         TimeSlotInline,
+        ExternalProgramFormInline,
     ]
 
 

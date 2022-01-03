@@ -42,6 +42,7 @@ class PermissionType(TextChoices):
     student_dashboard_view = "view_student_dashboard"
     student_register_for_program = "student_register_for_program"
     student_update_profile = "student_update_profile"
+    student_make_payment = "student_make_payment"
 
     # Teacher actions
     teacher_dashboard_view = "view_teacher_dashboard"
