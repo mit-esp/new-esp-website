@@ -1,5 +1,5 @@
 from collections import defaultdict
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from django.contrib import messages
 from django.core.mail import send_mail
@@ -28,7 +28,7 @@ from esp.forms import (ProgramForm, ProgramRegistrationStepFormset,
                        TeacherSendEmailForm)
 from esp.legacy.latex import render_to_latex
 from esp.lottery import run_program_lottery
-from esp.models.course_scheduling_models import ClassroomTimeSlot
+from esp.models.course_scheduling_models import ClassroomTimeSlot, CourseSection
 from esp.models.program_models import Course, Program, ProgramStage, TimeSlot
 from esp.models.program_registration_models import (ClassRegistration,
                                                     FinancialAidRequest,
@@ -52,7 +52,7 @@ class AdminDashboardView(TemplateView):
         context["students_count"] = User.objects.filter(user_type=UserType.student).count()
         context["teachers_count"] = User.objects.filter(user_type=UserType.teacher).count()
         context["admins_count"] = User.objects.filter(user_type=UserType.admin, is_active=True).count()
-        context["upcoming_programs"] = Program.objects.filter(start_date__gte=ts).order_by('start_date', 'end_date')[:2]
+        context["upcoming_programs"] = Program.objects.filter(start_date__gte=ts).order_by('start_date', 'end_date')[:3]
         context["active_programs"] = (
             Program.objects.filter(start_date__lte=ts, end_date__gte=ts).order_by('-start_date')
         )
@@ -126,16 +126,21 @@ class AdminManageTeachersView(PermissionRequiredMixin, SingleObjectMixin, Templa
         context = super().get_context_data(**kwargs)
         program = self.get_object()
         context["program_id"] = program.id
-        timeslots = TimeSlot.objects.filter(program=program).order_by('start_datetime')
-        context["timeslot_dict"] = self.get_time_dict(timeslots)
+        course_sections = CourseSection.objects.filter(course__program=program)
+        context["timeslot_dict"] = self.get_time_dict(course_sections)
         return context
 
-    def get_time_dict(self, timeslots):
+    def get_time_dict(self, sections):
         """organizes the datetimes into a dict of lists with each key being a date and each list
             being the datetimes from that day"""
         time_dict = defaultdict(list)
-        for time in timeslots:
-            time_dict[time.start_datetime.date()].append(time)
+        for section in sections:
+            for meeting in section.get_section_times():
+                timeslot = TimeSlot.objects.get(program=self.get_object(), start_datetime=meeting[0])
+                if timeslot not in time_dict[meeting[0].date()]:
+                    time_dict[meeting[0].date()].append(timeslot)
+        for key, value in time_dict.items():
+            value.sort(key=lambda x: x.start_datetime)
         time_dict.default_factory = None
         return time_dict
 
@@ -145,25 +150,47 @@ class AdminCheckinTeachersView(PermissionRequiredMixin, TemplateView):
     template_name = 'esp/check_in_teachers.html'
 
     def get_context_data(self, **kwargs):
+        print('in check in view')
         context = super().get_context_data()
-        context["program_id"] = self.kwargs["pk"]
+        program_id = self.kwargs["pk"]
+        context["program_id"] = program_id
         timeslot_id = self.kwargs["timeslot_id"]
         context["timeslot_id"] = timeslot_id
+        context["unit"] = self.kwargs["unit"]
+        sections = CourseSection.objects.filter(course__program_id=program_id)
+        classroom_timeslots = []
         if self.kwargs["unit"] == 'day':
-            day = TimeSlot.objects.get(id=timeslot_id).start_datetime.day
-            classroom_timeslots = ClassroomTimeSlot.objects.filter(time_slot__start_datetime__day=day)
+            day = TimeSlot.objects.get(id=timeslot_id).start_datetime.date()
+            for section in sections:
+                course_times = section.get_section_times()
+                for time in course_times:
+                    if self.kwargs["unit"] == 'day' and time[0].date() == day:
+                        classroom_timeslots.append(ClassroomTimeSlot.objects.get(
+                            course_section=section,
+                            time_slot=TimeSlot.objects.get(program_id=program_id,
+                                                           start_datetime=time[0],
+                                                           ),
+                        ))
         elif self.kwargs["unit"] == 'slot':
-            classroom_timeslots = ClassroomTimeSlot.objects.filter(time_slot_id=timeslot_id)
+            for section in sections:
+                course_times = section.get_section_times()
+                for time in course_times:
+                    if self.kwargs["unit"] == 'slot' and time[0] == TimeSlot.objects.get(id=timeslot_id).start_datetime:
+                        classroom_timeslots.append(ClassroomTimeSlot.objects.get(
+                            course_section=section,
+                            time_slot=TimeSlot.objects.get(id=timeslot_id),
+                        ))
         else:
             raise Http404
-        context["courses_list"] = self.get_courses_list(classroom_timeslots)
+        course_list = self.get_courses_list(classroom_timeslots)
+        context["courses_list"] = sorted(course_list, key=lambda x: x['classroom'].time_slot.start_datetime.time())
         return context
 
     def get_courses_list(self, classroom_timeslots):
         courses_list = []
         for classroom_timeslot in classroom_timeslots:
             course_dict = {'course': classroom_timeslot.course_section.course,
-                           'classroom': classroom_timeslot.classroom.name, 'teachers': [], }
+                           'classroom': classroom_timeslot, 'teachers': [], }
             for teacher in classroom_timeslot.course_section.course.teacher_registrations.all():
                 checked_in = teacher.checked_in_at and teacher.checked_in_at.date() == timezone.now().date()
                 course_dict['teachers'].append({'teacher': teacher, 'checked_in': checked_in})
@@ -180,6 +207,7 @@ class TeacherCheckinView(PermissionRequiredMixin, SingleObjectMixin, View):
         teacher_registration = self.get_object()
         timeslot_id = self.kwargs.get('timeslot_id')
         if teacher_registration.checked_in_at and teacher_registration.checked_in_at.date() == timezone.now().date():
+            teacher_registration.update(checked_in_at=timezone.now() - timedelta(days=1))
             messages.info(request,
                           f"{teacher_registration.user.first_name} {teacher_registration.user.last_name} already checked in today")
         else:
@@ -188,7 +216,7 @@ class TeacherCheckinView(PermissionRequiredMixin, SingleObjectMixin, View):
                              f"Checked in {teacher_registration.user.first_name} {teacher_registration.user.last_name}")
 
         return redirect('check_in_teachers', pk=teacher_registration.program.id,
-                        timeslot_id=timeslot_id)
+                        timeslot_id=timeslot_id, unit=self.kwargs.get('unit'))
 
 
 class ProgramCreateView(PermissionRequiredMixin, CreateView):
