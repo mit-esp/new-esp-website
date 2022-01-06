@@ -1,7 +1,7 @@
 <div class="card card-body my-3">
   <div class="row">
     <div class="col-lg-6">
-      <h5>{{ program.name }}</h5>
+      <h4>Program <span class="badge rounded-pill bg-secondary">{{ program.name }}</span></h4>
       <p><strong>{{program.start_date}} to {{program.end_date}}</strong></p>
       <br/>
       <h6>Stages</h6>
@@ -24,10 +24,11 @@
         <div class="card-body">
           <h5 class="card-title">Admin actions</h5>
           <a class="btn btn-outline-success mx-1 my-1" role="button" href="{% url 'manage_students' pk=program.id %}">Manage Students</a>
+          <a class="btn btn-outline-success mx-1 my-1" role="button" href="{% url 'manage_teachers' pk=program.id %}">Manage Teachers</a>
           <a class="btn btn-outline-success mx-1 my-1" role="button" href="{% url 'courses' pk=program.id %}">Manage Courses</a>
           <a class="btn btn-outline-success mx-1 my-1" role="button" href="{% url 'scheduler' %}?program_id={{program.id}} ">Course Scheduler</a>
-          <a class="btn btn-outline-success mx-1 my-1" role="button" href="{% url 'program_lottery' pk=program.id %}">Run lottery</a>
-          <a class="btn btn-outline-success mx-1 my-1" role="button" href="{% url 'approve_financial_aid' pk=program.id %}">Approve financial aid requests</a>
+          <a class="btn btn-outline-success mx-1 my-1" role="button" href="{% url 'program_lottery' pk=program.id %}">Run Lottery</a>
+          <a class="btn btn-outline-success mx-1 my-1" role="button" href="{% url 'approve_financial_aid' pk=program.id %}">Approve Financial Aid Requests</a>
           <a class="btn btn-outline-success mx-1 my-1" role="button" href="{% url 'print_student_schedules' pk=program.id %}" target="_blank">Print Student Schedules</a>
         </div>
       </div>

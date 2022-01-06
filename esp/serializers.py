@@ -169,7 +169,7 @@ class AssignClassroomTimeSlotSerializer(serializers.Serializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-    search_string = serializers.CharField()
+    search_string = serializers.CharField(read_only=True)
 
     class Meta:
         model = User
@@ -180,6 +180,7 @@ class UserSerializer(serializers.ModelSerializer):
             "username",
             "user_type",
             "verified",
+            "search_string",
         )
 
     def __new__(cls, *args, **kwargs):
