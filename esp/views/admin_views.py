@@ -22,7 +22,7 @@ from common.models import User
 from common.views import PermissionRequiredMixin
 from config.settings import DEFAULT_FROM_EMAIL
 from esp.constants import StudentRegistrationStepType
-from esp.forms import (ProgramForm, ProgramRegistrationStepFormset,
+from esp.forms import (CommentForm, ProgramForm, ProgramRegistrationStepFormset,
                        ProgramStageForm, QuerySendEmailForm,
                        StudentSendEmailForm, TeacherCourseForm,
                        TeacherSendEmailForm)
@@ -34,7 +34,7 @@ from esp.models.program_registration_models import (ClassRegistration,
                                                     FinancialAidRequest,
                                                     ProgramRegistration,
                                                     PurchaseLineItem, TeacherRegistration)
-from esp.serializers import UserSerializer
+from esp.serializers import CommentSerializer, UserSerializer
 
 ######################################
 # ADMIN DASHBOARD
@@ -86,6 +86,8 @@ class AdminManageStudentsView(PermissionRequiredMixin, SingleObjectMixin, Templa
             context['student'] = student
             context['purchasable'] = program.purchase_items.values_list('item_name', 'price')
             context['purchased'] = student.purchases.values_list('item__item_name', 'charge_amount', 'payment__payment_method', 'purchase_confirmed_on')
+            context['comments'] = student.comments.values_list('comment', 'author__username', 'created_on')
+            context['comment_form'] = CommentForm(program, student)
             try:
                 program_registration = get_object_or_404(ProgramRegistration, program=program, user__id=student_id)
                 context['program_registration'] = program_registration
@@ -97,6 +99,30 @@ class AdminManageStudentsView(PermissionRequiredMixin, SingleObjectMixin, Templa
                 )
                 redirect('admin_dashboard')
         return context
+
+class AdminCommentView(PermissionRequiredMixin, View):
+    permission = PermissionType.admin_dashboard_actions
+
+    def post(self, request, *args, **kwargs):
+        student_id = self.kwargs.get('student_id')
+        program_id = self.kwargs.get('pk')
+        program_registration = get_object_or_404(ProgramRegistration, program_id=program_id,
+                                                 user_id=student_id)
+        student = get_object_or_404(User, id=student_id)
+        print(request.POST)
+        data = {"program": program_id,
+                "author": request.user.id,
+                "student": student_id,
+                "comment": request.POST["comment"]}
+        serializer = CommentSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+        else:
+            messages.error(
+                self.request,
+                serializer.errors
+            )
+        return redirect('manage_students_specific', pk=program_id, student_id=student_id)
 
 
 class StudentCheckinView(PermissionRequiredMixin, View):

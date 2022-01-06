@@ -46,6 +46,10 @@ class User(AbstractUser, BaseModel):
     def __str__(self):
         return self.username
 
+    @property
+    def name(self):
+        return f"{self.first_name} {self.last_name} ({self.username})"
+
     def get_dashboard_url(self):
         dashboard_url_mapping = {
             UserType.admin: "admin_dashboard",

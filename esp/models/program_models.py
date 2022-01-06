@@ -5,7 +5,7 @@ from django.db.models import Max, Min
 from django.utils import timezone
 
 from common.constants import GradeLevel, UserType, Weekday
-from common.models import BaseModel
+from common.models import BaseModel, User
 from esp.constants import (ClassroomTagCategory, CourseDifficulty,
                            CourseStatus, CourseTagCategory, FormIntegration,
                            ProgramTagCategory, ProgramType,
@@ -358,3 +358,10 @@ class PurchaseableItem(BaseModel):
 
     def __str__(self):
         return f"{self.item_name} ({self.program.name})"
+
+
+class Comment(BaseModel):
+    program = models.ForeignKey(Program, related_name="comments", on_delete=models.PROTECT)
+    author = models.ForeignKey(User, on_delete=models.PROTECT)
+    student = models.ForeignKey(User, related_name="comments", on_delete=models.PROTECT)
+    comment = models.TextField()
