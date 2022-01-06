@@ -24,7 +24,7 @@ from esp.forms import (ProgramForm, ProgramRegistrationStepFormset,
                        StudentSendEmailForm, TeacherCourseForm,
                        TeacherSendEmailForm)
 from esp.legacy.latex import render_to_latex
-from esp.lottery import run_program_lottery
+from esp.lottery import LotteryDisallowedError, run_program_lottery
 from esp.models.program_models import Course, Program, ProgramStage
 from esp.models.program_registration_models import (ClassRegistration,
                                                     FinancialAidRequest,
@@ -233,7 +233,14 @@ class ProgramLotteryView(PermissionRequiredMixin, SingleObjectMixin, TemplateVie
         return context
 
     def post(self, request, *args, **kwargs):
-        run_program_lottery(self.get_object())
+        try:
+            registrations_count = run_program_lottery(self.get_object())
+            if registrations_count == 0:
+                messages.warning(request, "No course registrations created. Have students submitted preferences?")
+            else:
+                messages.success(request, f"{registrations_count} course registrations created")
+        except LotteryDisallowedError as e:
+            messages.error(request, str(e))
         return redirect("program_lottery", pk=self.kwargs["pk"])
 
 
