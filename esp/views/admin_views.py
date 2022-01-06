@@ -1,9 +1,9 @@
 from collections import defaultdict
-from datetime import timedelta
 
 from django.contrib import messages
 from django.core.mail import send_mail
-from django.db.models import Count, F, Max, Min, Prefetch, Value
+from django.db.models import (BooleanField, Count, ExpressionWrapper, F, Max,
+                              Min, OuterRef, Prefetch, Q, Subquery, Sum, Value)
 from django.db.models.functions import Concat
 from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
@@ -21,7 +21,7 @@ from common.forms import CrispyFormsetHelper
 from common.models import User
 from common.views import PermissionRequiredMixin
 from config.settings import DEFAULT_FROM_EMAIL
-from esp.constants import StudentRegistrationStepType
+from esp.constants import PaymentMethod, StudentRegistrationStepType
 from esp.forms import (ProgramForm, ProgramRegistrationStepFormset,
                        ProgramStageForm, QuerySendEmailForm,
                        StudentSendEmailForm, TeacherCourseForm,
@@ -30,12 +30,14 @@ from esp.legacy.latex import render_to_latex
 from esp.lottery import LotteryDisallowedError, run_program_lottery
 from esp.models.course_scheduling_models import (ClassroomTimeSlot,
                                                  CourseSection)
-from esp.models.program_models import Course, Program, ProgramStage, TimeSlot
+from esp.models.program_models import (Course, Program, ProgramStage,
+                                       PurchaseableItem, TimeSlot)
 from esp.models.program_registration_models import (ClassRegistration,
                                                     FinancialAidRequest,
                                                     ProgramRegistration,
                                                     PurchaseLineItem,
-                                                    TeacherRegistration)
+                                                    TeacherRegistration,
+                                                    UserPayment)
 from esp.serializers import UserSerializer
 
 ######################################
@@ -75,7 +77,7 @@ class AdminManageStudentsView(PermissionRequiredMixin, SingleObjectMixin, Templa
         context["StudentRegistrationStepType"] = StudentRegistrationStepType
         program = self.get_object()
         context["program_id"] = program.id
-        students = User.objects.filter(user_type=UserType.student,
+        students = User.objects.filter(student_profile__isnull=False,
                                        registrations__program=program).select_related(
             'student_profile')
         context['students'] = UserSerializer(students.annotate(
@@ -86,12 +88,25 @@ class AdminManageStudentsView(PermissionRequiredMixin, SingleObjectMixin, Templa
         if context['student_id']:
             student = get_object_or_404(User, id=student_id)
             context['student'] = student
-            context['purchasable'] = program.purchase_items.values_list('item_name', 'price')
-            context['purchased'] = student.purchases.values_list('item__item_name', 'charge_amount', 'payment__payment_method', 'purchase_confirmed_on')
+            purchased_items_query = PurchaseLineItem.objects.filter(user=student, item__id=OuterRef("id"))
+            context["purchase_items"] = program.purchase_items.annotate(
+                in_cart=Count(purchased_items_query.filter(purchase_confirmed_on__isnull=True).distinct().values("id")),
+                in_cart_price=Subquery(
+                    purchased_items_query.filter(purchase_confirmed_on__isnull=True)[:1].values("charge_amount")
+                ),
+                purchased=Count(
+                    purchased_items_query.filter(purchase_confirmed_on__isnull=False).distinct().values("id")),
+            )
+            context['purchased'] = student.purchases.filter(purchase_confirmed_on__isnull=False).select_related(
+                'item', 'payment'
+            )
             try:
                 program_registration = get_object_or_404(ProgramRegistration, program=program, user__id=student_id)
                 context['program_registration'] = program_registration
                 context["program_stage_steps"] = program_registration.get_program_stage().steps.all()
+                context["financial_aid_approved"] = (
+                    program_registration.financial_aid_requests.filter(approved=True).exists()
+                )
             except Http404:
                 messages.error(
                     self.request,
@@ -125,6 +140,43 @@ class StudentCheckinView(PermissionRequiredMixin, View):
         return redirect('manage_students_specific', pk=program_id, student_id=student_id)
 
 
+class StudentCashPaymentView(PermissionRequiredMixin, SingleObjectMixin, View):
+    permission = PermissionType.admin_dashboard_actions
+    model = ProgramRegistration
+    pk_url_kwarg = "student_id"
+
+    def post(self, request, *args, **kwargs):
+        registration = self.get_object()
+        # Parse item ids from POST data
+        new_cart_item_ids = [key[5:] for key in request.POST.keys() if key.startswith('item-')]
+        new_cart_items = PurchaseableItem.objects.filter(id__in=new_cart_item_ids, program=registration.program)
+        purchases_to_create = []
+        fin_aid = registration.financial_aid_requests.filter(approved=True).exists()
+        for item in new_cart_items:
+            # Assumes 100% financial aid for all eligible items
+            price = 0 if item.eligible_for_financial_aid and fin_aid else item.price
+            purchases_to_create.append(
+                PurchaseLineItem(
+                    user=registration.user, item=item, added_to_cart_on=timezone.now(), charge_amount=price
+                )
+            )
+        PurchaseLineItem.objects.bulk_create(purchases_to_create)
+        whole_cart = registration.user.purchases.filter(
+            item__program=registration.program, purchase_confirmed_on__isnull=True
+        )
+        num_items = whole_cart.count()
+        total_charge = whole_cart.aggregate(total_charge=Sum("charge_amount"))["total_charge"]
+        payment = UserPayment.objects.create(
+            user=registration.user,
+            payment_method=PaymentMethod.cash,
+            total_amount=total_charge,
+            transaction_datetime=timezone.now(),
+        )
+        whole_cart.update(payment=payment, purchase_confirmed_on=timezone.now())
+        messages.success(request, f"A total payment of ${total_charge} ({num_items} items) has been logged.")
+        return redirect("manage_students_specific", pk=registration.program_id, student_id=registration.user_id)
+
+
 class AdminManageTeachersView(PermissionRequiredMixin, SingleObjectMixin, TemplateView):
     permission = PermissionType.admin_dashboard_actions
     template_name = 'esp/manage_teachers.html'
@@ -133,9 +185,8 @@ class AdminManageTeachersView(PermissionRequiredMixin, SingleObjectMixin, Templa
     def get_context_data(self, **kwargs):
         self.object = self.get_object()
         context = super().get_context_data(**kwargs)
-        program = self.get_object()
-        context["program_id"] = program.id
-        course_sections = CourseSection.objects.filter(course__program=program)
+        context["program_id"] = self.object.id
+        course_sections = CourseSection.objects.filter(course__program=self.object)
         context["timeslot_dict"] = self.get_time_dict(course_sections)
         return context
 
@@ -145,7 +196,7 @@ class AdminManageTeachersView(PermissionRequiredMixin, SingleObjectMixin, Templa
         time_dict = defaultdict(list)
         for section in sections:
             for meeting in section.get_section_times():
-                timeslot = TimeSlot.objects.get(program=self.get_object(), start_datetime=meeting[0])
+                timeslot = TimeSlot.objects.get(program=self.object, start_datetime=meeting[0])
                 if timeslot not in time_dict[meeting[0].date()]:
                     time_dict[meeting[0].date()].append(timeslot)
         for key, value in time_dict.items():
@@ -162,17 +213,21 @@ class AdminCheckinTeachersView(PermissionRequiredMixin, TemplateView):
         context = super().get_context_data()
         program_id = self.kwargs["pk"]
         context["program_id"] = program_id
+        unit = self.kwargs["unit"]
+        context["unit"] = unit
         timeslot_id = self.kwargs["timeslot_id"]
         context["timeslot_id"] = timeslot_id
-        context["unit"] = self.kwargs["unit"]
+        time_slot = TimeSlot.objects.get(id=timeslot_id)
+        context["time_range"] = time_slot.start_datetime.time() if unit == "slot" else time_slot.start_datetime.date()
         sections = CourseSection.objects.filter(course__program_id=program_id)
         classroom_timeslots = []
         if self.kwargs["unit"] == 'day':
             day = TimeSlot.objects.get(id=timeslot_id).start_datetime.date()
+            sections = sections.filter(time_slots__time_slot__start_datetime__date=day).distinct()
             for section in sections:
                 course_times = section.get_section_times()
                 for time in course_times:
-                    if self.kwargs["unit"] == 'day' and time[0].date() == day:
+                    if time[0].date() == day:
                         classroom_timeslots.append(ClassroomTimeSlot.objects.get(
                             course_section=section,
                             time_slot=TimeSlot.objects.get(program_id=program_id,
@@ -180,28 +235,35 @@ class AdminCheckinTeachersView(PermissionRequiredMixin, TemplateView):
                                                            ),
                         ))
         elif self.kwargs["unit"] == 'slot':
+            sections = sections.filter(time_slots__time_slot_id=timeslot_id).distinct()
             for section in sections:
                 course_times = section.get_section_times()
                 for time in course_times:
-                    if self.kwargs["unit"] == 'slot' and time[0] == TimeSlot.objects.get(id=timeslot_id).start_datetime:
+                    if time[0] == time_slot.start_datetime:
                         classroom_timeslots.append(ClassroomTimeSlot.objects.get(
                             course_section=section,
-                            time_slot=TimeSlot.objects.get(id=timeslot_id),
+                            time_slot=time_slot,
                         ))
         else:
             raise Http404
         course_list = self.get_courses_list(classroom_timeslots)
-        context["courses_list"] = sorted(course_list, key=lambda x: x['classroom'].time_slot.start_datetime.time())
+        context["courses_list"] = sorted(course_list, key=lambda x: x['classroom_info'].time_slot.start_datetime.time())
         return context
 
     def get_courses_list(self, classroom_timeslots):
         courses_list = []
+        today = timezone.now().date()
         for classroom_timeslot in classroom_timeslots:
-            course_dict = {'course': classroom_timeslot.course_section.course,
-                           'classroom': classroom_timeslot, 'teachers': [], }
-            for teacher in classroom_timeslot.course_section.course.teacher_registrations.all():
-                checked_in = teacher.checked_in_at and teacher.checked_in_at.date() == timezone.now().date()
-                course_dict['teachers'].append({'teacher': teacher, 'checked_in': checked_in})
+            course_dict = {
+                'course': classroom_timeslot.course_section.course,
+                'classroom_info': classroom_timeslot,
+                'teachers': classroom_timeslot.course_section.course.teacher_registrations.annotate(
+                    checked_in=ExpressionWrapper(
+                        Q(checked_in_at__isnull=False, checked_in_at__date=today),
+                        output_field=BooleanField()
+                    )
+                ),
+            }
             courses_list.append(course_dict)
         return courses_list
 
@@ -215,14 +277,21 @@ class TeacherCheckinView(PermissionRequiredMixin, SingleObjectMixin, View):
         teacher_registration = self.get_object()
         timeslot_id = self.kwargs.get('timeslot_id')
         if teacher_registration.checked_in_at and teacher_registration.checked_in_at.date() == timezone.now().date():
-            teacher_registration.update(checked_in_at=timezone.now() - timedelta(days=1))
-            messages.info(request,
-                          f"{teacher_registration.user.first_name} {teacher_registration.user.last_name} already checked in today")
+            messages.info(
+                request,
+                f"{teacher_registration.user.first_name} {teacher_registration.user.last_name} already checked in today"
+            )
         else:
-            teacher_registration.update(checked_in_at=timezone.now())
-            messages.success(request,
-                             f"Checked in {teacher_registration.user.first_name} {teacher_registration.user.last_name}")
-
+            reg_requirements_check = teacher_registration.check_registration_requirements()
+            if reg_requirements_check["requirements_satisfied"]:
+                teacher_registration.update(checked_in_at=timezone.now())
+                messages.success(
+                    request,
+                    f"Checked in {teacher_registration.user.first_name} {teacher_registration.user.last_name}"
+                )
+            else:
+                for message in reg_requirements_check["errors"]:
+                    messages.error(request, message)
         return redirect('check_in_teachers', pk=teacher_registration.program.id,
                         timeslot_id=timeslot_id, unit=self.kwargs.get('unit'))
 

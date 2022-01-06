@@ -114,33 +114,34 @@ class ProgramRegistration(BaseModel):
         return self.user.purchases.filter(
             item__program=self.program,
             purchase_confirmed_on__isnull=True
-        ).aggregate(Sum("charge_amount"))
+        ).aggregate(Sum("charge_amount"))["charge_amount__sum"]
 
     def check_registration_requirements(self):
         return_dict = {
             "requirements_satisfied": True,
             "errors": [],
         }
-        if not self.all_program_forms_complete():
+        if self.incomplete_forms().exists():
             return_dict["requirements_satisfied"] = False
             return_dict["errors"].append("Not all program forms have been completed.")
         if not self.all_required_purchases_complete():
             return_dict["requirements_satisfied"] = False
             return_dict["errors"].append("Not all required payments have been made.")
-        if self.get_amount_owed() != 0:
+        amount_owed = self.get_amount_owed()
+        if amount_owed:
             return_dict["requirements_satisfied"] = False
-            return_dict["errors"].append("Payment is still owed for items in cart.")
+            return_dict["errors"].append(f"Payment (${amount_owed}) is still owed for items in cart.")
         return return_dict
 
-    def all_program_forms_complete(self):
+    def incomplete_forms(self):
         return self.program.external_forms.filter(user_type=UserType.student).annotate(
             completed=Exists(
                 self.completed_forms_extra.filter(form_id=OuterRef("id"), completed_on__isnull=False)
             )
-        ).filter(completed=False).exists()
+        ).filter(completed=False)
 
     def all_required_purchases_complete(self):
-        return self.program.purchase_items.filter(required_for_registration=True).annotate(
+        return not self.program.purchase_items.filter(required_for_registration=True).annotate(
             purchased=Exists(
                 self.user.purchases.filter(item_id=OuterRef("id"), purchase_confirmed_on__isnull=False)
             )
@@ -305,6 +306,23 @@ class TeacherRegistration(BaseModel):
             (self.allow_early_registration_after and self.allow_early_registration_after < timezone.now())
             or (self.allow_late_registration_until and self.allow_late_registration_until > timezone.now())
         )
+
+    def check_registration_requirements(self):
+        return_dict = {
+            "requirements_satisfied": True,
+            "errors": [],
+        }
+        if not self.all_program_forms_complete():
+            return_dict["requirements_satisfied"] = False
+            return_dict["errors"].append("Not all program forms have been completed.")
+        return return_dict
+
+    def all_program_forms_complete(self):
+        return self.program.external_forms.filter(user_type=UserType.teacher).annotate(
+            completed=Exists(
+                self.completed_forms_extra.filter(form_id=OuterRef("id"), completed_on__isnull=False)
+            )
+        ).filter(completed=False).exists()
 
 
 class CompletedTeacherRegistrationStep(BaseModel):

@@ -1,16 +1,17 @@
 from django.urls import path
 
 from esp.constants import StudentRegistrationStepType
-from esp.views.admin_views import (AdminDashboardView,
+from esp.views.admin_views import (AdminCheckinTeachersView,
+                                   AdminDashboardView, AdminManageStudentsView,
+                                   AdminManageTeachersView,
                                    ApproveFinancialAidView, CourseCreateView,
                                    CourseListView, CourseUpdateView,
                                    PrintStudentSchedulesView,
                                    ProgramCreateView, ProgramListView,
                                    ProgramLotteryView, ProgramStageCreateView,
-                                   ProgramStageUpdateView, ProgramUpdateView, SendEmailsView,
-                                   AdminManageStudentsView, StudentCheckinView,
-                                   AdminManageTeachersView, AdminCheckinTeachersView,
-                                   TeacherCheckinView)
+                                   ProgramStageUpdateView, ProgramUpdateView,
+                                   SendEmailsView, StudentCashPaymentView,
+                                   StudentCheckinView, TeacherCheckinView)
 from esp.views.scheduler_views import (AssignClassroomTimeSlotsApiView,
                                        ClassroomApiView,
                                        ClassroomTimeSlotApiView, CourseApiView,
@@ -77,11 +78,13 @@ urlpatterns = [
          name="manage_students_specific"),
     path('admin/programs/<uuid:pk>/manage/students/<uuid:student_id>/checkin/', StudentCheckinView.as_view(),
          name="student_checkin"),
+    path('admin/programs/<uuid:program_id>/manage/students/<uuid:student_id>/payment/', StudentCashPaymentView.as_view(),
+          name="manage_student_cash_payment"),
 
     path('admin/programs/<uuid:pk>/manage/teachers/', AdminManageTeachersView.as_view(),
          name="manage_teachers"),
-    path('admin/programs/<uuid:pk>/manage/teachers/<uuid:timeslot_id>/check_in/<str:unit>/', AdminCheckinTeachersView.as_view(),
-         name="check_in_teachers"),
+    path('admin/programs/<uuid:pk>/manage/teachers/<uuid:timeslot_id>/check_in/<str:unit>/',
+         AdminCheckinTeachersView.as_view(), name="check_in_teachers"),
     path('admin/programs/<uuid:teacher_id>/check_in/teacher/<uuid:timeslot_id>/<str:unit>/', TeacherCheckinView.as_view(),
          name="teacher_checkin"),
 

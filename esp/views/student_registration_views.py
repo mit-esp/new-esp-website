@@ -24,6 +24,7 @@ from esp.models.program_models import (Course, PreferenceEntryCategory,
                                        PurchaseableItem, TimeSlot)
 from esp.models.program_registration_models import (ClassRegistration,
                                                     CompletedRegistrationStep,
+                                                    CompletedStudentForm,
                                                     ProgramRegistration,
                                                     ProgramRegistrationStep,
                                                     PurchaseLineItem,
@@ -172,6 +173,8 @@ class SubmitWaiversView(RegistrationStepBaseView):
 
     def post(self, request, *args, **kwargs):
         # TODO: Form integrations; handle form completed model creation upon API response/webhook
+        for form in self.object.incomplete_forms():
+            CompletedStudentForm.objects.create(program_registration=self.object, form=form, completed_on=timezone.now())
         return redirect("complete_registration_step", registration_id=self.object.id, step_id=self.registration_step.id)
 
 
@@ -264,10 +267,13 @@ class PayProgramFeesView(RegistrationStepBaseView):
         new_cart_item_ids = [key[5:] for key in request.POST.keys() if key.startswith('item-')]
         new_cart_items = PurchaseableItem.objects.filter(id__in=new_cart_item_ids, program=self.object.program)
         purchases_to_create = []
+        fin_aid = self.object.financial_aid_requests.filter(approved=True).exists()
         for item in new_cart_items:
+            # Assumes 100% financial aid for all eligible items
+            price = 0 if item.eligible_for_financial_aid and fin_aid else item.price
             purchases_to_create.append(
                 PurchaseLineItem(
-                    user=self.object.user, item=item, added_to_cart_on=timezone.now(), charge_amount=item.price
+                    user=self.object.user, item=item, added_to_cart_on=timezone.now(), charge_amount=price
                 )
             )
         PurchaseLineItem.objects.bulk_create(purchases_to_create)
@@ -509,12 +515,24 @@ class MakePaymentView(RegistrationStepBaseView, FormView):
     template_name = "student/registration_steps/make_payments.html"
     form_class = PaymentForm
 
+    def permission_enabled_for_view(self):
+        permission = super().permission_enabled_for_view()
+        if permission:
+            self.cart = self.get_user_cart()
+            self.total_charge = self.cart.aggregate(total_charge=Sum("charge_amount"))["total_charge"]
+        return permission
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        cart = self.get_user_cart()
-        context["cart"] = cart
-        context["total_charge"] = cart.aggregate(total_charge=Sum("charge_amount"))["total_charge"]
+        context["cart"] = self.cart
+        context["total_charge"] = self.total_charge
         return context
+
+    def post(self, request, *args, **kwargs):
+        if self.total_charge == 0:
+            self.cart.update(purchase_confirmed_on=timezone.now())
+            return self.get_success_url()
+        return super().post(request, *args, **kwargs)
 
     def form_valid(self, form):
         cart = self.get_user_cart()
@@ -533,6 +551,9 @@ class MakePaymentView(RegistrationStepBaseView, FormView):
             transaction_datetime=timezone.now(),
         )
         cart.update(payment=payment, purchase_confirmed_on=timezone.now())
+        return self.get_success_url()
+
+    def get_success_url(self):
         # If there are still required program purchases, do not mark step as complete
         if (
             self.object.program.purchase_items

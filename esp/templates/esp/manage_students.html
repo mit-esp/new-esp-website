@@ -49,12 +49,12 @@
               </tr>
             </thead>
             <tbody>
-              {% for item,charge_amount,payment_method,date in purchased %}
+              {% for purchase in purchased %}
               <tr>
-                <th scope="row">{{item}}</th>
-                <td>{{date}}</td>
-                <td>{{charge_amount}}</td>
-                <td>{{payment_method}}</td>
+                <th scope="row">{{purchase.item.item_name}}</th>
+                <td>{{purchase.purchase_confirmed_on}}</td>
+                <td>${{purchase.charge_amount}}</td>
+                <td>{% if purchase.payment %}{{purchase.payment.get_payment_method_display}}{% else %}None{% endif %}</td>
               </tr>
             {% empty %}
               <tr>
@@ -68,11 +68,17 @@
           </table>
 
           <h6 class="mt-5">Available program items for purchase:</h6>
-          {% for item,price in purchasable %}
-            <li>{{item}}: {{price}}</li>
-          {% empty %}
-            <li>No items</li>
-          {% endfor %}
+          <form class="d-flex flex-column" method="post" action="{% url 'manage_student_cash_payment' student_id=program_registration.id program_id=program_id%}">
+            {% csrf_token %}
+            <div class="list-group">
+            {% for item in purchase_items %}
+              <div class="list-group-item">{% include "shared/purchase_item.html" with required=item.required_for_registration %}</div>
+            {% empty %}
+              <li>No items</li>
+            {% endfor %}
+          </div>
+          <button type="submit" class="btn btn-primary ms-auto mt-2">Add selected items to student cart and mark paid in cash</button>
+          </form>
         </div>
       </div>
     </div>
