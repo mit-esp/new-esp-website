@@ -1,0 +1,26 @@
+{% extends "base_templates/base.html" %}
+
+{% load static %}
+{% load sass_tags %}
+{% load auth %}
+
+
+{% block title %}Check In Teachers{% endblock %}
+
+{% block body %}
+  <h2>Teacher Check-in</h2>
+
+  {% for course in courses_list %}
+    <div class="card card-body my-3">
+      <div class="row">
+        <div class="col-lg-6">
+          <h5>{{ course.course.name }} in {{ course.classroom.classroom.name }} starting at {{ course.classroom.time_slot.start_datetime.time }}</h5>
+          {% for teacher in course.teachers %}
+            {{ teacher.teacher.user.first_name }} {{ teacher.teacher.user.last_name }}: {{ teacher.teacher.user.teacher_profile.cell_phone }} <form method="post" action="{% url 'teacher_checkin' teacher_id=teacher.teacher.id timeslot_id=timeslot_id unit=unit%}">{% csrf_token %}<input class="form-control" type="submit" value="Check In"{% if teacher.checked_in %} disabled {% endif%}></form>
+            <br>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+{% endblock %}

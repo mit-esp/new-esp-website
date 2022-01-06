@@ -24,6 +24,7 @@
         <div class="card-body">
           <h5 class="card-title">Admin actions</h5>
           <a class="btn btn-outline-success mx-1 my-1" role="button" href="{% url 'manage_students' pk=program.id %}">Manage Students</a>
+          <a class="btn btn-outline-success mx-1 my-1" role="button" href="{% url 'manage_teachers' pk=program.id %}">Manage Teachers</a>
           <a class="btn btn-outline-success mx-1 my-1" role="button" href="{% url 'courses' pk=program.id %}">Manage Courses</a>
           <a class="btn btn-outline-success mx-1 my-1" role="button" href="{% url 'scheduler' %}?program_id={{program.id}} ">Course Scheduler</a>
           <a class="btn btn-outline-success mx-1 my-1" role="button" href="{% url 'program_lottery' pk=program.id %}">Run lottery</a>
