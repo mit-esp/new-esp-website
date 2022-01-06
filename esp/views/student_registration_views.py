@@ -54,7 +54,7 @@ class ProgramRegistrationCreateView(PermissionRequiredMixin, SingleObjectMixin, 
 
     def post(self, request, *args, **kwargs):
         registration, _created = ProgramRegistration.objects.get_or_create(program=self.object, user=self.request.user)
-        return redirect("current_registration_stage", pk=registration.id)
+        return redirect("current_registration_stage", registration_id=registration.id)
 
 
 class StudentRegistrationPermissionMixin(PermissionRequiredMixin, SingleObjectMixin):
