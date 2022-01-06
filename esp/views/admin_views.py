@@ -111,8 +111,13 @@ class StudentCheckinView(PermissionRequiredMixin, View):
                                                  user_id=student_id)
         student = get_object_or_404(User, id=student_id)
         if program_registration.checked_in is False:
-            program_registration.update(checked_in=True)
-            messages.success(request, f"Checked in {student.first_name} {student.last_name}")
+            registration_requirements_check = program_registration.check_registration_requirements()
+            if registration_requirements_check["requirements_satisfied"]:
+                program_registration.update(checked_in=True)
+                messages.success(request, f"Checked in {student.first_name} {student.last_name}")
+            else:
+                for message in registration_requirements_check["errors"]:
+                    messages.error(request, message)
         else:
             messages.info(request,
                           f"{student.first_name} {student.last_name} is already checked in")

@@ -1,12 +1,11 @@
 from datetime import date
-from decimal import Decimal
 
 from django.db import models
-from django.db.models import Exists, Min, OuterRef, Value
+from django.db.models import Exists, Min, OuterRef, Sum, Value
 from django.db.models.functions import Now
 from django.utils import timezone
 
-from common.constants import GradeLevel, ShirtSize, USStateEquiv
+from common.constants import GradeLevel, ShirtSize, UserType, USStateEquiv
 from common.models import BaseModel, User
 from esp.constants import HeardAboutVia, MITAffiliation, PaymentMethod
 from esp.models.course_scheduling_models import CourseSection
@@ -112,8 +111,40 @@ class ProgramRegistration(BaseModel):
         return "".join((str(self.id)).split('-')).upper()
 
     def get_amount_owed(self):
-        # TODO: Add after program fees merge
-        return Decimal(0.00)
+        return self.user.purchases.filter(
+            item__program=self.program,
+            purchase_confirmed_on__isnull=True
+        ).aggregate(Sum("charge_amount"))
+
+    def check_registration_requirements(self):
+        return_dict = {
+            "requirements_satisfied": True,
+            "errors": [],
+        }
+        if not self.all_program_forms_complete():
+            return_dict["requirements_satisfied"] = False
+            return_dict["errors"].append("Not all program forms have been completed.")
+        if not self.all_required_purchases_complete():
+            return_dict["requirements_satisfied"] = False
+            return_dict["errors"].append("Not all required payments have been made.")
+        if self.get_amount_owed() != 0:
+            return_dict["requirements_satisfied"] = False
+            return_dict["errors"].append("Payment is still owed for items in cart.")
+        return return_dict
+
+    def all_program_forms_complete(self):
+        return self.program.external_forms.filter(user_type=UserType.student).annotate(
+            completed=Exists(
+                self.completed_forms_extra.filter(form_id=OuterRef("id"), completed_on__isnull=False)
+            )
+        ).filter(completed=False).exists()
+
+    def all_required_purchases_complete(self):
+        return self.program.purchase_items.filter(required_for_registration=True).annotate(
+            purchased=Exists(
+                self.user.purchases.filter(item_id=OuterRef("id"), purchase_confirmed_on__isnull=False)
+            )
+        ).filter(purchased=False).exists()
 
     def __str__(self):
         return f"{self.program} registration for {self.user}"
