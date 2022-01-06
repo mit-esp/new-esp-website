@@ -20,7 +20,7 @@ Email: {{ student_registration.user.email|texescape }}
 \begin{flushleft}
 \nameblock
 \vspace{1ex} \hrule \vspace{1ex}
-\textbf{Amount Owed: \fbox{\$ {{ student_registration.get_amount_owed }} } }
+\textbf{Amount Owed: \fbox{\$ {{ student_registration.get_amount_owed|default_if_none:"0.00" }} } }
 \end{flushleft}
 
 \columnbreak
