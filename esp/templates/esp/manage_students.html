@@ -27,19 +27,52 @@
     <div class="col-lg-6 my-2" id="studentActions">
       <div class="card">
         <div class="card-body">
-          <div>
-            {% if program_registration.checked_in %}
-              <h4>{{ student_first_name }} {{ student_last_name }} <span class="badge rounded-pill bg-success mx-1 my-2">Is Checked In</span></h4>
-            {% else %}
-              <h4>{{ student_first_name }} {{ student_last_name }} <span class="badge rounded-pill bg-danger mx-1 my-2">Not Checked In</span></h4>
-            {% endif%}
-          </div>
-          <form method="post" action="{% url 'student_checkin' pk=program_id student_id=student_id %}">{% csrf_token %}<input class="form-control my-3" type="submit" value="Check In {{ student_first_name }} {{ student_last_name }}" {% if program_registration.checked_in %} disabled {% endif%}></form>
+          {% if program_registration.checked_in %}
+            <h4>{{ student.first_name }} {{ student.last_name }} <span class="badge rounded-pill bg-success mx-1 my-2">Is Checked In</span></h4>
+          {% else %}
+            <h4>{{ student.first_name }} {{ student.last_name }} <span class="badge rounded-pill bg-danger mx-1 my-2">Not Checked In</span></h4>
+          {% endif%}
+          <form method="post" action="{% url 'student_checkin' pk=program_id student_id=student_id %}">{% csrf_token %}<input class="form-control my-3" type="submit" value="Check In {{ student.first_name }} {{ student.last_name }}" {% if program_registration.checked_in %} disabled {% endif%}></form>
           {% for step in program_stage_steps %}
               <a href="{% url step.step_key registration_id=program_registration.id step_id=step.id %}" class="btn btn-outline-success mx-1 my-1" role="button">{{ step.get_display_name }}</a>
           {% endfor %}
               <a href="{% url 'edit_student_courses' registration_id=program_registration.id %}" class="btn btn-outline-success mx-1 my-1" role="button">View/Edit Course Schedule</a>
-          </div>
+
+          <h5 class="my-4">Purchase History:</h5>
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">Item</th>
+                <th scope="col">Date</th>
+                <th scope="col">Charge</th>
+                <th scope="col">Payment Method</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item,charge_amount,payment_method,date in purchased %}
+              <tr>
+                <th scope="row">{{item}}</th>
+                <td>{{date}}</td>
+                <td>{{charge_amount}}</td>
+                <td>{{payment_method}}</td>
+              </tr>
+            {% empty %}
+              <tr>
+                <th scope="row">No items</th>
+                <td></td>
+                <td></td>
+                <td></td>
+              </tr>
+            </tbody>
+          {% endfor %}
+          </table>
+
+          <h6 class="mt-5">Available program items for purchase:</h6>
+          {% for item,price in purchasable %}
+            <li>{{item}}: {{price}}</li>
+          {% empty %}
+            <li>No items</li>
+          {% endfor %}
         </div>
       </div>
     </div>

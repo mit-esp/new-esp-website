@@ -82,8 +82,10 @@ class AdminManageStudentsView(PermissionRequiredMixin, SingleObjectMixin, Templa
         student_id = self.kwargs.get('student_id')
         context['student_id'] = student_id
         if context['student_id']:
-            context['student_first_name'] = User.objects.get(id=student_id).first_name
-            context['student_last_name'] = User.objects.get(id=student_id).last_name
+            student = get_object_or_404(User, id=student_id)
+            context['student'] = student
+            context['purchasable'] = program.purchase_items.values_list('item_name', 'price')
+            context['purchased'] = student.purchases.values_list('item__item_name', 'charge_amount', 'payment__payment_method', 'purchase_confirmed_on')
             try:
                 program_registration = get_object_or_404(ProgramRegistration, program=program, user__id=student_id)
                 context['program_registration'] = program_registration
