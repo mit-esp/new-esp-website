@@ -77,7 +77,6 @@ class SiteRedirectPathForm(ModelForm):
     def clean_redirect_full_url(self):
         url = self.cleaned_data.get("redirect_full_url")
         split_url = urlparse(url)
-        print(split_url)
         if not split_url.hostname:
             if not split_url.path:
                 raise ValidationError("Enter valid URL")

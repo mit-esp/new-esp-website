@@ -150,7 +150,6 @@ class AdminCheckinTeachersView(PermissionRequiredMixin, TemplateView):
     template_name = 'esp/check_in_teachers.html'
 
     def get_context_data(self, **kwargs):
-        print('in check in view')
         context = super().get_context_data()
         program_id = self.kwargs["pk"]
         context["program_id"] = program_id
@@ -360,10 +359,8 @@ class SendEmailsView(PermissionRequiredMixin, FormsView):
         return HttpResponseRedirect(self.success_url)
 
     def teacher_form_valid(self, form):
-        # print(form.cleaned_data)
         teachers = User.objects.filter(user_type=UserType.teacher)
         if form.cleaned_data['program']:
-            # print(form.cleaned_data['program'])
             teachers = teachers.filter(teacher_registrations__program=form.cleaned_data['program'])
         if form.cleaned_data['submit_one_class']:
             teachers = teachers.annotate(

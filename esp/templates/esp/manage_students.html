@@ -14,9 +14,7 @@
 
 {% block body %}
 
-<h2>Student Check-in</h2>
-
-<p>Search for students:</p>
+<h2>Student Check-In</h2>
 
 <!--Make sure the form has the autocomplete function switched off:-->
 <form autocomplete="off">
@@ -29,11 +27,18 @@
     <div class="col-lg-6 my-2" id="studentActions">
       <div class="card">
         <div class="card-body">
-          <p>Status: {{ student_first_name }} {{ student_last_name }} is {% if not program_registration.checked_in %}not {% endif%}checked in.</p>
-          <form method="post" action="{% url 'student_checkin' pk=program_id student_id=student_id %}">{% csrf_token %}<input class="form-control" type="submit" value="Check In {{ student_first_name }} {{ student_last_name }}" {% if program_registration.checked_in %} disabled {% endif%}></form>
+          <div>
+            {% if program_registration.checked_in %}
+              <h4>{{ student_first_name }} {{ student_last_name }} <span class="badge rounded-pill bg-success mx-1 my-2">Is Checked In</span></h4>
+            {% else %}
+              <h4>{{ student_first_name }} {{ student_last_name }} <span class="badge rounded-pill bg-danger mx-1 my-2">Not Checked In</span></h4>
+            {% endif%}
+          </div>
+          <form method="post" action="{% url 'student_checkin' pk=program_id student_id=student_id %}">{% csrf_token %}<input class="form-control my-3" type="submit" value="Check In {{ student_first_name }} {{ student_last_name }}" {% if program_registration.checked_in %} disabled {% endif%}></form>
           {% for step in program_stage_steps %}
-              <li><a href="{% url step.step_key registration_id=program_registration.id step_id=step.id %}" class="btn btn-outline-success mx-1 my-1" role="button">{{ step.get_display_name }}</a></li>
+              <a href="{% url step.step_key registration_id=program_registration.id step_id=step.id %}" class="btn btn-outline-success mx-1 my-1" role="button">{{ step.get_display_name }}</a>
           {% endfor %}
+              <a href="{% url 'edit_student_courses' registration_id=program_registration.id %}" class="btn btn-outline-success mx-1 my-1" role="button">View/Edit Course Schedule</a>
           </div>
         </div>
       </div>
