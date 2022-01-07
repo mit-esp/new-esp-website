@@ -27,7 +27,12 @@
               <span>Total</span><span>${{ total_charge }}</span>
             </div>
           </div>
-          {% crispy form %}
+          {% if total_charge %}
+            {% crispy form %}
+          {% else %}
+            <p>You do not owe anything at this time.</p>
+            {% include "shared/submit_button.html" with submit_label="Confirm purchase of all items in cart" %}
+          {% endif %}
         {% else %}
           <p>Your cart is currently empty.</p>
         {% endif %}

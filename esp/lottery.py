@@ -4,12 +4,17 @@ from esp.models.course_scheduling_models import CourseSection
 from esp.models.program_registration_models import ClassRegistration
 
 
+class LotteryDisallowedError(Exception):
+    pass
+
+
 def run_program_lottery(program):
     # TODO: Actual lottery/preference-matching algorithm
     # This placeholder makes no distinction between class preference categories,
     # fills slots greedily, and also makes many database calls.
     if ClassRegistration.objects.filter(course_section__course__program_id=program.id).exists():
-        raise Exception("Course assignments already exist")
+        raise LotteryDisallowedError("Course assignments already exist")
+    registrations_count = 0
     for time_slot in program.time_slots.all():
         for section in CourseSection.objects.filter(time_slots__time_slot=time_slot).distinct():
             interested_students = (
@@ -31,3 +36,5 @@ def run_program_lottery(program):
                 for student in interested_students[:section.course.max_section_size]
             ]
             ClassRegistration.objects.bulk_create(registrations)
+            registrations_count += len(registrations)
+    return registrations_count

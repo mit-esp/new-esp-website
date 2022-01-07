@@ -24,17 +24,23 @@
   <form method="post">
     {% csrf_token %}
     <h3 class="my-4">Required Payments</h3>
+    <div class="w-50">
     {% for item in required_purchase_items %}
-      {% include "student/components/purchase_item.html" with required=True %}
+      {% include "shared/purchase_item.html" with required=True %}
     {% endfor %}
+    </div>
     {% if additional_purchase_items %}
       <h3 class="my-4">Optional Add-Ons</h3>
-      {% for item in additional_purchase_items %}
-        {% include "student/components/purchase_item.html" %}
-      {% endfor %}
+      <div class="w-50">
+        {% for item in additional_purchase_items %}
+          {% include "shared/purchase_item.html" %}
+        {% endfor %}
+      </div>
     {% endif %}
     <div class="d-flex mt-3">
-      <button type="submit" class="btn btn-secondary me-2" name="submit" value="financial_aid">Request financial aid</button>
+      {% if not financial_aid_requested %}
+        <button type="submit" class="btn btn-secondary me-2" name="submit" value="financial_aid">Request financial aid</button>
+      {% endif %}
       <button type="submit" class="btn btn-primary" name="submit" value="pay">Pay now</button>
     </div>
   </form>

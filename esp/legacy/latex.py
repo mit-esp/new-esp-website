@@ -60,6 +60,8 @@ def render_to_latex(filepath, context_dict=None, filetype='pdf'):
     else:
         t = loader.get_template(filepath)
 
+    file_name = (filepath.split("/")[-1]).split(".")[0]
+
     context_dict['MEDIA_ROOT'] = settings.MEDIA_ROOT
     context_dict['file_type'] = filetype
     context_dict['settings'] = settings
@@ -67,7 +69,7 @@ def render_to_latex(filepath, context_dict=None, filetype='pdf'):
     rendered_source = t.render(context_dict)
 
     file_path = gen_latex(rendered_source, filetype)
-    return FileResponse(open(file_path, 'rb'), filename=f"{filepath}.{filetype}")
+    return FileResponse(open(file_path, 'rb'), filename=f"{file_name}.{filetype}")
 
 
 def gen_latex(texcode, type='pdf', stdout=_devnull_sentinel, stderr=subprocess.STDOUT):
