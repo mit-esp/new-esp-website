@@ -3,7 +3,7 @@ from django.urls import path
 from esp.constants import StudentRegistrationStepType
 from esp.views.admin_views import (AdminCheckinTeachersView,
                                    AdminDashboardView, AdminManageStudentsView,
-                                   AdminManageTeachersView, AdminCommentView
+                                   AdminManageTeachersView, AdminCommentView,
                                    ApproveFinancialAidView, CourseCreateView,
                                    CourseListView, CourseUpdateView,
                                    PrintStudentSchedulesView,

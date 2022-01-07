@@ -103,7 +103,8 @@ class AdminManageStudentsView(PermissionRequiredMixin, SingleObjectMixin, Templa
                 )
                 program_registration = get_object_or_404(ProgramRegistration, program=program, user__id=student_id)
                 context['program_registration'] = program_registration
-                context["program_stage_steps"] = program_registration.get_program_stage().steps.all()
+                stage = program_registration.get_program_stage()
+                context["program_stage_steps"] = stage.steps.all() if stage else []
                 context["financial_aid_approved"] = (
                     program_registration.financial_aid_requests.filter(approved=True).exists()
                 )
