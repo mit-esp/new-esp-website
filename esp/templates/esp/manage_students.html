@@ -3,7 +3,7 @@
 {% load static %}
 {% load sass_tags %}
 {% load auth %}
-
+{% load crispy_forms_tags %}
 
 {% block title %}Manage Students{% endblock %}
 
@@ -24,7 +24,7 @@
 </form>
 
   {% if student_id %}
-    <div class="col-lg-6 my-2" id="studentActions">
+    <div class="col-lg-9 my-2" id="studentActions">
       <div class="card">
         <div class="card-body">
           {% if program_registration.checked_in %}
@@ -67,12 +67,41 @@
           {% endfor %}
           </table>
 
-          <h6 class="mt-5">Available program items for purchase:</h6>
-          {% for item,price in purchasable %}
+          <h6 class="my-4">Available program items for purchase:</h6>
+          {% for item, price in purchasable %}
             <li>{{item}}: {{price}}</li>
           {% empty %}
             <li>No items</li>
           {% endfor %}
+
+          <h5 class="mt-4">Admin Comments:</h5>
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">Comment</th>
+                <th scope="col">Date</th>
+                <th scope="col">Author</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for comment, author, created_on in comments %}
+              <tr>
+                <th scope="row">{{comment}}</th>
+                <td>{{created_on}}</td>
+                <td>{{author}}</td>
+              </tr>
+            {% empty %}
+              <tr>
+                <th scope="row">No comments</th>
+                <td></td>
+                <td></td>
+              </tr>
+            </tbody>
+          {% endfor %}
+          </table>
+
+          {% crispy comment_form %}
+
         </div>
       </div>
     </div>

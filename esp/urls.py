@@ -1,7 +1,7 @@
 from django.urls import path
 
 from esp.constants import StudentRegistrationStepType
-from esp.views.admin_views import (AdminDashboardView,
+from esp.views.admin_views import (AdminCommentView, AdminDashboardView,
                                    ApproveFinancialAidView, CourseCreateView,
                                    CourseListView, CourseUpdateView,
                                    PrintStudentSchedulesView,
@@ -77,6 +77,8 @@ urlpatterns = [
          name="manage_students_specific"),
     path('admin/programs/<uuid:pk>/manage/students/<uuid:student_id>/checkin/', StudentCheckinView.as_view(),
          name="student_checkin"),
+    path('admin/programs/<uuid:pk>/manage/students/<uuid:student_id>/comment/', AdminCommentView.as_view(),
+         name="add_comment"),
 
     path('admin/programs/<uuid:pk>/manage/teachers/', AdminManageTeachersView.as_view(),
          name="manage_teachers"),

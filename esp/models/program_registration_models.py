@@ -201,6 +201,12 @@ class CompletedStudentForm(CompletedForm):
         ProgramRegistration, on_delete=models.PROTECT, related_name="completed_forms_extra"
     )
 
+
+class Comment(BaseModel):
+    registration = models.ForeignKey(ProgramRegistration, related_name="comments", on_delete=models.PROTECT)
+    author = models.ForeignKey(User, on_delete=models.PROTECT)
+    comment = models.TextField()
+
 #####################################################
 # TEACHER REGISTRATIONS
 #####################################################

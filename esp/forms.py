@@ -5,6 +5,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import FieldError, ValidationError
 from django.db import transaction
 from django.forms import ModelForm, inlineformset_factory
+from django.urls import reverse_lazy
 
 from common.constants import (REGISTRATION_USER_TYPE_CHOICES, GradeLevel,
                               USStateEquiv)
@@ -17,7 +18,7 @@ from esp.constants import (CourseDifficulty, CourseTagCategory,
 from esp.models.course_scheduling_models import (ClassroomTimeSlot,
                                                  CourseSection)
 from esp.models.program_models import Course, CourseTag, Program, ProgramStage
-from esp.models.program_registration_models import (FinancialAidRequest,
+from esp.models.program_registration_models import (Comment, FinancialAidRequest,
                                                     ProgramRegistrationStep,
                                                     StudentProfile,
                                                     TeacherProfile,
@@ -387,3 +388,16 @@ class PaymentForm(CrispyFormMixin, forms.Form):
     def clean_card_number(self, value):
         # TODO
         return value
+
+
+class CommentForm(CrispyFormMixin, forms.ModelForm):
+    submit_label = "Add Comment"
+
+    def __init__(self, program_registration, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['comment'].widget.attrs.update({'class': 'form-control form-control-sm'})
+        self.helper.form_action = reverse_lazy("add_comment", kwargs={"pk": program_registration.program.id, "student_id": program_registration.user.id})
+
+    class Meta:
+        model = Comment
+        fields = ['comment']
