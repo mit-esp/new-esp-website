@@ -3,7 +3,7 @@ from django.urls import path
 from esp.constants import StudentRegistrationStepType
 from esp.views.admin_views import (AdminCheckinTeachersView,
                                    AdminDashboardView, AdminManageStudentsView,
-                                   AdminManageTeachersView,
+                                   AdminManageTeachersView, AdminCommentView
                                    ApproveFinancialAidView, CourseCreateView,
                                    CourseListView, CourseUpdateView,
                                    PrintStudentSchedulesView,
@@ -80,7 +80,8 @@ urlpatterns = [
          name="student_checkin"),
     path('admin/programs/<uuid:program_id>/manage/students/<uuid:student_id>/payment/', StudentCashPaymentView.as_view(),
           name="manage_student_cash_payment"),
-
+    path('admin/programs/<uuid:pk>/manage/students/<uuid:student_id>/comment/', AdminCommentView.as_view(),
+         name="add_comment"),
     path('admin/programs/<uuid:pk>/manage/teachers/', AdminManageTeachersView.as_view(),
          name="manage_teachers"),
     path('admin/programs/<uuid:pk>/manage/teachers/<uuid:timeslot_id>/check_in/<str:unit>/',

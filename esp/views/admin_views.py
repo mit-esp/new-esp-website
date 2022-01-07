@@ -22,7 +22,7 @@ from common.models import User
 from common.views import PermissionRequiredMixin
 from config.settings import DEFAULT_FROM_EMAIL
 from esp.constants import PaymentMethod, StudentRegistrationStepType
-from esp.forms import (ProgramForm, ProgramRegistrationStepFormset,
+from esp.forms import (CommentForm, ProgramForm, ProgramRegistrationStepFormset,
                        ProgramStageForm, QuerySendEmailForm,
                        StudentSendEmailForm, TeacherCourseForm,
                        TeacherSendEmailForm)
@@ -38,7 +38,7 @@ from esp.models.program_registration_models import (ClassRegistration,
                                                     PurchaseLineItem,
                                                     TeacherRegistration,
                                                     UserPayment)
-from esp.serializers import UserSerializer
+from esp.serializers import CommentSerializer, UserSerializer
 
 ######################################
 # ADMIN DASHBOARD
@@ -86,27 +86,30 @@ class AdminManageStudentsView(PermissionRequiredMixin, SingleObjectMixin, Templa
         student_id = self.kwargs.get('student_id')
         context['student_id'] = student_id
         if context['student_id']:
-            student = get_object_or_404(User, id=student_id)
-            context['student'] = student
-            purchased_items_query = PurchaseLineItem.objects.filter(user=student, item__id=OuterRef("id"))
-            context["purchase_items"] = program.purchase_items.annotate(
-                in_cart=Count(purchased_items_query.filter(purchase_confirmed_on__isnull=True).distinct().values("id")),
-                in_cart_price=Subquery(
-                    purchased_items_query.filter(purchase_confirmed_on__isnull=True)[:1].values("charge_amount")
-                ),
-                purchased=Count(
-                    purchased_items_query.filter(purchase_confirmed_on__isnull=False).distinct().values("id")),
-            )
-            context['purchased'] = student.purchases.filter(purchase_confirmed_on__isnull=False).select_related(
-                'item', 'payment'
-            )
             try:
+                student = get_object_or_404(User, id=student_id)
+                context['student'] = student
+                purchased_items_query = PurchaseLineItem.objects.filter(user=student, item__id=OuterRef("id"))
+                context["purchase_items"] = program.purchase_items.annotate(
+                    in_cart=Count(purchased_items_query.filter(purchase_confirmed_on__isnull=True).distinct().values("id")),
+                    in_cart_price=Subquery(
+                        purchased_items_query.filter(purchase_confirmed_on__isnull=True)[:1].values("charge_amount")
+                    ),
+                    purchased=Count(
+                        purchased_items_query.filter(purchase_confirmed_on__isnull=False).distinct().values("id")),
+                )
+                context['purchased'] = student.purchases.filter(item__program=program, purchase_confirmed_on__isnull=False).select_related(
+                    'item', 'payment'
+                )
                 program_registration = get_object_or_404(ProgramRegistration, program=program, user__id=student_id)
                 context['program_registration'] = program_registration
                 context["program_stage_steps"] = program_registration.get_program_stage().steps.all()
                 context["financial_aid_approved"] = (
                     program_registration.financial_aid_requests.filter(approved=True).exists()
                 )
+                context['comments'] = program_registration.comments.values_list('comment', 'author__username', 'created_on')
+
+                context['comment_form'] = CommentForm(program_registration)
             except Http404:
                 messages.error(
                     self.request,
@@ -114,6 +117,29 @@ class AdminManageStudentsView(PermissionRequiredMixin, SingleObjectMixin, Templa
                 )
                 redirect('admin_dashboard')
         return context
+
+class AdminCommentView(PermissionRequiredMixin, View):
+    permission = PermissionType.admin_dashboard_actions
+
+    def post(self, request, *args, **kwargs):
+        student_id = self.kwargs.get('student_id')
+        program_id = self.kwargs.get('pk')
+        program_registration = get_object_or_404(ProgramRegistration, program_id=program_id,
+                                                 user_id=student_id)
+        student = get_object_or_404(User, id=student_id)
+        print(request.POST)
+        data = {"author": request.user.id,
+                "registration": program_registration.id,
+                "comment": request.POST["comment"]}
+        serializer = CommentSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+        else:
+            messages.error(
+                self.request,
+                serializer.errors
+            )
+        return redirect('manage_students_specific', pk=program_id, student_id=student_id)
 
 
 class StudentCheckinView(PermissionRequiredMixin, View):
