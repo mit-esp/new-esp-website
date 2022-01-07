@@ -17,8 +17,8 @@ from esp.constants import (CourseDifficulty, CourseTagCategory,
                            TeacherRegistrationStepType)
 from esp.models.course_scheduling_models import (ClassroomTimeSlot,
                                                  CourseSection)
-from esp.models.program_models import Comment, Course, CourseTag, Program, ProgramStage
-from esp.models.program_registration_models import (FinancialAidRequest,
+from esp.models.program_models import Course, CourseTag, Program, ProgramStage
+from esp.models.program_registration_models import (Comment, FinancialAidRequest,
                                                     ProgramRegistrationStep,
                                                     StudentProfile,
                                                     TeacherProfile,
@@ -393,10 +393,10 @@ class PaymentForm(CrispyFormMixin, forms.Form):
 class CommentForm(CrispyFormMixin, forms.ModelForm):
     submit_label = "Add Comment"
 
-    def __init__(self, program, student, *args, **kwargs):
+    def __init__(self, program_registration, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['comment'].widget.attrs.update({'class': 'form-control form-control-sm'})
-        self.helper.form_action = reverse_lazy("add_comment", kwargs={"pk": program.id, "student_id": student.id})
+        self.helper.form_action = reverse_lazy("add_comment", kwargs={"pk": program_registration.program.id, "student_id": program_registration.user.id})
 
     class Meta:
         model = Comment

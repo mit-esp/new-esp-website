@@ -5,8 +5,8 @@ from rest_framework import serializers
 
 from common.models import User
 from esp.models.course_scheduling_models import CourseSection, ClassroomTimeSlot
-from esp.models.program_models import Comment, Course, Classroom, TimeSlot
-from esp.models.program_registration_models import (ClassPreference,
+from esp.models.program_models import Course, Classroom, TimeSlot
+from esp.models.program_registration_models import (Comment, ClassPreference,
                                                     PreferenceEntryCategory, TeacherAvailability)
 
 
@@ -199,7 +199,6 @@ class CommentSerializer(serializers.ModelSerializer):
             "created_on",
             "comment",
             "author",
-            "student",
-            "program",
+            "registration",
         ]
         read_only_fields = ["id", "created_on"]

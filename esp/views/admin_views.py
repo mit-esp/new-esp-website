@@ -82,16 +82,20 @@ class AdminManageStudentsView(PermissionRequiredMixin, SingleObjectMixin, Templa
         student_id = self.kwargs.get('student_id')
         context['student_id'] = student_id
         if context['student_id']:
-            student = get_object_or_404(User, id=student_id)
-            context['student'] = student
-            context['purchasable'] = program.purchase_items.values_list('item_name', 'price')
-            context['purchased'] = student.purchases.values_list('item__item_name', 'charge_amount', 'payment__payment_method', 'purchase_confirmed_on')
-            context['comments'] = student.comments.values_list('comment', 'author__username', 'created_on')
-            context['comment_form'] = CommentForm(program, student)
             try:
+                student = get_object_or_404(User, id=student_id)
+                context['student'] = student
+                context['purchasable'] = program.purchase_items.filter(program=program).values_list('item_name', 'price')
+                context['purchased'] = student.purchases.filter(item__program=program).values_list('item__item_name', 'charge_amount',
+                                                                     'payment__payment_method', 'purchase_confirmed_on')
+
                 program_registration = get_object_or_404(ProgramRegistration, program=program, user__id=student_id)
                 context['program_registration'] = program_registration
                 context["program_stage_steps"] = program_registration.get_program_stage().steps.all()
+                context['comments'] = program_registration.comments.values_list('comment', 'author__username', 'created_on')
+
+                context['comment_form'] = CommentForm(program_registration)
+
             except Http404:
                 messages.error(
                     self.request,
@@ -110,9 +114,8 @@ class AdminCommentView(PermissionRequiredMixin, View):
                                                  user_id=student_id)
         student = get_object_or_404(User, id=student_id)
         print(request.POST)
-        data = {"program": program_id,
-                "author": request.user.id,
-                "student": student_id,
+        data = {"author": request.user.id,
+                "registration": program_registration.id,
                 "comment": request.POST["comment"]}
         serializer = CommentSerializer(data=data)
         if serializer.is_valid():
