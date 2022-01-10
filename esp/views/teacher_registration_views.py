@@ -266,7 +266,7 @@ class AddCoTeacherView(PermissionRequiredMixin, SingleObjectMixin, FormView):
         queryset = super().get_queryset()
         if not self.request.user.has_permission(PermissionType.courses_edit_all):
             queryset = queryset.filter(
-                teachers__teacher_registration_id__in=self.request.user.teacher_registrations.values("id")
+                course_teachers__teacher_registration_id__in=self.request.user.teacher_registrations.values("id")
             )
         return queryset
 
