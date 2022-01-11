@@ -208,13 +208,13 @@ export function Actions(props) {
         }
       )
     } catch (e) {
-      return showToast('Oops! There was an issue communicating with the server.', TOAST_TYPES.warning)
       setSubmitting(false)
+      return showToast('Oops! There was an issue communicating with the server.', TOAST_TYPES.warning)
     }
 
     if (!response.ok) {
-      return showToast('Oops! Something went wrong with submitting your data.', TOAST_TYPES.warning)
       setSubmitting(false)
+      return showToast('Oops! Something went wrong with submitting your data.', TOAST_TYPES.warning)
     }
 
     await loadData(

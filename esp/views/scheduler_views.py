@@ -4,6 +4,7 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
 from django.views import View
+from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView
 from django.views.generic.list import BaseListView
 from rest_framework import status
@@ -17,6 +18,7 @@ from esp.models.program_models import Classroom, Course, Program, TimeSlot
 from esp.models.program_registration_models import TeacherAvailability
 from esp.serializers import ClassroomSerializer, CourseSerializer, TeacherAvailabilitySerializer, TimeSlotSerializer, \
     ClassroomTimeSlotSerializer
+
 
 
 class SerializerResponseMixin:
@@ -33,7 +35,7 @@ class SerializerResponseMixin:
 
 
 # Todo: Remove CSRF exempt?
-@method_decorator(csrf_exempt_localhost, name="dispatch")
+@method_decorator(csrf_exempt, name="dispatch")
 class AssignClassroomTimeSlotsApiView(View):
     # Todo: Protect with auth and admin permissions
     def post(self, *args, **kwargs):
