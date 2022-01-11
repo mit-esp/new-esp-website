@@ -18,7 +18,8 @@ from esp.constants import (CourseDifficulty, CourseTagCategory,
 from esp.models.course_scheduling_models import (ClassroomTimeSlot,
                                                  CourseSection)
 from esp.models.program_models import Course, CourseTag, Program, ProgramStage
-from esp.models.program_registration_models import (Comment, FinancialAidRequest,
+from esp.models.program_registration_models import (Comment,
+                                                    FinancialAidRequest,
                                                     ProgramRegistrationStep,
                                                     StudentProfile,
                                                     TeacherProfile,
@@ -385,9 +386,9 @@ class PaymentForm(CrispyFormMixin, forms.Form):
             )
         )
 
-    def clean_card_number(self, value):
+    def clean_card_number(self):
         # TODO
-        return value
+        return self.cleaned_data["card_number"]
 
 
 class CommentForm(CrispyFormMixin, forms.ModelForm):
