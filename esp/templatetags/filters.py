@@ -8,11 +8,13 @@ register = template.Library()
 @register.filter
 def format_time_slots(time_slots):
     if not time_slots:
-        return ""
-    return ", ".join([
-        f"{format_time(slot[0])} - {format_time(slot[1])} ({Weekday(slot[0].weekday()).label})"
-        for slot in time_slots
-    ])
+        return "Unscheduled"
+    return ", ".join([format_time_slot(slot) for slot in time_slots])
+
+
+def format_time_slot(slot):
+    time_string = f"{format_time(slot[0])} - {format_time(slot[1])} ({Weekday(slot[0].weekday()).label})"
+    return f"{time_string} in {slot[2]}"
 
 
 def format_time(time):

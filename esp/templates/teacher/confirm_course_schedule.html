@@ -11,11 +11,6 @@
 {% block content %}
   <h1>Confirm your teaching schedule for {{ registration.program }}</h1>
   <p>Your course schedule is summarized below. Please check for mistakes.</p>
-  {% comment %}
-    TODO: Add registration summary
-  {% endcomment %}
-  <form method="post">
-    {% csrf_token %}
-    <button class="btn btn-primary" type="submit">Confirm Schedule</button>
-  </form>
+  <div class="mb-3">{% include "teacher/components/teaching_summary.html" %}</div>
+  {% include "shared/submit_button.html" with submit_label="Confirm Schedule" %}
 {% endblock %}
