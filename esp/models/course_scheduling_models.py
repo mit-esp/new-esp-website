@@ -53,24 +53,33 @@ class CourseSection(BaseModel):
     def get_section_times(self):
         time_slots = sorted(
             (
-                {"start": slot.time_slot.start_datetime, "end": slot.time_slot.end_datetime}
+                {
+                    "start": slot.time_slot.start_datetime,
+                    "end": slot.time_slot.end_datetime,
+                    "classroom": slot.classroom.name
+                }
                 for slot in self.time_slots.all()
             ),
             key=lambda slot: slot["start"]
         )
         start_time = None
         end_time = None
+        classroom = None
         times = []
         for slot in time_slots:
             if not start_time:
                 start_time = slot["start"]
+            if not classroom:
+                classroom = slot["classroom"]
             if end_time and (
                 slot["start"] > end_time + timedelta(minutes=self.course.program.time_block_minutes - 1)
+                or slot["classroom"] != classroom
             ):
-                times.append((start_time, end_time))
+                times.append((start_time, end_time, classroom))
                 start_time = slot["start"]
+                classroom = slot["classroom"]
             end_time = slot["end"]
-        times.append((start_time, end_time))
+        times.append((start_time, end_time, classroom))
         return times
 
     def __str__(self):

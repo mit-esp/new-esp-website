@@ -1,0 +1,20 @@
+<div class="list-group col-lg-8">
+{% for course_registration in registration.course_teachers.all %}
+  {% with num_sections=course_registration.course.sections.all|length %}
+  <div class="list-group-item list-group-item-dark">
+    <div class="list-group-item-heading d-flex">
+      <span>{{ course_registration.course.name }}: {{ num_sections }} section{{ num_sections|pluralize }}</span>
+      <div class="ms-auto">
+        {% if course_registration.course.is_editable %}
+          <a class="me-2" href="{% url 'teacher_edit_course' pk=course_registration.course_id %}">Edit Course</a>
+        {% endif %}
+        <a href="{% url 'add_coteacher' pk=course_registration.course_id %}">Add a co-teacher</a>
+      </div>
+    </div>
+  </div>
+  {% endwith %}
+  {% for course_section in course_registration.course.sections.all %}
+    {% include "teacher/components/teaching_course_card.html" %}
+  {% endfor %}
+{% endfor %}
+</div>
