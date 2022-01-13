@@ -12,7 +12,7 @@ from esp.views.admin_views import (AdminCheckinTeachersView,
                                    ProgramLotteryView, ProgramStageCreateView,
                                    ProgramStageUpdateView, ProgramUpdateView,
                                    SendEmailsView, StudentCashPaymentView,
-                                   StudentCheckinView, TeacherCheckinView)
+                                   StudentCheckinView, TeacherCheckinView, ClassroomListView)
 from esp.views.scheduler_views import (AssignClassroomTimeSlotsApiView,
                                        ClassroomApiView,
                                        ClassroomTimeSlotApiView, CourseApiView,
@@ -70,6 +70,7 @@ urlpatterns = [
         'admin/programs/<uuid:pk>/approve_financial_aid/',
         ApproveFinancialAidView.as_view(), name="approve_financial_aid"
     ),
+    path('admin/classrooms/', ClassroomListView.as_view(), name="classrooms"),
     path(
         'admin/programs/<uuid:pk>/print/schedules/', PrintStudentSchedulesView.as_view(), name="print_student_schedules"
     ),
