@@ -4,8 +4,7 @@ from uuid import UUID
 from django.contrib import messages
 from django.core.mail import send_mail
 from django.db.models import (BooleanField, Count, ExpressionWrapper, F, Max,
-                              Min, OuterRef, Prefetch, Q,
-                              Subquery, Sum, Value)
+                              Min, OuterRef, Prefetch, Q, Subquery, Sum, Value)
 from django.db.models.functions import Concat
 from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
@@ -123,6 +122,7 @@ class AdminManageStudentsView(PermissionRequiredMixin, SingleObjectMixin, Templa
                 redirect('admin_dashboard')
         return context
 
+
 class AdminCommentView(PermissionRequiredMixin, View):
     permission = PermissionType.admin_dashboard_actions
 
@@ -131,8 +131,7 @@ class AdminCommentView(PermissionRequiredMixin, View):
         program_id = self.kwargs.get('pk')
         program_registration = get_object_or_404(ProgramRegistration, program_id=program_id,
                                                  user_id=student_id)
-        student = get_object_or_404(User, id=student_id)
-        print(request.POST)
+        _student = get_object_or_404(User, id=student_id)
         data = {"author": request.user.id,
                 "registration": program_registration.id,
                 "comment": request.POST["comment"]}
