@@ -21,8 +21,8 @@ from common.forms import CrispyFormsetHelper
 from common.models import User
 from common.views import PermissionRequiredMixin
 from config.settings import DEFAULT_FROM_EMAIL
-from esp.constants import PaymentMethod, StudentRegistrationStepType
-from esp.forms import (CommentForm, ProgramForm, ProgramRegistrationStepFormset,
+from esp.constants import CourseStatus, PaymentMethod, StudentRegistrationStepType
+from esp.forms import (AdminCourseForm, CommentForm, ProgramForm, ProgramRegistrationStepFormset,
                        ProgramStageForm, QuerySendEmailForm,
                        StudentSendEmailForm, TeacherCourseForm,
                        TeacherSendEmailForm)
@@ -597,10 +597,10 @@ class ApproveFinancialAidView(PermissionRequiredMixin, SingleObjectMixin, Templa
 ###########################################################
 
 
-class CourseCreateView(PermissionRequiredMixin, CreateView):
+class AdminCourseCreateView(PermissionRequiredMixin, CreateView):
     permission = PermissionType.courses_edit_all
     model = Course
-    form_class = TeacherCourseForm
+    form_class = AdminCourseForm
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -617,10 +617,10 @@ class CourseCreateView(PermissionRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class CourseUpdateView(PermissionRequiredMixin, UpdateView):
+class AdminCourseUpdateView(PermissionRequiredMixin, UpdateView):
     permission = PermissionType.courses_edit_all
     model = Course
-    form_class = TeacherCourseForm
+    form_class = AdminCourseForm
     pk_url_kwarg = "class_pk"
 
     def get_form_kwargs(self):
@@ -633,14 +633,33 @@ class CourseUpdateView(PermissionRequiredMixin, UpdateView):
         return reverse_lazy('courses', kwargs={'pk': program_id})
 
 
-class CourseListView(PermissionRequiredMixin, ListView):
+class AdminCourseListView(PermissionRequiredMixin, ListView):
     permission = PermissionType.courses_view_all
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["program_id"] = self.kwargs['pk']
+        program = get_object_or_404(Program, pk=context["program_id"])
+        context["program"] = program
         return context
 
     def get_queryset(self, **kwargs):
         program = get_object_or_404(Program, pk=self.kwargs['pk'])
         return Course.objects.filter(program=program)
+
+
+class AdminCreateCourseSectionsView(PermissionRequiredMixin, View):
+    permission = PermissionType.admin_dashboard_actions
+
+    def post(self, request, *args, **kwargs):
+        program_id = self.kwargs.get('pk')
+        program = get_object_or_404(Program, id=program_id)
+        accepted_courses = Course.objects.filter(program=program, status=CourseStatus.accepted)
+        count = 0
+        for course in accepted_courses:
+            # creates course sections up to max sections
+            for _ in range(course.max_sections - course.sections.count()):
+                CourseSection.objects.create(course=course)
+                count += 1
+        messages.success(self.request, f"{count} Course Sections created.")
+        return redirect('courses', pk=program_id)
