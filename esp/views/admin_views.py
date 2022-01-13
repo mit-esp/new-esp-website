@@ -69,7 +69,7 @@ class ClassroomListView(PermissionRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['classrooms'] = {classroom.name: classroom.tags.filter(tag_category=ClassroomTagCategory.resource).all() for classroom in Classroom.objects.all()}
+        context['classrooms'] = {classroom: classroom.tags.filter(tag_category=ClassroomTagCategory.resource) for classroom in Classroom.objects.prefetch_related('tags')}
         return context
 
 
