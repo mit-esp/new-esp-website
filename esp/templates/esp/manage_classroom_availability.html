@@ -1,0 +1,44 @@
+{% extends "base_templates/base.html" %}
+
+{% block title %}Manage Classroom Availability{% endblock %}
+
+{% block body %}
+  <h2>Manage Classroom Availability for {{ program }}</h2>
+
+  {% if program.time_slots.all|length == 0  %}
+    <p>You must <a href="">configure the time slots</a> for {{ program }} before starting this configuration step.</p>
+  {% elif classrooms|length == 0 %}
+    <p>There are no classrooms configured in the system. You must <a href="">configure classrooms</a> before starting this configuration step.</p>
+  {% else %}
+    <p>In each row, mark the time slots during which the given classroom is available.</p>
+    <form method="post">
+    {% csrf_token %}
+    <table class="table overflow-scroll">
+      <thead>
+        <tr>
+          <th></th>
+          {% for time_slot in program.time_slots.all %}
+            <th>{{ time_slot }}</th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for classroom, available_time_slots in classrooms.items %}
+          <tr>
+            <th>
+              {{ classroom.name }}
+            </th>
+            {% for time_slot in program.time_slots.all %}
+              <td><input type="checkbox" {% if time_slot.id in available_time_slots %}checked{% endif %} name="classroom:{{ classroom.id }}" value="{{ time_slot.id }}" aria-label="{{ classroom.name }} available at {{ time_slot }}?"></td>
+            {% endfor %}
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <button class="btn btn-primary" type="submit">Submit</button>
+    </form>
+  {% endif %}
+
+  <a class="btn btn-secondary mt-2" href="{% url 'admin_dashboard' %}">Return to admin dashboard</a>
+{% endblock %}

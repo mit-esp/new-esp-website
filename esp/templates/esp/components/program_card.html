@@ -23,7 +23,7 @@
           <a class="btn btn-outline-success mx-1 my-1" role="button" href="{% url 'manage_students' pk=program.id %}">Manage Students</a>
           <a class="btn btn-outline-success mx-1 my-1" role="button" href="{% url 'manage_teachers' pk=program.id %}">Manage Teachers</a>
           <a class="btn btn-outline-success mx-1 my-1" role="button" href="{% url 'courses' pk=program.id %}">Manage Courses</a>
-          <a class="btn btn-outline-success mx-1 my-1" role="button" href="">Manage Classroom Availability</a>
+          <a class="btn btn-outline-success mx-1 my-1" role="button" href="{% url 'manage_classroom_availability' pk=program.id %}">Manage Classroom Availability</a>
           <a class="btn btn-outline-success mx-1 my-1" role="button" href="{% url 'scheduler' %}?program_id={{program.id}} ">The Scheduler</a>
           <a class="btn btn-outline-success mx-1 my-1" role="button" href="{% url 'program_lottery' pk=program.id %}">Run Lottery</a>
           <a class="btn btn-outline-success mx-1 my-1" role="button" href="{% url 'approve_financial_aid' pk=program.id %}">Approve Financial Aid Requests</a>
