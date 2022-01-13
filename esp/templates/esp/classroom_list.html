@@ -4,6 +4,13 @@
 
 {% block body %}
 <h3>Classrooms Admin</h3>
+<div class="my-3">
+  <a class="btn btn-secondary" href="{% url 'admin_dashboard' %}">Return To Admin Dashboard</a>
+  <a class="btn btn-primary mx-2" href="/django_admin/">Django Admin Interface</a>
+</div>
+<hr>
+
+
   {% for classroom, resources in classrooms.items %}
     <div class="card card-body my-3">
       <div class="row">
