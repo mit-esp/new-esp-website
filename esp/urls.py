@@ -41,6 +41,7 @@ from esp.views.user_views import (GuardianDashboardView, RegisterAccountView,
 
 urlpatterns = [
     # Public pages
+    path('', TemplateView.as_view(template_name='public/welcome.html')),
     path('faq/', TemplateView.as_view(template_name='public/faq.html')),
     path('privacy-policy/', TemplateView.as_view(template_name='public/privacy_policy.html'), name="privacy_policy"),
     path('for-parents/', TemplateView.as_view(template_name='public/for_parents.html')),

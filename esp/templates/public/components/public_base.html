@@ -33,7 +33,7 @@
 <header>
   <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
     <div class="container-fluid">
-      <a class="navbar-brand" href="#">
+      <a class="navbar-brand" href="/">
       <img  width="40px" height="40px" src="{% static 'images/esp_logo.png' %}" alt="MIT ESP Logo">
       MIT ESP
       </a>
@@ -74,6 +74,18 @@
           <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
           <button class="btn btn-outline-success" type="submit">Search</button>
         </form>
+        {% if not user.is_authenticated %}
+        <li class="nav-item d-grid">
+          <a href="{% url 'register_account' %}" class="btn btn-primary navbar-btn">Register</a>
+        </li>
+        <li class="nav-item d-grid">
+          <a href="{% url 'login' %}" class="btn btn-primary navbar-btn">Log in</a>
+        </li>
+        {% else %}
+        <li class="nav-item d-grid">
+          <a href="{% url 'index' %}" class="btn btn-primary navbar-btn">My Dashboard</a>
+        </li>
+        {% endif %}
       </div>
     </div>
   </nav>
