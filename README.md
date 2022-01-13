@@ -103,17 +103,15 @@ Here are the steps one should take in order to run an ESP program on this system
 6. As an Admin user, add purchasable items (In Django Admin Panel)
 7. As an Admin user, create/add classrooms if they don’t already exist from previous Programs (in Django Admin Panel)
 8. As an Admin user, create classroom time slots for times classrooms are available
-9. Teachers and Students submit waivers, if waivers are a ProgramRegistrationStep
-10. Teachers create classes and submit time availability, teachers add co-teachers
-11. Admins approve classes and create the desired number of sections (`manage courses` page)
-12. As an Admin user, schedule course sections to classroom timeslots via `The Scheduler`
-13. Teachers confirm course section time slots, (missing)
-14. Students enter lottery preferences
-15. As an Admin user, run lottery
-16. Students confirm their courses (missing)
-17. Teachers can see how many students signed up with their courses (missing)
-18. Day-of: Students check in for the program
-19. Day-of: Teachers check in before each hour of courses
+9. Teachers create classes and submit time availability, teachers add co-teachers
+10. Admins approve classes and create the desired number of sections (`manage courses` page)
+11. As an Admin user, schedule course sections to classroom timeslots via `The Scheduler`
+12. Teachers confirm course section time slots
+13. Students enter lottery preferences
+14. As an Admin user, run lottery
+15. Students confirm their courses
+16. Teachers can see how many students signed up with their courses
+17. Students and Teachers check in for the program
 
 
 <!--

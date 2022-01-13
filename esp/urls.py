@@ -40,22 +40,6 @@ from esp.views.user_views import (GuardianDashboardView, RegisterAccountView,
                                   VolunteerDashboardView)
 
 urlpatterns = [
-    # Public pages
-    path('', TemplateView.as_view(template_name='public/welcome.html')),
-    path('faq/', TemplateView.as_view(template_name='public/faq.html')),
-    path('privacy-policy/', TemplateView.as_view(template_name='public/privacy_policy.html'), name="privacy_policy"),
-    path('for-parents/', TemplateView.as_view(template_name='public/for_parents.html')),
-    path('contact-us/', TemplateView.as_view(template_name='public/contact_us.html'), name="contact_us"),
-
-    path('teach/', TemplateView.as_view(template_name='public/teach.html')),
-    path('learn/', TemplateView.as_view(template_name='public/learn.html')),
-    path('volunteer/', TemplateView.as_view(template_name='public/volunteer.html')),
-
-    path('splash/', TemplateView.as_view(template_name='public/splash.html')),
-    path('hssp/', TemplateView.as_view(template_name='public/hssp.html')),
-    path('spark/', TemplateView.as_view(template_name='public/spark.html')),
-    path('cascade/', TemplateView.as_view(template_name='public/cascade.html')),
-
     # User setup
     path('accounts/register/', RegisterAccountView.as_view(), name="register_account"),
     path('accounts/student/', StudentProfileCreateView.as_view(), name="create_student_profile"),
@@ -213,3 +197,23 @@ urlpatterns = [
         AssignClassroomTimeSlotsApiView.as_view(), name="assign_classroom_time_slots_api"
     ),
 ]
+
+public_pages = [
+    # Public pages
+    path('', TemplateView.as_view(template_name='public/welcome.html')),
+    path('faq/', TemplateView.as_view(template_name='public/faq.html')),
+    path('privacy-policy/', TemplateView.as_view(template_name='public/privacy_policy.html'), name="privacy_policy"),
+    path('contact-us/', TemplateView.as_view(template_name='public/contact_us.html'), name="contact_us"),
+    path('for-parents/', TemplateView.as_view(template_name='public/for_parents.html')),
+
+    path('teach/', TemplateView.as_view(template_name='public/teach.html')),
+    path('learn/', TemplateView.as_view(template_name='public/learn.html')),
+    path('volunteer/', TemplateView.as_view(template_name='public/volunteer.html')),
+
+    path('splash/', TemplateView.as_view(template_name='public/splash.html')),
+    path('hssp/', TemplateView.as_view(template_name='public/hssp.html')),
+    path('spark/', TemplateView.as_view(template_name='public/spark.html')),
+    path('cascade/', TemplateView.as_view(template_name='public/cascade.html')),
+]
+
+urlpatterns += public_pages
