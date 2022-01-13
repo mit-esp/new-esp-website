@@ -43,6 +43,8 @@ class ProgramRegistrationCreateView(PermissionRequiredMixin, SingleObjectMixin, 
     template_name = "student/program_registration_create.html"
 
     def permission_enabled_for_view(self):
+        if self.request.user.has_permission(PermissionType.admin_dashboard_actions):
+            return True
         self.object = self.get_object()
         return self.object.show_to_students()
 
@@ -76,6 +78,8 @@ class ProgramRegistrationStageView(StudentRegistrationPermissionMixin, SingleObj
     template_name = "student/program_registration_dashboard.html"
 
     def permission_enabled_for_view(self):
+        if self.request.user.has_permission(PermissionType.admin_dashboard_actions):
+            return True
         self.object = self.get_object()
         self.program_stage = self.object.get_program_stage()
         return self.program_stage is not None
@@ -84,7 +88,7 @@ class ProgramRegistrationStageView(StudentRegistrationPermissionMixin, SingleObj
         context = super().get_context_data(**kwargs)
         context["program"] = self.object.program
         context["program_stage"] = self.program_stage
-        context["program_stage_steps"] = self.program_stage.steps.all()
+        context["program_stage_steps"] = self.program_stage.steps.all() if self.program_stage else []
         context["completed_steps"] = self.object.completed_steps.values_list("step_id", flat=True)
         course_registrations = list(
             self.object.class_registrations.filter(confirmed_on__isnull=False)
@@ -113,6 +117,8 @@ class RegistrationStepBaseView(StudentRegistrationPermissionMixin, TemplateView)
         self.registration_step = get_object_or_404(
             ProgramRegistrationStep, id=self.kwargs["step_id"], step_key=self.registration_step_key
         )
+        if self.request.user.has_permission(PermissionType.admin_dashboard_actions):
+            return True
         return self.registration_step.program_stage.is_active() or self.object.ignore_registration_deadlines()
 
 
@@ -328,6 +334,8 @@ class PreferenceEntryRoundView(PermissionRequiredMixin, DetailView):
         registration_step = get_object_or_404(
             ProgramRegistrationStep, id=self.kwargs["step_id"], step_key=StudentRegistrationStepType.lottery_preferences
         )
+        if self.request.user.has_permission(PermissionType.admin_dashboard_actions):
+            return True
         return registration_step.program_stage.is_active() or self.registration.ignore_registration_deadlines()
 
     def get_queryset(self):
@@ -418,9 +426,15 @@ class EditAssignedCoursesView(StudentRegistrationPermissionMixin, TemplateView):
 
     def permission_enabled_for_view(self):
         self.object = self.get_object()
-        return self.object.get_program_stage().steps.filter(
-            step_key=StudentRegistrationStepType.confirm_assigned_courses
-        ).exists()
+        if self.request.user.has_permission(PermissionType.admin_dashboard_actions):
+            return True
+        stage = self.object.get_program_stage()
+        if stage:
+            return stage.steps.filter(
+                step_key=StudentRegistrationStepType.confirm_assigned_courses
+            ).exists()
+        else:
+            return False
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
@@ -516,6 +530,8 @@ class MakePaymentView(RegistrationStepBaseView, FormView):
     form_class = PaymentForm
 
     def permission_enabled_for_view(self):
+        if self.request.user.has_permission(PermissionType.admin_dashboard_actions):
+            return True
         permission = super().permission_enabled_for_view()
         if permission:
             self.cart = self.get_user_cart()
