@@ -1,9 +1,11 @@
 from collections import defaultdict
+from uuid import UUID
 
 from django.contrib import messages
 from django.core.mail import send_mail
 from django.db.models import (BooleanField, Count, ExpressionWrapper, F, Max,
-                              Min, OuterRef, Prefetch, Q, Subquery, Sum, Value)
+                              Min, OuterRef, Prefetch, Q,
+                              Subquery, Sum, Value)
 from django.db.models.functions import Concat
 from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
@@ -21,17 +23,19 @@ from common.forms import CrispyFormsetHelper
 from common.models import User
 from common.views import PermissionRequiredMixin
 from config.settings import DEFAULT_FROM_EMAIL
-from esp.constants import CourseStatus, PaymentMethod, StudentRegistrationStepType
-from esp.forms import (AdminCourseForm, CommentForm, ProgramForm, ProgramRegistrationStepFormset,
-                       ProgramStageForm, QuerySendEmailForm,
-                       StudentSendEmailForm, TeacherCourseForm,
+from esp.constants import (CourseStatus, PaymentMethod,
+                           StudentRegistrationStepType)
+from esp.forms import (AdminCourseForm, CommentForm, ProgramForm,
+                       ProgramRegistrationStepFormset, ProgramStageForm,
+                       QuerySendEmailForm, StudentSendEmailForm,
                        TeacherSendEmailForm)
 from esp.legacy.latex import render_to_latex
 from esp.lottery import LotteryDisallowedError, run_program_lottery
 from esp.models.course_scheduling_models import (ClassroomTimeSlot,
                                                  CourseSection)
-from esp.models.program_models import (Course, Program, ProgramStage,
-                                       PurchaseableItem, TimeSlot)
+from esp.models.program_models import (Classroom, Course, Program,
+                                       ProgramStage, PurchaseableItem,
+                                       TimeSlot)
 from esp.models.program_registration_models import (ClassRegistration,
                                                     FinancialAidRequest,
                                                     ProgramRegistration,
@@ -547,7 +551,7 @@ class SendEmailsView(PermissionRequiredMixin, FormsView):
 
 
 class PrintStudentSchedulesView(PermissionRequiredMixin, SingleObjectMixin, View):
-    permission = PermissionType.admin_dashboard_view
+    permission = PermissionType.admin_dashboard_actions
     model = Program
 
     def get_queryset(self):
@@ -567,7 +571,7 @@ class PrintStudentSchedulesView(PermissionRequiredMixin, SingleObjectMixin, View
 
 class ApproveFinancialAidView(PermissionRequiredMixin, SingleObjectMixin, TemplateView):
     model = Program
-    permission = PermissionType.admin_dashboard_view
+    permission = PermissionType.admin_dashboard_actions
     template_name = "esp/approve_financial_aid.html"
 
     def get_context_data(self, **kwargs):
@@ -592,6 +596,49 @@ class ApproveFinancialAidView(PermissionRequiredMixin, SingleObjectMixin, Templa
             item__eligible_for_financial_aid=True,
         ).update(charge_amount=0, purchase_confirmed_on=timezone.now())
         requests.update(reviewed_on=timezone.now(), approved=True)
+        return redirect("admin_dashboard")
+
+
+class AdminManageClassroomAvailabilityView(PermissionRequiredMixin, SingleObjectMixin, TemplateView):
+    permission = PermissionType.admin_dashboard_actions
+    model = Program
+    template_name = "esp/manage_classroom_availability.html"
+
+    def get_context_data(self, **kwargs):
+        self.object = self.get_object()
+        context = super().get_context_data(**kwargs)
+        context["classrooms"] = {
+            classroom: list(classroom.time_slots.values_list("time_slot_id", flat=True))
+            for classroom in Classroom.objects.all()
+        }
+        return context
+
+    def post(self, request, *args, **kwargs):
+        program = self.get_object()
+        classroom_ids = [key.split(":")[1] for key in request.POST.keys() if key.startswith("classroom:")]
+        classrooms_with_availabilities = Classroom.objects.filter(id__in=classroom_ids).prefetch_related("time_slots")
+        time_slots_to_create = []
+        deleted_count = 0
+        all_time_slot_ids = TimeSlot.objects.filter(program=program).values_list("id", flat=True)
+
+        for classroom in classrooms_with_availabilities:
+            existing_time_slots = {time_slot.time_slot_id for time_slot in classroom.time_slots.filter(time_slot__program=program)}
+            new_time_slots = set(UUID(id) for id in request.POST.getlist(f"classroom:{classroom.id}"))
+            for time_slot_id in new_time_slots - existing_time_slots:
+                if time_slot_id in all_time_slot_ids:
+                    time_slots_to_create.append(ClassroomTimeSlot(classroom=classroom, time_slot_id=time_slot_id))
+            to_delete_ids = existing_time_slots - new_time_slots
+            to_delete = classroom.time_slots.filter(time_slot_id__in=to_delete_ids)
+            if any(slot.course_section for slot in to_delete):
+                messages.warning(
+                    request,
+                    "You have deleted at least one classroom time slot that already had a course scheduled. Please re-schedule."
+                )
+            deleted_count += len(to_delete_ids)
+            to_delete.delete()
+
+        created = ClassroomTimeSlot.objects.bulk_create(time_slots_to_create)
+        messages.success(request, f"{len(created)} new availabilities created and {deleted_count} deleted.")
         return redirect("admin_dashboard")
 
 ###########################################################
