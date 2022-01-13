@@ -3,16 +3,66 @@
 {% block title %}Classes{% endblock %}
 
 {% block body %}
-<h3>Classes</h3>
-<h4><a class="btn btn-success my-2 px-auto" href='{% url "create_course" pk=program_id %}'>Create New Class</a></h4>
+<h2>{{program}} Classes</h2>
+
+<div class="my-3">
+  <a class="btn btn-secondary" href="{% url 'admin_dashboard' %}">Return To Admin Dashboard</a>
+  <a class="btn btn-success mx-3" href='{% url "create_course" pk=program_id %}'>Create New Course</a>
+  <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createCourseSectionModal">Create Course Sections For Accepted Courses</button>
+</div>
+
 <hr />
 {% for course in object_list %}
-    <h5>{{ course.name }}</h5>
-    <p><strong>{{course.start_date}} to {{course.end_date}}</strong></p>
-    <br/>
-    <p>Created: {{ course.created_on }} - Updated: {{ course.updated_on }}
-    <br>
-    <a href = '{% url "update_course" pk=course.program.id class_pk=course.id %}'>Update</a>
-    <hr/>
+  <div class="card">
+    <div class="card-body">
+    <h4 class="my-1 fs-3">{{ course.get_display_name }}
+        <span class="badge rounded-pill bg-success mx-3"> {{ course.status }}</span>
+        <a class="btn btn-outline-success" href='{% url "update_course" pk=course.program.id class_pk=course.id %}' role="button">Update</a>
+    </h4>
+    <p class="my-2 fs-4">Course Sections: {{course.sections.count}}</p>
+    <p class="my-0"><strong>Course Teachers</strong>: {{course.get_teacher_names}}</p>
+    <p class="my-0"><strong>Description</strong>: {{course.description}}</p>
+    <p class="my-0"><strong>Prerequisites</strong>: {{course.prerequisites}}</p>
+    <p class="my-0"><strong>Difficulty</strong>: {{course.difficulty}}</p>
+    <p class="my-0"><strong>Grade Level</strong>: {{course.min_grade_level}} - {{course.max_grade_level}}</p>
+    <p class="my-0"><strong>Current Number of Sections</strong>: {{course.max_section_size}}</p>
+    <p class="my-0"><strong>Max Section Size</strong>: {{course.max_section_size}}</p>
+    <p class="my-0"><strong>Max Sections</strong>: {{course.max_sections}}</p>
+    <p class="my-0"><strong>Time Slots Per Session</strong>: {{course.time_slots_per_session}}</p>
+    <p class="my-0"><strong>Sessions Per Week</strong>: {{course.sessions_per_week}}</p>
+    <p class="my-0"><strong>Course Number Of Weeks</strong>: {{course.number_of_weeks}}</p>
+    <p class="my-0"><strong>Dates</strong>: {{course.start_date}} to {{course.end_date}}</p>
+    <p class="my-0"><strong>Planned Purchases</strong>: {{course.planned_purchases}}</p>
+    <p class="my-0"><strong>Course Created</strong>: {{ course.created_on }} | <strong>Course Updated</strong>: {{ course.updated_on }}</p>
+    <p class="my-0"><strong>Teacher Notes For Admin</strong>: {{course.teacher_notes}}</p>
+    <p class="my-0"><strong>Admin Notes</strong>: {{course.admin_notes}}</p>
+    </div>
+  </div>
+<hr/>
 {% endfor %}
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="createCourseSectionModal" tabindex="-1" aria-labelledby="createCourseSectionModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Are you sure?</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Are you sure? This will create Course Sections for all Courses With Accepted status.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <form method="post" action="{% url "create_course_sections" pk=program_id %}">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger">Yes, Create Course Sections</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
 {% endblock %}

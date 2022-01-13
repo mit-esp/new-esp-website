@@ -3,7 +3,6 @@ Previous code repository: https://github.com/learning-unlimited/ESP-Website/tree
 
 A website to help manage the logistics of large short-term educational programs. This website was written by the [MIT Educational Studies Program](https://esp.mit.edu) to support [Splash](https://esp.mit.edu/learn/Splash) and other educational programs.
 
-<!-- Documentation for program administrators and developers is in the docs directory, including dev setup documentation and instructions for contributors. -->
 
 ## Local Project Setup
 ```
@@ -93,10 +92,36 @@ sudo systemctl restart gunicorn
 `MAINTENANCE_MODE`: Set this flag on a server environment to stop all user requests to the site, such as when you need to make substantial server updates or run a complex database migration.
 
 
+## Program Run Guide (WIP) 
+
+Here are the steps one should take in order to run an ESP program on this system.
+1. As an Admin user, create a Program object
+2. As an Admin user, add ProgramStages with the dates that each stage should start and end (e.g. "pre-lottery stage", "post-lottery stage")
+3. As an Admin user, add ProgramRegistrationSteps to each stage (In Django Admin Panel, go to Programs to create objects). Some steps must exist and be coherently ordered.
+4. As an Admin user, add TeacherRegistrationSteps (teacher registration steps) (in Django Admin Panel).
+5. As an Admin user, add external program forms (in Django Admin Panel)
+6. As an Admin user, add purchasable items (In Django Admin Panel)
+7. As an Admin user, create/add classrooms if they don’t already exist from previous Programs (in Django Admin Panel)
+8. As an Admin user, create classroom time slots for times classrooms are available
+9. Teachers create classes and submit time availability, teachers add co-teachers
+10. Admins approve classes and create the desired number of sections (`manage courses` page)
+11. As an Admin user, schedule course sections to classroom timeslots via `The Scheduler`
+12. Teachers confirm course section time slots
+13. Students enter lottery preferences
+14. As an Admin user, run lottery
+15. Students confirm their courses
+16. Teachers can see how many students signed up with their courses
+17. Students and Teachers check in for the program
+
+
+<!--
 ### Documentation
+Documentation for program administrators and developers is in the docs directory, including dev setup documentation and instructions for contributors.
+
 After installing Sphinx via `pip install sphinx`:
 ```
 # sphinx-apidoc -o . ..
 make html
 make linkcheck
 ```
+ -->

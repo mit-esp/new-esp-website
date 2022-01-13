@@ -9,16 +9,21 @@
 
 {% block body %}
 
-  <h2>Teacher Check-in</h2>
+<h2>Teacher Check-in</h2>
 
-  {% for day, timeslots in timeslot_dict.items %}
-    <ul class="list-group">
-     {% if timeslots|length > 0 %} <li class="list-group-item"><a href="{% url 'check_in_teachers' program_id timeslots.0.id 'day' %}">Check in teachers with classes starting on {{ day }}</a></li>{% endif %}
-      {% for timeslot in timeslots %}
-        <li class="list-group-item"><a href="{% url 'check_in_teachers' program_id timeslot.id 'slot' %}">Check in teachers with classes starting at {{ timeslot.start_datetime }}</a></li>
-      {% endfor %}
-    </ul>
-  {% empty %}
-    <p>There are no scheduled classes in this program</p>
-  {% endfor %}
+<div class="my-3">
+  <a class="btn btn-secondary" href="{% url 'admin_dashboard' %}">Return To Admin Dashboard</a>
+</div>
+<hr>
+{% for day, timeslots in timeslot_dict.items %}
+  <ul class="list-group">
+   {% if timeslots|length > 0 %} <li class="list-group-item"><a href="{% url 'check_in_teachers' program_id timeslots.0.id 'day' %}">Check in teachers with classes starting on {{ day }}</a></li>{% endif %}
+    {% for timeslot in timeslots %}
+      <li class="list-group-item"><a href="{% url 'check_in_teachers' program_id timeslot.id 'slot' %}">Check in teachers with classes starting at {{ timeslot.start_datetime }}</a></li>
+    {% endfor %}
+  </ul>
+{% empty %}
+  <p>There are no scheduled classes in this program</p>
+{% endfor %}
+
 {% endblock %}

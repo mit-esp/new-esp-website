@@ -1,11 +1,12 @@
 from django.urls import path
+from django.views.generic import TemplateView
 
 from esp.constants import StudentRegistrationStepType
 from esp.views.admin_views import (AdminCheckinTeachersView,
-                                   AdminDashboardView, AdminManageStudentsView,
+                                   AdminCreateCourseSectionsView, AdminDashboardView, AdminManageStudentsView,
                                    AdminManageTeachersView, AdminCommentView,
-                                   ApproveFinancialAidView, CourseCreateView,
-                                   CourseListView, CourseUpdateView,
+                                   ApproveFinancialAidView, AdminCourseCreateView,
+                                   AdminCourseListView, AdminCourseUpdateView,
                                    PrintStudentSchedulesView,
                                    ProgramCreateView, ProgramListView,
                                    ProgramLotteryView, ProgramStageCreateView,
@@ -61,9 +62,9 @@ urlpatterns = [
     path('admin/programs/<uuid:pk>/stages/update/', ProgramStageUpdateView.as_view(), name="update_program_stage"),
     path('admin/programs/all/', ProgramListView.as_view(), name='programs'),
 
-    path('admin/programs/<uuid:pk>/classes/create/', CourseCreateView.as_view(), name='create_course'),
-    path('admin/programs/<uuid:pk>/classes/update/<uuid:class_pk>/', CourseUpdateView.as_view(), name='update_course'),
-    path('admin/programs/<uuid:pk>/classes/', CourseListView.as_view(), name='courses'),
+    path('admin/programs/<uuid:pk>/classes/create/', AdminCourseCreateView.as_view(), name='create_course'),
+    path('admin/programs/<uuid:pk>/classes/update/<uuid:class_pk>/', AdminCourseUpdateView.as_view(), name='update_course'),
+    path('admin/programs/<uuid:pk>/classes/', AdminCourseListView.as_view(), name='courses'),
     path('admin/programs/<uuid:pk>/lottery/', ProgramLotteryView.as_view(), name="program_lottery"),
     path(
         'admin/programs/<uuid:pk>/approve_financial_aid/',
@@ -83,6 +84,10 @@ urlpatterns = [
           name="manage_student_cash_payment"),
     path('admin/programs/<uuid:pk>/manage/students/<uuid:student_id>/comment/', AdminCommentView.as_view(),
          name="add_comment"),
+
+    path('admin/programs/<uuid:pk>/classes/create_course_sections/', AdminCreateCourseSectionsView.as_view(),
+         name="create_course_sections"),
+
     path('admin/programs/<uuid:pk>/manage/teachers/', AdminManageTeachersView.as_view(),
          name="manage_teachers"),
     path('admin/programs/<uuid:pk>/manage/teachers/<uuid:timeslot_id>/check_in/<str:unit>/',
@@ -193,3 +198,23 @@ urlpatterns = [
         AssignClassroomTimeSlotsApiView.as_view(), name="assign_classroom_time_slots_api"
     ),
 ]
+
+public_pages = [
+    # Public pages
+    path('', TemplateView.as_view(template_name='public/welcome.html')),
+    path('faq/', TemplateView.as_view(template_name='public/faq.html')),
+    path('privacy-policy/', TemplateView.as_view(template_name='public/privacy_policy.html'), name="privacy_policy"),
+    path('contact-us/', TemplateView.as_view(template_name='public/contact_us.html'), name="contact_us"),
+    path('for-parents/', TemplateView.as_view(template_name='public/for_parents.html')),
+
+    path('teach/', TemplateView.as_view(template_name='public/teach.html')),
+    path('learn/', TemplateView.as_view(template_name='public/learn.html')),
+    path('volunteer/', TemplateView.as_view(template_name='public/volunteer.html')),
+
+    path('splash/', TemplateView.as_view(template_name='public/splash.html')),
+    path('hssp/', TemplateView.as_view(template_name='public/hssp.html')),
+    path('spark/', TemplateView.as_view(template_name='public/spark.html')),
+    path('cascade/', TemplateView.as_view(template_name='public/cascade.html')),
+]
+
+urlpatterns += public_pages

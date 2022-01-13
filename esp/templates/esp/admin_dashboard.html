@@ -66,7 +66,7 @@
 {% if active_programs %}
 <div class="my-3">
   <div class="row">
-    <div class="col-lg-8">
+    <div class="col-lg-12">
     <h3>Active Programs</h3>
     {% for program in active_programs %}
       {% include "esp/components/program_card.html" %}
@@ -79,7 +79,7 @@
 {% if upcoming_programs %}
   <div class="my-3">
     <div class="row">
-      <div class="col-lg-8">
+      <div class="col-lg-12">
         <h3>Upcoming Programs</h3>
         {% for program in upcoming_programs %}
           {% include "esp/components/program_card.html" %}

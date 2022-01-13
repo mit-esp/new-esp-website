@@ -4,12 +4,15 @@
 
 {% block body %}
   <h1>Approve Financial Aid Requests</h1>
+  <div class="my-3">
+    <a class="btn btn-secondary" href="{% url 'admin_dashboard' %}">Return To Admin Dashboard</a>
+  </div>
+  <hr>
   <p>
-    There are {{ financial_aid_requests_count }} unreviewed financial aid requests for {{ program.name }}.
+    There are {{ financial_aid_requests_count }} unreviewed financial aid requests for Program {{ program.name }}.
     {% if financial_aid_requests_count > 0 %}Confirm below to approve all.{% endif %}
   </p>
   <div class="d-flex">
-  <a class="btn btn-secondary" role="button" href="{% url 'admin_dashboard' %}">Return to admin dashboard</a>
   {% if financial_aid_requests_count > 0 %}{% include "shared/submit_button.html" with submit_label="Confirm" %}{% endif %}
   </div>
 {% endblock %}
