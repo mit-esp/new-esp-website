@@ -11,6 +11,9 @@
 {% endblock %}
 
 {% block body %}
+<div class="my-3">
+  <a class="btn btn-secondary" href="{% url 'admin_dashboard' %}">Return To Admin Dashboard</a>
+</div>
 
   {% django_setting "REACT_HOTLOAD" as react_hotload %}
   {% if react_hotload %}
