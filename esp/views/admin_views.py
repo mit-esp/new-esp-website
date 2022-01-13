@@ -611,7 +611,7 @@ class ApproveFinancialAidView(PermissionRequiredMixin, SingleObjectMixin, Templa
 class AdminManageClassroomAvailabilityView(PermissionRequiredMixin, SingleObjectMixin, TemplateView):
     permission = PermissionType.admin_dashboard_actions
     model = Program
-    template_name = "esp/manage_classroom_availability.html"
+    template_name = "admin/manage_classroom_availability.html"
 
     def get_context_data(self, **kwargs):
         self.object = self.get_object()
