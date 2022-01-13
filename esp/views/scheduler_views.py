@@ -77,7 +77,7 @@ class CourseApiView(SerializerResponseMixin, BaseListView):
 
 class SchedulerView(PermissionRequiredMixin, TemplateView):
     permission = PermissionType.use_scheduler
-    template_name = "esp/scheduler.html"
+    template_name = "admin/scheduler.html"
 
 
 class TimeSlotApiView(SerializerResponseMixin, BaseListView):

@@ -124,7 +124,7 @@ class RegistrationStepBaseView(StudentRegistrationPermissionMixin, TemplateView)
 
 class RegistrationStepPlaceholderView(RegistrationStepBaseView):
     permission = PermissionType.student_register_for_program
-    template_name = "esp/registration_step_placeholder.html"
+    template_name = "admin/registration_step_placeholder.html"
 
     def post(self, request, *args, **kwargs):
         return redirect(

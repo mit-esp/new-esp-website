@@ -50,7 +50,7 @@ from esp.serializers import CommentSerializer, UserSerializer
 
 class AdminDashboardView(PermissionRequiredMixin, TemplateView):
     permission = PermissionType.admin_dashboard_view
-    template_name = 'esp/admin_dashboard.html'
+    template_name = 'admin/admin_dashboard.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
@@ -68,7 +68,7 @@ class AdminDashboardView(PermissionRequiredMixin, TemplateView):
 
 class ClassroomListView(PermissionRequiredMixin, TemplateView):
     permission = PermissionType.admin_dashboard_view
-    template_name = 'esp/classroom_list.html'
+    template_name = 'admin/classroom_list.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -78,7 +78,7 @@ class ClassroomListView(PermissionRequiredMixin, TemplateView):
 
 class AdminManageStudentsView(PermissionRequiredMixin, SingleObjectMixin, TemplateView):
     permission = PermissionType.admin_dashboard_actions
-    template_name = 'esp/manage_students.html'
+    template_name = 'admin/manage_students.html'
     model = Program
 
     def __init__(self, *args, **kwargs):
@@ -219,7 +219,7 @@ class StudentCashPaymentView(PermissionRequiredMixin, SingleObjectMixin, View):
 
 class AdminManageTeachersView(PermissionRequiredMixin, SingleObjectMixin, TemplateView):
     permission = PermissionType.admin_dashboard_actions
-    template_name = 'esp/manage_teachers.html'
+    template_name = 'admin/manage_teachers.html'
     model = Program
 
     def get_context_data(self, **kwargs):
@@ -247,7 +247,7 @@ class AdminManageTeachersView(PermissionRequiredMixin, SingleObjectMixin, Templa
 
 class AdminCheckinTeachersView(PermissionRequiredMixin, TemplateView):
     permission = PermissionType.admin_dashboard_actions
-    template_name = 'esp/check_in_teachers.html'
+    template_name = 'admin/check_in_teachers.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
@@ -364,7 +364,7 @@ class ProgramUpdateView(PermissionRequiredMixin, UpdateView):
 class ProgramListView(PermissionRequiredMixin, ListView):
     permission = PermissionType.programs_view_all
     context_object_name = "data"
-    template_name = "esp/program_list.html"
+    template_name = "admin/program_list.html"
 
     def get_queryset(self):
         data = {
@@ -403,7 +403,7 @@ class ProgramStageCreateView(PermissionRequiredMixin, SingleObjectMixin, Program
     permission = PermissionType.programs_edit_all
     model = Program
     form_class = ProgramStageForm
-    template_name = "esp/program_stage_form.html"
+    template_name = "admin/program_stage_form.html"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -431,7 +431,7 @@ class ProgramStageUpdateView(PermissionRequiredMixin, ProgramStageFormsetMixin, 
     model = ProgramStage
     form_class = ProgramStageForm
     context_object_name = "stage"
-    template_name = "esp/program_stage_form.html"
+    template_name = "admin/program_stage_form.html"
     success_url = reverse_lazy("programs")
 
     def get_object(self, queryset=None):
@@ -443,7 +443,7 @@ class ProgramStageUpdateView(PermissionRequiredMixin, ProgramStageFormsetMixin, 
 class ProgramLotteryView(PermissionRequiredMixin, SingleObjectMixin, TemplateView):
     permission = PermissionType.run_program_lottery
     model = Program
-    template_name = "esp/program_lottery.html"
+    template_name = "admin/program_lottery.html"
 
     def get_context_data(self, **kwargs):
         self.object = self.get_object()
@@ -469,7 +469,7 @@ class ProgramLotteryView(PermissionRequiredMixin, SingleObjectMixin, TemplateVie
 
 class SendEmailsView(PermissionRequiredMixin, FormsView):
     permission = PermissionType.send_email
-    template_name = "esp/send_email.html"
+    template_name = "admin/send_email.html"
     success_url = reverse_lazy('send_email')
     mailing_list = None
     form_classes = {
@@ -581,7 +581,7 @@ class PrintStudentSchedulesView(PermissionRequiredMixin, SingleObjectMixin, View
 class ApproveFinancialAidView(PermissionRequiredMixin, SingleObjectMixin, TemplateView):
     model = Program
     permission = PermissionType.admin_dashboard_actions
-    template_name = "esp/approve_financial_aid.html"
+    template_name = "admin/approve_financial_aid.html"
 
     def get_context_data(self, **kwargs):
         self.object = self.get_object()
