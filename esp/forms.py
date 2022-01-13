@@ -172,6 +172,7 @@ class TeacherCourseForm(CrispyFormMixin, ModelForm):
             "max_grade_level",
             "difficulty",
             "teacher_notes",
+            "planned_purchases"
         ]
         widgets = {
             'start_date': forms.DateInput(attrs={'type': 'date', 'class': 'datepicker'}),
@@ -198,6 +199,13 @@ class TeacherCourseForm(CrispyFormMixin, ModelForm):
         additional_tags = self.cleaned_data.pop("additional_tags", [])
         instance = super().save(commit)
         instance.tags.add(*categories, *additional_tags)
+
+
+class AdminCourseForm(TeacherCourseForm):
+    submit_label = "Update Class"
+
+    class Meta(TeacherCourseForm.Meta):
+        fields = TeacherCourseForm.Meta.fields + ['admin_notes', 'status']
 
 
 class TeacherRegistrationChoiceField(forms.ModelChoiceField):
