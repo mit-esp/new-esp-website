@@ -1,0 +1,6 @@
+{% extends "shared/course_card_base.html" %}
+
+{% block details %}
+  <div>Status: {{ course_section.course.get_status_display }}</div>
+  <div>Enrollment: {{ course_section.registrations.count }}/{{ course_section.course.max_section_size }}</div>
+{% endblock %}

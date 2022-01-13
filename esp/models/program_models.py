@@ -125,6 +125,10 @@ class Course(BaseModel):
             course_teacher.teacher_registration.user.get_full_name() for course_teacher in self.course_teachers.all()
         )
 
+    def is_editable(self):
+        # Modify to determine teacher course editing permissions
+        return self.status == CourseStatus.unreviewed
+
     def save(self, *args, **kwargs):
         if not self.display_id:
             self.display_id = self.get_next_display_id()
