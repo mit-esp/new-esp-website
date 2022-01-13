@@ -1,0 +1,112 @@
+{% load static %}
+{% load crispy_forms_tags %}
+{% load sass_tags %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MIT ESP | {% block title %}{% endblock %}</title>
+    <link href="{% static "images/favicon.ico" %}" rel="icon">
+    <link href="{% sass_src 'styles/base.scss' %}" rel="stylesheet">
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+   {% block head %}{% endblock %}
+    <style>
+      .bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        user-select: none;
+      }
+      @media (min-width: 768px) {
+        .bd-placeholder-img-lg {
+          font-size: 3.5rem;
+        }
+      }
+      main > .container {
+        padding: 60px 15px 0;
+      }
+    </style>
+
+  </head>
+
+<body class="d-flex flex-column h-100">
+<header>
+  <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/">
+      <img  width="40px" height="40px" src="{% static 'images/esp_logo.png' %}" alt="MIT ESP Logo">
+      MIT ESP
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarCollapse">
+        <ul class="navbar-nav me-auto mb-2 mb-md-0">
+          <li class="nav-item">
+            <a class="nav-link" href="/faq">FAQ</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/learn">Learn</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/teach">Teach</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/volunteer">Volunteer</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/for-parents">Parents</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="/splash">Splash</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="/spark">Spark</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="/hssp">HSSP</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="/cascade">Cascade</a>
+          </li>
+        </ul>
+        <form class="d-flex">
+          <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+          <button class="btn btn-outline-success" type="submit">Search</button>
+        </form>
+        {% if not user.is_authenticated %}
+        <li class="nav-item d-grid mx-2">
+          <a href="{% url 'register_account' %}" class="btn btn-primary navbar-btn">Register</a>
+        </li>
+        <li class="nav-item d-grid mx-2">
+          <a href="{% url 'login' %}" class="btn btn-primary navbar-btn">Log in</a>
+        </li>
+        {% else %}
+        <li class="nav-item d-grid mx-2">
+          <a href="{% url 'index' %}" class="btn btn-primary navbar-btn">My Dashboard</a>
+        </li>
+        {% endif %}
+      </div>
+    </div>
+  </nav>
+</header>
+
+<!-- Begin page content -->
+<main class="flex-shrink-0">
+  <div class="container">
+    <h1 class="mt-5">Page Title</h1>
+    <p class="lead">Page description.</p>
+
+    {% block body %}{% endblock %}
+
+  </div>
+</main>
+
+
+{% include "public/components/footer.html" %}
+
+{% block script %}{% endblock %}
+</body>
+</html>
+

@@ -22,7 +22,7 @@ from common.forms import CrispyFormsetHelper
 from common.models import User
 from common.views import PermissionRequiredMixin
 from config.settings import DEFAULT_FROM_EMAIL
-from esp.constants import (CourseStatus, PaymentMethod,
+from esp.constants import (ClassroomTagCategory, CourseStatus, PaymentMethod,
                            StudentRegistrationStepType)
 from esp.forms import (AdminCourseForm, CommentForm, ProgramForm,
                        ProgramRegistrationStepFormset, ProgramStageForm,
@@ -48,7 +48,7 @@ from esp.serializers import CommentSerializer, UserSerializer
 ######################################
 
 
-class AdminDashboardView(TemplateView):
+class AdminDashboardView(PermissionRequiredMixin, TemplateView):
     permission = PermissionType.admin_dashboard_view
     template_name = 'esp/admin_dashboard.html'
 
@@ -63,6 +63,16 @@ class AdminDashboardView(TemplateView):
         context["active_programs"] = (
             Program.objects.filter(start_date__lte=ts, end_date__gte=ts).order_by('-start_date')
         )
+        return context
+
+
+class ClassroomListView(PermissionRequiredMixin, TemplateView):
+    permission = PermissionType.admin_dashboard_view
+    template_name = 'esp/classroom_list.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['classrooms'] = {classroom: classroom.tags.filter(tag_category=ClassroomTagCategory.resource) for classroom in Classroom.objects.prefetch_related('tags')}
         return context
 
 
