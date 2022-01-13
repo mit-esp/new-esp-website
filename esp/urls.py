@@ -1,4 +1,5 @@
 from django.urls import path
+from django.views.generic import TemplateView
 
 from esp.constants import StudentRegistrationStepType
 from esp.views.admin_views import (AdminCheckinTeachersView,
@@ -39,6 +40,21 @@ from esp.views.user_views import (GuardianDashboardView, RegisterAccountView,
                                   VolunteerDashboardView)
 
 urlpatterns = [
+    # Public pages
+    path('faq/', TemplateView.as_view(template_name='public/faq.html')),
+    path('privacy-policy/', TemplateView.as_view(template_name='public/privacy_policy.html'), name="privacy_policy"),
+    path('for-parents/', TemplateView.as_view(template_name='public/for_parents.html')),
+    path('contact-us/', TemplateView.as_view(template_name='public/contact_us.html'), name="contact_us"),
+
+    path('teach/', TemplateView.as_view(template_name='public/teach.html')),
+    path('learn/', TemplateView.as_view(template_name='public/learn.html')),
+    path('volunteer/', TemplateView.as_view(template_name='public/volunteer.html')),
+
+    path('splash/', TemplateView.as_view(template_name='public/splash.html')),
+    path('hssp/', TemplateView.as_view(template_name='public/hssp.html')),
+    path('spark/', TemplateView.as_view(template_name='public/spark.html')),
+    path('cascade/', TemplateView.as_view(template_name='public/cascade.html')),
+
     # User setup
     path('accounts/register/', RegisterAccountView.as_view(), name="register_account"),
     path('accounts/student/', StudentProfileCreateView.as_view(), name="create_student_profile"),
