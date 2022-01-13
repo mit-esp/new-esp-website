@@ -17,7 +17,7 @@ from esp.models.program_registration_models import StudentProfile, TeacherProfil
 
 
 class RegisterAccountView(CreateView):
-    template_name = "esp/registration.html"
+    template_name = "admin/registration.html"
     form_class = RegisterUserForm
 
     def get_success_url(self):
