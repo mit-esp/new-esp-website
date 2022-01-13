@@ -28,7 +28,12 @@ python manage.py runserver_plus
 
 #To run the React scheduler in development:
 npm run start
+
 ```
+
+Install System dependencies (operating system dependent):
+- To generate LaTeX-based printables, `pdflatex` needs to be installed and callable: https://www.tug.org/texlive/quickinstall.html
+
 
 To access the database:
 ```
@@ -95,23 +100,22 @@ sudo systemctl restart gunicorn
 ## Program Run Guide (WIP) 
 
 Here are the steps one should take in order to run an ESP program on this system.
-1. As an Admin user, create a Program object
+1. As an Admin user, create a Program object. Tag with ProgramTags as desired.
 2. As an Admin user, add ProgramStages with the dates that each stage should start and end (e.g. "pre-lottery stage", "post-lottery stage")
-3. As an Admin user, add ProgramRegistrationSteps to each stage (In Django Admin Panel, go to Programs to create objects). Some steps must exist and be coherently ordered.
+3. As an Admin user, add ProgramRegistrationSteps to each stage (In Django Admin Panel, go to Programs to create objects). Be very careful with this step, as while the system allows the free rein of customized ordering, certain steps are expected be coherently ordered.
 4. As an Admin user, add TeacherRegistrationSteps (teacher registration steps) (in Django Admin Panel).
-5. As an Admin user, add external program forms (in Django Admin Panel)
-6. As an Admin user, add purchasable items (In Django Admin Panel)
-7. As an Admin user, create/add classrooms if they don’t already exist from previous Programs (in Django Admin Panel)
-8. As an Admin user, create classroom time slots for times classrooms are available
-9. Teachers create classes and submit time availability, teachers add co-teachers
-10. Admins approve classes and create the desired number of sections (`manage courses` page)
-11. As an Admin user, schedule course sections to classroom timeslots via `The Scheduler`
-12. Teachers confirm course section time slots
+5. As an Admin user, add ExternalProgramForms (in Django Admin Panel)
+6. As an Admin user, add PurchaseableItems (In Django Admin Panel)
+7. As an Admin user, create/add classrooms if they don’t already exist from previous Programs (in Django Admin Panel), and modify ClassroomTags as desired
+8. As an Admin user, create ClassroomTimeSlots for the times that classrooms are available for the Program
+9. Teachers create proposed Courses, submit their time availability, and add co-teachers
+10. As an Admin user, approve Courses and create the desired number of sections (on the `manage courses` page)
+11. As an Admin user, schedule course sections to classroom timeslots via the Scheduler
+12. Teachers confirm CourseSection time slots
 13. Students enter lottery preferences
-14. As an Admin user, run lottery
-15. Students confirm their courses
-16. Teachers can see how many students signed up with their courses
-17. Students and Teachers check in for the program
+14. As an Admin user, run the lottery process
+15. Students confirm their courses, and Teachers can view how many students signed up with their courses
+16. Students and Teachers check in for the Program day-of
 
 
 <!--
