@@ -5,13 +5,11 @@
 {% block body %}
 <h2>{{program}} Classes</h2>
 
-{% block nav %}
-  <div class="my-3">
-    <a class="btn btn-secondary" href="{% url 'admin_dashboard' %}">Return To Admin Dashboard</a>
-    <a class="btn btn-success mx-3" href='{% url "create_course" pk=program_id %}'>Create New Course</a>
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createCourseSectionModal">Create Course Sections For Accepted Courses</button>
-  </div>
-{% endblock %}
+<div class="my-3">
+  <a class="btn btn-secondary" href="{% url 'admin_dashboard' %}">Return To Admin Dashboard</a>
+  <a class="btn btn-success mx-3" href='{% url "create_course" pk=program_id %}'>Create New Course</a>
+  <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createCourseSectionModal">Create Course Sections For Accepted Courses</button>
+</div>
 
 <hr />
 {% for course in object_list %}

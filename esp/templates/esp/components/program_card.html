@@ -2,22 +2,19 @@
   <div class="row">
     <div class="col-lg-6">
       <h4>Program <span class="badge rounded-pill bg-secondary">{{ program.name }}</span></h4>
-      <p><strong>{{program.start_date}} to {{program.end_date}}</strong></p>
-      <br/>
-      <h6>Stages</h6>
+      <p class="my-1 fs-5"><strong>From {{program.start_date}} to {{program.end_date}}</strong></p>
+      <p class="my-1 fs-6">Program Stages</p>
       <ol>
       {% for stage in program.stages.all %}
-        <li>{{ stage.start_date|date:"m/d/Y" }} - {{ stage.end_date|date:"m/d/Y" }}: {{ stage.name }} <a href="{% url "update_program_stage" pk=stage.id %}"><span class="bi-pencil"></span></a></li>
+        <li>Stage {{ stage.name }}: {{ stage.start_date|date:"m/d/Y" }} - {{ stage.end_date|date:"m/d/Y" }} <a href="{% url "update_program_stage" pk=stage.id %}"><span class="bi-pencil"></span></a></li>
         <ul>{% for step in stage.steps.all %}<li>{{ step.get_step_key_display }}</li>{% endfor %}</ul>
       {% empty %}
         None Created
       {% endfor %}
       </ol>
-      <br/>
-      <p>Created: {{ program.created_on }} - Updated: {{ program.updated_on }}
-      <a href='{% url "update_program" program.id %}'>Update</a> -
-      <a href='{% url "update_program" program.id %}'>Clone</a>
-      </p>
+      <p class="my-0"><strong>Program Last Updated</strong>: {{ program.updated_on }} <a class="btn btn-outline-success my-2 mx-2" href='{% url "update_program" program.id %}'>Update</a>
+</p>
+
     </div>
     <div class="col-lg-6">
       <div class="card">
@@ -26,7 +23,8 @@
           <a class="btn btn-outline-success mx-1 my-1" role="button" href="{% url 'manage_students' pk=program.id %}">Manage Students</a>
           <a class="btn btn-outline-success mx-1 my-1" role="button" href="{% url 'manage_teachers' pk=program.id %}">Manage Teachers</a>
           <a class="btn btn-outline-success mx-1 my-1" role="button" href="{% url 'courses' pk=program.id %}">Manage Courses</a>
-          <a class="btn btn-outline-success mx-1 my-1" role="button" href="{% url 'scheduler' %}?program_id={{program.id}} ">Course Scheduler</a>
+          <a class="btn btn-outline-success mx-1 my-1" role="button" href="">Manage Classroom Availability</a>
+          <a class="btn btn-outline-success mx-1 my-1" role="button" href="{% url 'scheduler' %}?program_id={{program.id}} ">The Scheduler</a>
           <a class="btn btn-outline-success mx-1 my-1" role="button" href="{% url 'program_lottery' pk=program.id %}">Run Lottery</a>
           <a class="btn btn-outline-success mx-1 my-1" role="button" href="{% url 'approve_financial_aid' pk=program.id %}">Approve Financial Aid Requests</a>
           <a class="btn btn-outline-success mx-1 my-1" role="button" href="{% url 'print_student_schedules' pk=program.id %}" target="_blank">Print Student Schedules</a>

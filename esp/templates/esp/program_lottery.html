@@ -3,7 +3,12 @@
 {% block title %}{{ program }} Lottery{% endblock %}
 
 {% block body %}
-  <h1>Program Lottery for {{ program }}</h1>
+  <h1>Run Lottery for Program <span class="badge rounded-pill bg-secondary">{{ program }}</span></h1>
+  <div class="my-3">
+    <a class="btn btn-secondary" href="{% url 'admin_dashboard' %}">Return To Admin Dashboard</a>
+  </div>
+  <hr>
+
   {% if registrations %}
     <p>Lottery has already been run. Current enrollments are summarized below.</p>
     <div class="list-group">
