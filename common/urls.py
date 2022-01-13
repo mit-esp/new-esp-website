@@ -6,7 +6,7 @@ from django.urls import include, path
 from common import views
 
 urlpatterns = [
-    path("", views.IndexView.as_view(), name="index"),
+    path("dashboard/", views.IndexView.as_view(), name="index"),  #todo: rename index to dashboard
     path('login/', auth_views.LoginView.as_view(template_name='common/login.html'), name='login'),
     path("logout/", views.LogoutView.as_view(), name="logout"),
     path("accounts/password_change/", auth_views.PasswordChangeView.as_view(), name='password_change'),

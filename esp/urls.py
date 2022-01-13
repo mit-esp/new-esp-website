@@ -1,4 +1,5 @@
 from django.urls import path
+from django.views.generic import TemplateView
 
 from esp.constants import StudentRegistrationStepType
 from esp.views.admin_views import (AdminCheckinTeachersView,
@@ -196,3 +197,23 @@ urlpatterns = [
         AssignClassroomTimeSlotsApiView.as_view(), name="assign_classroom_time_slots_api"
     ),
 ]
+
+public_pages = [
+    # Public pages
+    path('', TemplateView.as_view(template_name='public/welcome.html')),
+    path('faq/', TemplateView.as_view(template_name='public/faq.html')),
+    path('privacy-policy/', TemplateView.as_view(template_name='public/privacy_policy.html'), name="privacy_policy"),
+    path('contact-us/', TemplateView.as_view(template_name='public/contact_us.html'), name="contact_us"),
+    path('for-parents/', TemplateView.as_view(template_name='public/for_parents.html')),
+
+    path('teach/', TemplateView.as_view(template_name='public/teach.html')),
+    path('learn/', TemplateView.as_view(template_name='public/learn.html')),
+    path('volunteer/', TemplateView.as_view(template_name='public/volunteer.html')),
+
+    path('splash/', TemplateView.as_view(template_name='public/splash.html')),
+    path('hssp/', TemplateView.as_view(template_name='public/hssp.html')),
+    path('spark/', TemplateView.as_view(template_name='public/spark.html')),
+    path('cascade/', TemplateView.as_view(template_name='public/cascade.html')),
+]
+
+urlpatterns += public_pages
