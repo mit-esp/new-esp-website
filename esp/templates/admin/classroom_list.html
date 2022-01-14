@@ -11,20 +11,28 @@
 <hr>
 
 
-  {% for classroom, resources in classrooms.items %}
+  {% for classroom, tags in classrooms.items %}
     <div class="card card-body my-3">
       <div class="row">
         <div class="col-lg-6">
-          <h4>{{ classroom.name }}</h4>
+          <h4>{{ classroom.name }} <span class="badge rounded-pill bg-secondary">{{ tags.location.tag }}</span></h4>
           <h6>Max Occupancy: {{ classroom.max_occupants }}</h6>
           <h6>Resources</h6>
           <ul>
-            {% for resource in resources %}
+            {% for resource in tags.resources %}
               <li>{{ resource.tag }}</li>
             {% empty %}
               This classroom has no resources
             {% endfor %}
           </ul>
+          {% if tags.other %}
+            <h6>Other</h6>
+            <ul>
+              {% for resource in tags.other %}
+                <li>{{ resource.tag }}</li>
+              {% endfor %}
+            </ul>
+          {% endif %}
         </div>
       </div>
     </div>
