@@ -340,6 +340,7 @@ class ProgramCreateView(PermissionRequiredMixin, CreateView):
     permission = PermissionType.admin_dashboard_actions
     model = Program
     form_class = ProgramForm
+    template_name = 'admin/program_form.html'
 
     def form_valid(self, form):
         next_link = super().form_valid(form)
@@ -411,7 +412,7 @@ class ProgramStageCreateView(PermissionRequiredMixin, SingleObjectMixin, Program
         self.object = None
 
     def get_success_url(self):
-        if self.request.POST.get("save-add-new"):
+        if "save-add-another" in self.request.POST:
             return reverse_lazy("create_program_stage", kwargs={"pk": self.object.id})
         return reverse_lazy("programs")
 

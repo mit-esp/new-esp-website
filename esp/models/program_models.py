@@ -146,7 +146,7 @@ class TimeSlot(BaseModel):
     def __str__(self):
         start = self.start_datetime.strftime('%I:%M%p').lstrip('0')
         end = self.end_datetime.strftime('%I:%M%p').lstrip('0')
-        return f"{start} - {end} ({Weekday(self.start_datetime.weekday()).label})"
+        return f"{self.program.name}: {start} - {end} ({Weekday(self.start_datetime.weekday()).label})"
 
     class Meta(BaseModel.Meta):
         ordering = ["start_datetime"]
