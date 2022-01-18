@@ -9,7 +9,7 @@
     <thead>
       <tr>
       {% for slot in time_slots %}
-        <td>{{ slot }}</td>
+        <td>{{ slot.get_display_name }}</td>
       {% endfor %}
       </tr>
     </thead>

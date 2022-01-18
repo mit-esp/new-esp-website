@@ -18,7 +18,7 @@
         <tr>
           <th></th>
           {% for time_slot in program.time_slots.all %}
-            <th>{{ time_slot }}</th>
+            <th>{{ time_slot.get_display_name }}</th>
           {% endfor %}
         </tr>
       </thead>
@@ -29,7 +29,7 @@
               {{ classroom.name }}
             </th>
             {% for time_slot in program.time_slots.all %}
-              <td><input type="checkbox" {% if time_slot.id in available_time_slots %}checked{% endif %} name="classroom:{{ classroom.id }}" value="{{ time_slot.id }}" aria-label="{{ classroom.name }} available at {{ time_slot }}?"></td>
+              <td><input type="checkbox" {% if time_slot.id in available_time_slots %}checked{% endif %} name="classroom:{{ classroom.id }}" value="{{ time_slot.id }}" aria-label="{{ classroom.name }} available at {{ time_slot.get_display_name }}?"></td>
             {% endfor %}
           </tr>
         {% endfor %}

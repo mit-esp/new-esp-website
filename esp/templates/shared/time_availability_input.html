@@ -9,7 +9,7 @@
       {% for slot in time_slots %}
         <div class="form-check form-switch">
           <input type="checkbox" class="form-check-input col-2" name="{{ slot.id }}" id="availability-{{ slot.id }}" {% if slot.id in availabilities %}checked{% endif %}>
-          <label class="form-check-label ms-5" for="availability-{{ slot.id }}">{{ slot }}</label>
+          <label class="form-check-label ms-5" for="availability-{{ slot.id }}">{{ slot.get_display_name }}</label>
         </div>
       {% endfor %}
       <input type="submit" value="Submit" class="btn btn-primary btn-sm mt-3">
