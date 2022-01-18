@@ -144,9 +144,16 @@ class TimeSlot(BaseModel):
     end_datetime = models.DateTimeField()
 
     def __str__(self):
+        """For use in the Django Admin Interface"""
         start = self.start_datetime.strftime('%I:%M%p').lstrip('0')
         end = self.end_datetime.strftime('%I:%M%p').lstrip('0')
         return f"{self.program.name}: {start} - {end} ({Weekday(self.start_datetime.weekday()).label})"
+
+    def get_display_name(self):
+        """For use in a user facing context anywhere else in the codebase"""
+        start = self.start_datetime.strftime('%I:%M%p').lstrip('0')
+        end = self.end_datetime.strftime('%I:%M%p').lstrip('0')
+        return f"{start} - {end} ({Weekday(self.start_datetime.weekday()).label})"
 
     class Meta(BaseModel.Meta):
         ordering = ["start_datetime"]

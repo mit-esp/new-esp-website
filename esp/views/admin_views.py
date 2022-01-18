@@ -75,7 +75,7 @@ class ClassroomListView(PermissionRequiredMixin, TemplateView):
         context['classrooms'] = {
             classroom: {
                 'resources': classroom.tags.filter(tag_category=ClassroomTagCategory.resource),
-                'location':  classroom.tags.filter(tag_category=ClassroomTagCategory.location).first(),
+                'locations':  classroom.tags.filter(tag_category=ClassroomTagCategory.location),
                 'other': classroom.tags.filter(tag_category=ClassroomTagCategory.other),
             }
             for classroom in Classroom.objects.prefetch_related('tags')
