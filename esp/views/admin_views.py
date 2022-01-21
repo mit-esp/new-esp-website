@@ -633,12 +633,11 @@ class AdminManageClassroomAvailabilityView(PermissionRequiredMixin, SingleObject
     def post(self, request, *args, **kwargs):
         program = self.get_object()
         classroom_ids = [key.split(":")[1] for key in request.POST.keys() if key.startswith("classroom:")]
-        classrooms_with_availabilities = Classroom.objects.filter(id__in=classroom_ids).prefetch_related("time_slots")
         time_slots_to_create = []
         deleted_count = 0
         all_time_slot_ids = TimeSlot.objects.filter(program=program).values_list("id", flat=True)
 
-        for classroom in classrooms_with_availabilities:
+        for classroom in Classroom.objects.all().prefetch_related("time_slots"):
             existing_time_slots = {time_slot.time_slot_id for time_slot in classroom.time_slots.filter(time_slot__program=program)}
             new_time_slots = set(UUID(id) for id in request.POST.getlist(f"classroom:{classroom.id}"))
             for time_slot_id in new_time_slots - existing_time_slots:
