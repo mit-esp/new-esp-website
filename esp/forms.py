@@ -154,7 +154,7 @@ class TeacherCourseForm(CrispyFormMixin, ModelForm):
         queryset=CourseTag.objects.exclude(
             tag_category=CourseTagCategory.course_category
         ).filter(editable_by_teachers=True),
-        blank=True,
+        required=False,
     )
 
     class Meta:
@@ -183,6 +183,9 @@ class TeacherCourseForm(CrispyFormMixin, ModelForm):
         if is_update:
             self.submit_label = "Update class"
         super().__init__(*args, **kwargs)
+        if self.instance:
+            self.fields["categories"].initial = self.instance.tags.filter(tag_category=CourseTagCategory.course_category)
+            self.fields["additional_tags"].initial = self.instance.tags.exclude(tag_category=CourseTagCategory.course_category)
         if not self.fields["additional_tags"].queryset.exists():
             self.fields.pop("additional_tags")
         if not is_update:
@@ -203,6 +206,11 @@ class TeacherCourseForm(CrispyFormMixin, ModelForm):
 
 class AdminCourseForm(TeacherCourseForm):
     submit_label = "Update Class"
+
+    additional_tags = forms.ModelMultipleChoiceField(
+        queryset=CourseTag.objects.exclude(tag_category=CourseTagCategory.course_category),
+        required=False,
+    )
 
     class Meta(TeacherCourseForm.Meta):
         fields = TeacherCourseForm.Meta.fields + ['admin_notes', 'status']

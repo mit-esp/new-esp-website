@@ -36,6 +36,11 @@
     <p class="my-0"><strong>Course Created</strong>: {{ course.created_on }} | <strong>Course Updated</strong>: {{ course.updated_on }}</p>
     <p class="my-0"><strong>Teacher Notes For Admin</strong>: {{course.teacher_notes}}</p>
     <p class="my-0"><strong>Admin Notes</strong>: {{course.admin_notes}}</p>
+    <div class="d-flex mt-2">
+      {% for tag in course.tags.all %}
+         <span class="badge rounded-pill bg-secondary me-3">{{ tag }}</span>
+      {% endfor %}
+    </div>
     </div>
   </div>
 <hr/>

@@ -51,6 +51,8 @@ class CourseSection(BaseModel):
         return self.__class__.objects.filter(course=self.course).aggregate(max=Max("display_id"))["max"] + 1
 
     def get_section_times(self):
+        if not self.time_slots.exists():
+            return []
         time_slots = sorted(
             (
                 {

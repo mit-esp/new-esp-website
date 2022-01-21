@@ -664,6 +664,7 @@ class AdminCourseCreateView(PermissionRequiredMixin, CreateView):
     permission = PermissionType.courses_edit_all
     model = Course
     form_class = AdminCourseForm
+    template_name = "admin/course_form.html"
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -685,6 +686,7 @@ class AdminCourseUpdateView(PermissionRequiredMixin, UpdateView):
     model = Course
     form_class = AdminCourseForm
     pk_url_kwarg = "class_pk"
+    template_name = "admin/course_form.html"
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -698,6 +700,7 @@ class AdminCourseUpdateView(PermissionRequiredMixin, UpdateView):
 
 class AdminCourseListView(PermissionRequiredMixin, ListView):
     permission = PermissionType.courses_view_all
+    template_name = "admin/course_list.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

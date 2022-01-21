@@ -3,4 +3,9 @@
 {% block details %}
   <div>Status: {{ course_section.course.get_status_display }}</div>
   <div>Enrollment: {{ course_section.registrations.count }}/{{ course_section.course.max_section_size }}</div>
+  <div class="d-flex mt-2">
+  {% for tag in course_section.course.tags.all %}
+    {% if tag.visible_to_teachers %}<div class="rounded-pill bg-secondary me-2">{{ tag.name }}</div>{% endif %}
+  {% endfor %}
+  </div>
 {% endblock %}
