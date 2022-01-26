@@ -9,12 +9,20 @@ A website to help manage the logistics of large short-term educational programs.
 # Create environment config file.
 cp config/.env.example config/.env
 
-# Fill in appropriate environment values.
+# Fill in appropriate environment values here later. Skip for now.
 vim config/.env
-# set top level REACT_APP_API_BASE_URL to backend API base url
+# set top level REACT_APP_API_BASE_URL to backend API base url later. Skip for now.
 vim .env
 
+# Create and activate virtual environment
+python3 -m venv venv
+source venv/bin/activate
+
 # Install backend requirements.
+# ‘apt’ is for Ubuntu systems,
+# use whatever package manager your OS uses.
+sudo apt install libpq-dev python3-dev
+pip install wheel
 pip install -r requirements.txt
 
 # Install frontend requirements.
