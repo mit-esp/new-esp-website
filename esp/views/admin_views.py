@@ -361,6 +361,7 @@ class ProgramUpdateView(PermissionRequiredMixin, UpdateView):
     permission = PermissionType.programs_edit_all
     model = Program
     form_class = ProgramForm
+    template_name = "admin/program_form.html"
     success_url = reverse_lazy('programs')
 
     def get_form_kwargs(self):
