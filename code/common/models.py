@@ -40,7 +40,7 @@ class User(AbstractUser, BaseModel):
     verified = models.BooleanField(default=True)
     user_type = models.CharField(max_length=128, choices=UserType.choices)
 
-    REQUIRED_FIELDS = []
+    REQUIRED_FIELDS = ["email"]
     objects = UserManager()
 
     def __str__(self):
