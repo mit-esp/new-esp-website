@@ -1,5 +1,6 @@
 from django.contrib.auth.base_user import BaseUserManager
 
+from common.constants import UserType
 
 class UserManager(BaseUserManager):
     """
@@ -30,4 +31,4 @@ class UserManager(BaseUserManager):
             raise ValueError('Superuser must have is_staff=True.')
         if extra_fields.get('is_superuser') is not True:
             raise ValueError('Superuser must have is_superuser=True.')
-        return self.create_user(email, password, **extra_fields)
+        return self.create_user(email=email, password=password, user_type=UserType.admin, **extra_fields)
