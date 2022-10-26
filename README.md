@@ -3,6 +3,8 @@ Previous code repository: https://github.com/learning-unlimited/ESP-Website/tree
 
 A website to help manage the logistics of large short-term educational programs. This website was written by the [MIT Educational Studies Program](https://esp.mit.edu) to support [Splash](https://esp.mit.edu/learn/Splash) and other educational programs.
 
+Before setup, clone this repo. File paths in these instructions are relative with respect to the repo's home directory.
+
 ## Docker Setup
 First, install Docker via whichever method your OS uses.
 ```
