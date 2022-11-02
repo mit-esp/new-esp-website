@@ -7,7 +7,7 @@ A website to help manage the logistics of large short-term educational programs.
 
 Before setup, clone this repo. File paths in these instructions are relative with respect to the repo's home directory.
 
-### Option 1: Docker Setup (recommended)
+### Docker Setup
 Docker containers are a way to create/store environments to run programs consistently.
 
 First, install Docker via whichever method your OS uses.
@@ -30,10 +30,19 @@ Depending on how you installed Docker, you may need to run these in `sudo` mode.
 
 Then, go to `localhost:8000` in your browser to see the website.
 
-### Local Setup
-Go to code/README.md to run the site locally outside of Docker.
+### Additional local setup
+I (songk) have a separate conda environment for this
+
+See `code/README.md` for more
 
 ## Navigation
-To view the admin dashboard, login information is
-```username: admin
-password: password```
+Information will not be saved in between Docker runs.
+
+### Login information
+Account type | Username | Password
+-------------|----------|----------
+   Admin     | admin    | password
+   Teacher   | teacher  | password
+   Student   | student  | password
+
+
