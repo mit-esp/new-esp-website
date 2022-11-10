@@ -7,6 +7,10 @@ jobs:
   pages:
     runs-on: ubuntu-latest
     steps:
+    - name: Install dependencies
+      uses: awalsh128/cache-apt-pkgs-action@v1
+      with:
+        packages: python3-testresources
     - uses: actions/setup-python@v4.3.0
     - uses: actions/checkout@main
       with:
