@@ -31,7 +31,7 @@ Depending on how you installed Docker, you may need to run these in `sudo` mode.
 Then, go to `localhost:8000` in your browser to see the website.
 
 ### Additional local setup
-I (songk) have a separate conda environment for this
+I (songk) have a separate conda environment for this. I haven't experimented with other venvs. 
 
 See `code/README.md` for more
 
