@@ -28,7 +28,7 @@ jobs:
         envkey_WEBPACK_LOADER_HOTLOAD: False
         envkey_DEFAULT_FROM_EMAIL: FILL_ME_IN
         envkey_MAINTENANCE_MODE: False
-        REACT_APP_API_BASE_URL: http://localhost:8000
+        envkey_REACT_APP_API_BASE_URL: http://localhost:8000
         directory: code/config
     - name: Build and Commit
       uses: sphinx-notes/pages@v2
