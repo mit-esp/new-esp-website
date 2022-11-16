@@ -396,6 +396,9 @@ class ProgramTag(BaseModel):
 
 
 class CourseCategory(BaseModel):
+    """
+    Generally speaking, the category of class (art, science, math, CS, ...)
+    """
     courses = models.ManyToManyField(Course, related_name="tags", blank=True)
     tag = models.CharField(max_length=256)
     display_name = models.CharField(max_length=256, null=True, blank=True)
@@ -413,6 +416,10 @@ class CourseCategory(BaseModel):
 
 
 class CourseFlag(BaseModel):
+    """
+    Flags that ESP admins use to indicate information about a course
+    (e.g. review stage, needs director review, specific classroom requests)
+    """
     courses = models.ManyToManyField(Course, related_name="flags", blank=True)
     tag = models.CharField(max_length=256)
     display_name = models.CharField(max_length=256, null=True, blank=True)
