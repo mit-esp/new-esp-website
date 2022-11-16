@@ -69,8 +69,13 @@ class ProgramTagCategory(TextChoices):
     other = "other"
 
 
-class CourseTagCategory(TextChoices):
+class CourseCategoryCategory(TextChoices):
     course_category = "course_category"
+    other = "other"
+
+
+class CourseFlagCategory(TextChoices):
+    course_category = "course_flag_category"
     other = "other"
 
 

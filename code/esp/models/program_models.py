@@ -6,15 +6,23 @@ from django.utils import timezone
 
 from common.constants import GradeLevel, UserType, Weekday
 from common.models import BaseModel
-from esp.constants import (ClassroomTagCategory, CourseDifficulty,
-                           CourseStatus, CourseTagCategory, FormIntegration,
-                           ProgramTagCategory, ProgramType,
-                           StudentRegistrationStepType,
-                           TeacherRegistrationStepType)
+from esp.constants import (
+    ClassroomTagCategory,
+    CourseDifficulty,
+    CourseStatus,
+    CourseCategoryCategory,
+    CourseFlagCategory,
+    FormIntegration,
+    ProgramTagCategory,
+    ProgramType,
+    StudentRegistrationStepType,
+    TeacherRegistrationStepType,
+)
 
 
 class ProgramConfiguration(BaseModel):
     """ProgramConfiguration represents a set of configuration for programs, e.g. stages and registration steps."""
+
     saved_as_preset = models.BooleanField(default=False)
     name = models.CharField(max_length=512, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
@@ -25,11 +33,14 @@ class ProgramConfiguration(BaseModel):
 
 class Program(BaseModel):
     """Program represents an ESP program instance, e.g. Splash 2021"""
+
     program_configuration = models.ForeignKey(
         ProgramConfiguration, on_delete=models.PROTECT, related_name="+", null=True
     )
     name = models.CharField(max_length=512)
-    program_type = models.CharField(choices=ProgramType.choices, max_length=128, null=True, blank=True)
+    program_type = models.CharField(
+        choices=ProgramType.choices, max_length=128, null=True, blank=True
+    )
     min_grade_level = models.IntegerField(choices=GradeLevel.choices, default=7)
     max_grade_level = models.IntegerField(choices=GradeLevel.choices, default=12)
     description = models.TextField(null=True)
@@ -72,35 +83,58 @@ class Course(BaseModel):
     Course represents an ESP class in a specific program (named to avoid reserved word 'class' conflicts).
     It is still referred to as 'class' in urls and on the frontend to match existing terminology.
     """
-    program = models.ForeignKey(Program, related_name="courses", on_delete=models.PROTECT)
+
+    program = models.ForeignKey(
+        Program, related_name="courses", on_delete=models.PROTECT
+    )
     name = models.CharField(max_length=2048, verbose_name="Class title")
     display_id = models.BigIntegerField(null=True, blank=True)
     start_date = models.DateTimeField(null=True, blank=True)
     end_date = models.DateTimeField(null=True, blank=True)
-    description = models.TextField(help_text="A description of the class that will be shown to students.")
+    description = models.TextField(
+        help_text="A description of the class that will be shown to students."
+    )
 
-    max_section_size = models.IntegerField(verbose_name="How many students can a single section include?")
-    max_sections = models.IntegerField(default=1, verbose_name="How many enrollment sections are you willing to teach?")
+    max_section_size = models.IntegerField(
+        verbose_name="How many students can a single section include?"
+    )
+    max_sections = models.IntegerField(
+        default=1, verbose_name="How many enrollment sections are you willing to teach?"
+    )
     time_slots_per_session = models.IntegerField(
-        default=2, verbose_name="How many time slots is each session of the class?",
+        default=2,
+        verbose_name="How many time slots is each session of the class?",
     )
     number_of_weeks = models.IntegerField(
         default=1, verbose_name="How many weeks will this class last?"
     )
     sessions_per_week = models.IntegerField(
-        default=1, verbose_name="How often will this class meet per week?",
-        help_text="If you would like to meet multiple times per week, please describe why in the comments."
+        default=1,
+        verbose_name="How often will this class meet per week?",
+        help_text="If you would like to meet multiple times per week, please describe why in the comments.",
     )
 
     prerequisites = models.TextField(
-        default="None", blank=True, help_text="Describe the recommended prerequisites for this class."
+        default="None",
+        blank=True,
+        help_text="Describe the recommended prerequisites for this class.",
     )
-    min_grade_level = models.IntegerField(choices=GradeLevel.choices, default=GradeLevel.seventh)
-    max_grade_level = models.IntegerField(choices=GradeLevel.choices, default=GradeLevel.twelfth)
-    difficulty = models.IntegerField(choices=CourseDifficulty.choices, default=CourseDifficulty.easy)
+    min_grade_level = models.IntegerField(
+        choices=GradeLevel.choices, default=GradeLevel.seventh
+    )
+    max_grade_level = models.IntegerField(
+        choices=GradeLevel.choices, default=GradeLevel.twelfth
+    )
+    difficulty = models.IntegerField(
+        choices=CourseDifficulty.choices, default=CourseDifficulty.easy
+    )
 
-    status = models.CharField(choices=CourseStatus.choices, max_length=32, default=CourseStatus.unreviewed)
-    teacher_notes = models.TextField(null=True, blank=True, help_text="Notes for admin review - leave blank if none")
+    status = models.CharField(
+        choices=CourseStatus.choices, max_length=32, default=CourseStatus.unreviewed
+    )
+    teacher_notes = models.TextField(
+        null=True, blank=True, help_text="Notes for admin review - leave blank if none"
+    )
     admin_notes = models.TextField(null=True, blank=True)
     planned_purchases = models.TextField(null=True, blank=True)
 
@@ -109,20 +143,26 @@ class Course(BaseModel):
 
     def get_display_name(self):
         program_type = self.program.get_program_type_display()
-        program_abbreviation = f"{program_type[0]}{program_type[-1]}".upper() if program_type else "ESP"
+        program_abbreviation = (
+            f"{program_type[0]}{program_type[-1]}".upper() if program_type else "ESP"
+        )
         return f"{program_abbreviation}{self.display_id}: {self.name}"
 
     def get_next_display_id(self):
         base_display_id = (self.program.start_date.year % 1000) * 1000
         if not self.__class__.objects.filter(program_id=self.program_id).exists():
             return base_display_id
-        return self.__class__.objects.filter(
-            program_id=self.program_id
-        ).aggregate(Max("display_id"))["display_id__max"] + 1
+        return (
+            self.__class__.objects.filter(program_id=self.program_id).aggregate(
+                Max("display_id")
+            )["display_id__max"]
+            + 1
+        )
 
     def get_teacher_names(self):
         return ", ".join(
-            course_teacher.teacher_registration.user.get_full_name() for course_teacher in self.course_teachers.all()
+            course_teacher.teacher_registration.user.get_full_name()
+            for course_teacher in self.course_teachers.all()
         )
 
     def is_editable(self):
@@ -139,20 +179,22 @@ class Course(BaseModel):
 
 
 class TimeSlot(BaseModel):
-    program = models.ForeignKey(Program, related_name="time_slots", on_delete=models.PROTECT)
+    program = models.ForeignKey(
+        Program, related_name="time_slots", on_delete=models.PROTECT
+    )
     start_datetime = models.DateTimeField()
     end_datetime = models.DateTimeField()
 
     def __str__(self):
         """For use in the Django Admin Interface"""
-        start = self.start_datetime.strftime('%I:%M%p').lstrip('0')
-        end = self.end_datetime.strftime('%I:%M%p').lstrip('0')
+        start = self.start_datetime.strftime("%I:%M%p").lstrip("0")
+        end = self.end_datetime.strftime("%I:%M%p").lstrip("0")
         return f"{self.program.name}: {start} - {end} ({Weekday(self.start_datetime.weekday()).label})"
 
     def get_display_name(self):
         """For use in a user facing context anywhere else in the codebase"""
-        start = self.start_datetime.strftime('%I:%M%p').lstrip('0')
-        end = self.end_datetime.strftime('%I:%M%p').lstrip('0')
+        start = self.start_datetime.strftime("%I:%M%p").lstrip("0")
+        end = self.end_datetime.strftime("%I:%M%p").lstrip("0")
         return f"{start} - {end} ({Weekday(self.start_datetime.weekday()).label})"
 
     class Meta(BaseModel.Meta):
@@ -161,9 +203,12 @@ class TimeSlot(BaseModel):
 
     def course_teacher_availabilities(self):
         from esp.serializers import UserSerializer
+
         mapping = defaultdict(list)
         for teacher_availability in self.teacher_availabilities.all():
-            for course_teacher in teacher_availability.registration.course_teachers.all():
+            for (
+                course_teacher
+            ) in teacher_availability.registration.course_teachers.all():
                 user = teacher_availability.registration.user
                 if user in mapping[course_teacher.course_id]:
                     continue
@@ -188,9 +233,13 @@ class Classroom(BaseModel):
 # Program configuration
 #######################
 
+
 class ProgramStage(BaseModel):
     """ProgramStage represents configuration for a student-facing program stage, e.g. 'Initiation' or 'Post-Lottery'"""
-    program = models.ForeignKey(Program, related_name="stages", on_delete=models.PROTECT)
+
+    program = models.ForeignKey(
+        Program, related_name="stages", on_delete=models.PROTECT
+    )
     name = models.CharField(max_length=256)
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
@@ -215,9 +264,14 @@ class ProgramStage(BaseModel):
 
 class ProgramRegistrationStep(BaseModel):
     """ProgramRegistrationStep represents config for a single student interaction step within a program stage."""
-    program_stage = models.ForeignKey(ProgramStage, related_name="steps", on_delete=models.PROTECT)
+
+    program_stage = models.ForeignKey(
+        ProgramStage, related_name="steps", on_delete=models.PROTECT
+    )
     display_name = models.CharField(max_length=512, null=True, blank=True)
-    step_key = models.CharField(choices=StudentRegistrationStepType.choices, max_length=256)
+    step_key = models.CharField(
+        choices=StudentRegistrationStepType.choices, max_length=256
+    )
     required_for_stage_completion = models.BooleanField(default=True)
     display_after_completion = models.BooleanField(default=True)
     allow_changes_after_completion = models.BooleanField(default=True)
@@ -238,10 +292,13 @@ class TeacherProgramRegistrationStep(BaseModel):
     TeacherProgramRegistrationStep represents an (ordered) step in the teacher registration process.
     Unlike student registration, teacher registration is not split into phases; instead, all active steps are displayed.
     """
+
     program = models.ForeignKey(
         Program, related_name="teacher_registration_steps", on_delete=models.PROTECT
     )
-    step_key = models.CharField(choices=TeacherRegistrationStepType.choices, max_length=128)
+    step_key = models.CharField(
+        choices=TeacherRegistrationStepType.choices, max_length=128
+    )
     display_name = models.CharField(max_length=512, null=True, blank=True)
     access_start_date = models.DateTimeField()
     access_end_date = models.DateTimeField()
@@ -311,7 +368,9 @@ class PreferenceEntryCategory(BaseModel):
 
 
 class ExternalProgramForm(BaseModel):
-    program = models.ForeignKey(Program, related_name="external_forms", on_delete=models.PROTECT)
+    program = models.ForeignKey(
+        Program, related_name="external_forms", on_delete=models.PROTECT
+    )
     user_type = models.CharField(max_length=64, choices=UserType.choices)
     integration = models.CharField(max_length=64, choices=FormIntegration.choices)
     integration_id = models.CharField(max_length=256, null=True, blank=True)
@@ -327,21 +386,41 @@ class ProgramTag(BaseModel):
     programs = models.ManyToManyField(Program, related_name="tags", blank=True)
     tag = models.CharField(max_length=256)
     tag_category = models.CharField(
-        choices=ProgramTagCategory.choices, default=ProgramTagCategory.other, max_length=128
+        choices=ProgramTagCategory.choices,
+        default=ProgramTagCategory.other,
+        max_length=128,
     )
 
     def __str__(self):
         return self.tag
 
 
-class CourseTag(BaseModel):
+class CourseCategory(BaseModel):
     courses = models.ManyToManyField(Course, related_name="tags", blank=True)
     tag = models.CharField(max_length=256)
     display_name = models.CharField(max_length=256, null=True, blank=True)
-    tag_category = models.CharField(choices=CourseTagCategory.choices, default=CourseTagCategory.other, max_length=128)
+    tag_category = models.CharField(
+        choices=CourseCategoryCategory.choices,
+        default=CourseCategoryCategory.other,
+        max_length=128,
+    )
     editable_by_teachers = models.BooleanField()
     viewable_by_teachers = models.BooleanField()
     viewable_by_students = models.BooleanField()
+
+    def __str__(self):
+        return self.tag
+
+
+class CourseFlag(BaseModel):
+    courses = models.ManyToManyField(Course, related_name="flags", blank=True)
+    tag = models.CharField(max_length=256)
+    display_name = models.CharField(max_length=256, null=True, blank=True)
+    tag_category = models.CharField(
+        choices=CourseFlagCategory.choices,
+        default=CourseFlagCategory.other,
+        max_length=128,
+    )
 
     def __str__(self):
         return self.tag
@@ -351,7 +430,9 @@ class ClassroomTag(BaseModel):
     classrooms = models.ManyToManyField(Classroom, related_name="tags", blank=True)
     tag = models.CharField(max_length=256, unique=True)
     tag_category = models.CharField(
-        choices=ClassroomTagCategory.choices, max_length=128, default=ClassroomTagCategory.other
+        choices=ClassroomTagCategory.choices,
+        max_length=128,
+        default=ClassroomTagCategory.other,
     )
 
     def __str__(self):
@@ -359,7 +440,9 @@ class ClassroomTag(BaseModel):
 
 
 class PurchaseableItem(BaseModel):
-    program = models.ForeignKey(Program, related_name="purchase_items", on_delete=models.PROTECT)
+    program = models.ForeignKey(
+        Program, related_name="purchase_items", on_delete=models.PROTECT
+    )
     item_name = models.CharField(max_length=250)
     description = models.TextField(blank=True, null=True)
     price = models.DecimalField(max_digits=6, decimal_places=2)
