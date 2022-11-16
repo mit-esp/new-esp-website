@@ -12,6 +12,7 @@ admin.site.register(program_models.ClassroomTag)
 admin.site.register(program_models.CourseTag)
 admin.site.register(program_models.PreferenceEntryCategory)
 admin.site.register(program_models.PurchaseableItem)
+admin.site.register(program_registration_models.ProgramRegistration)
 admin.site.register(program_models.ProgramRegistrationStep)
 admin.site.register(program_models.ProgramTag)
 admin.site.register(program_models.TeacherProgramRegistrationStep)
@@ -20,6 +21,7 @@ admin.site.register(program_models.ExternalProgramForm)
 admin.site.register(program_registration_models.ClassPreference)
 admin.site.register(program_registration_models.CompletedRegistrationStep)
 admin.site.register(program_registration_models.StudentProfile)
+admin.site.register(program_registration_models.TeacherProfile)
 
 
 class ProgramRegistrationStepInline(admin.StackedInline):
