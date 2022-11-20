@@ -97,11 +97,11 @@ class PreferenceEntryConfigurationAdmin(admin.ModelAdmin):
     ]
 
 
-class CourseTagInline(admin.TabularInline):
-    model = program_models.CourseTag.courses.through
+class CourseCategoryInline(admin.TabularInline):
+    model = program_models.CourseCategory.courses.through
     extra = 0
 
 
 @admin.register(program_models.Course)
 class CourseAdmin(admin.ModelAdmin):
-    inlines = [CourseTagInline]
+    inlines = [CourseCategoryInline]

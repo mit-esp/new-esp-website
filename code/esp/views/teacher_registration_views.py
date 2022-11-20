@@ -8,7 +8,7 @@ from django.views.generic.detail import DetailView, SingleObjectMixin
 
 from common.constants import PermissionType, UserType
 from common.views import PermissionRequiredMixin
-from esp.constants import CourseTagCategory, TeacherRegistrationStepType
+from esp.constants import CourseCategoryCategory, TeacherRegistrationStepType
 from esp.forms import (AddCoTeacherForm, TeacherCourseForm,
                        UpdateTeacherProfileForm)
 from esp.models.program_models import (Course, Program,
@@ -244,7 +244,7 @@ class TeacherEditCourseView(PermissionRequiredMixin, UpdateView):
 
     def get_initial(self):
         return {
-            "categories": self.object.tags.filter(tag_category=CourseTagCategory.course_category)
+            "categories": self.object.tags.filter(tag_category=CourseCategoryCategory.course_category)
         }
 
     def get_success_url(self):
