@@ -171,8 +171,8 @@ class Course(BaseModel):
     )
     name = models.CharField(max_length=2048, verbose_name="Class title")
     display_id = models.BigIntegerField(null=True, blank=True)
-    start_date = models.DateTimeField(null=True, blank=True)
-    end_date = models.DateTimeField(null=True, blank=True)
+    # start_date = models.DateTimeField(null=True, blank=True)
+    # end_date = models.DateTimeField(null=True, blank=True)
     category = models.ForeignKey(
         CourseCategory, related_name="category", on_delete=models.PROTECT
     )
@@ -221,7 +221,7 @@ class Course(BaseModel):
         null=True, blank=True, help_text="Notes for admin review - leave blank if none"
     )
     admin_notes = models.TextField(null=True, blank=True)
-    flags = models.ManyToManyField(CourseCategory, related_name="flags", blank=True)
+    flags = models.ManyToManyField(CourseFlag, related_name="flags", blank=True)
     planned_purchases = models.TextField(null=True, blank=True)
 
     class Meta:
