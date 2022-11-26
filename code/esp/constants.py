@@ -55,6 +55,7 @@ class CourseDifficulty(IntegerChoices):
     easy = 1
     moderate = 2
     challenging = 3
+    very_challenging = 4
 
 
 class MITAffiliation(TextChoices):

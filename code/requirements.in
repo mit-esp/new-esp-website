@@ -4,14 +4,15 @@ requests
 psycopg2
 ujson
 
+django-compressor
+django-cors-headers
 django-crispy-forms
+django-multiform-views
+django-rest-framework
+django-sass-processor
+django-ses
 django-storages
 djangorestframework
-django-cors-headers
-django-ses
-django-compressor
-django-sass-processor
-django-multiform-views
 libsass
 
 django-simple-history
@@ -20,6 +21,13 @@ sentry-sdk
 gunicorn
 sentry-sdk
 factory-boy
+
+pyqt5
+pyqtwebengine
+
+future
+pathlib
+ruamel-yaml
 
 # Development Convenience
 django-extensions
@@ -35,3 +43,6 @@ sphinx
 
 # Security
 cryptography==3.3.2  # Lock to 3.3.2 if running into "No module named 'setuptools_rust'" error
+
+# Sphinx
+sphinx_rtd_theme

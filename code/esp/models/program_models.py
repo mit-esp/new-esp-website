@@ -1,3 +1,8 @@
+"""
+Models that are relevant to creating and managing programs and courses.
+TODO separate these models into different categories? e.g. program-relevant, course-relevant
+"""
+
 from collections import defaultdict
 
 from django.db import models
@@ -24,13 +29,11 @@ class ProgramConfiguration(BaseModel):
     """
     ProgramConfiguration represents a set of configuration for programs, e.g. stages and registration steps.
 
-    Fields:
-     * saved_as_preset (BooleanField)
-     * name (CharField)
-     * description (TextField)
-
-    Foreign fields:
-     * PreferenceEntryRound
+    Args:
+        saved_as_preset (models.BooleanField): True if this program configuration is saved as a preset, False otherwise
+        name (models.CharField): name of program configuration
+        description (models.TextField): description
+        PreferenceEntryRounds (PreferenceEntryRound): 
     """
 
     saved_as_preset = models.BooleanField(default=False)
@@ -46,9 +49,10 @@ class CourseCategory(BaseModel):
     Generally speaking, the category of class (art, science, math, CS, ...).
     This should be viewable by everyone and editable by teachers.
 
-    Fields:
-     * display_name (CharField): name of category
-     * symbol (CharField): single-letter abbreviation (e.g. math = M)
+    Args:
+        display_name (CharField): name of category
+        symbol (CharField): single-letter abbreviation (e.g. math = M)
+        tag_category (CourseCategoryCategory): TODO remove
 
     """
 
@@ -69,10 +73,10 @@ class CourseFlag(BaseModel):
     Flags that ESP admins use to indicate information about a course
     (e.g. review stage, needs director review, specific classroom requests)
 
-    Fields:
-     * tag (CharField)
-     * display_name (CharField): name of flag
-     * tag_category (CharField)
+    Args:
+        tag (models.CharField)
+        display_name (models.CharField): name of flag
+        tag_category (models.CharField)
     """
 
     tag = models.CharField(max_length=256)
@@ -88,26 +92,25 @@ class CourseFlag(BaseModel):
 
 
 class Program(BaseModel):
-    """Program represents an ESP program instance, e.g. Splash 2021
+    """An ESP program instance, e.g. Splash 2021
     
-    Fields:
-     * name (CharField): name of the program
-     * program_type (ProgramType): type of program (e.g. Splash, Spark, ...)
-     * min_grade_level (GradeLevel)
-     * max_grade_level (GradeLevel)
-     * description (TextField)
-     * notes (TextField)
-     * start_date (DateTimeField)
-     * end_date (DateTimeField)
-     * number_of_weeks (IntegerField)
-     * time_block_minutes (IntegerField)
-    
-    Foreign fields:
-     * ProgramConfiguration
-     * ProgramStage
-     * TeacherProgramRegistrationStep
-     * TimeSlot
-     * ExternalProgramForm
+    Args:
+        name (models.CharField): name of the program
+        program_type (ProgramType): type of program (e.g. Splash, Spark, ...)
+        min_grade_level (GradeLevel): lowest allowed student grade level
+        max_grade_level (GradeLevel): highest allowed student grade level
+        description (models.TextField): brief description of the program
+        notes (models.TextField): for admin use
+        start_date (models.DateTimeField): start date of program
+        end_date (models.DateTimeField): end date of program
+        number_of_weeks (models.IntegerField): number of weeks
+        time_block_minutes (models.IntegerField): duration of each course block
+        program_configuration (ProgramConfiguration): 
+
+        program_stages (ProgramStage): set of ProgramStages
+        teacher_program_registration_steps (TeacherProgramRegistrationStep): set of TeacherProgramRegistrationSteps
+        timeslots (TimeSlot): set of all allowed TimeSlots for this program
+        external_program_forms (ExternalProgramForm): set of ExternalProgramForms
 
     """
 
@@ -164,6 +167,27 @@ class Course(BaseModel):
     """
     Course represents an ESP class in a specific program (named to avoid reserved word 'class' conflicts).
     It is still referred to as 'class' in urls and on the frontend to match existing terminology.
+
+    Args:
+        program (Program): program in which this course is offered
+        name (models.CharField): course title
+        display_id (models.BigIntegerField): unique ID for this course; should be automatically generated?
+        category (CourseCategory): subject area of this course (e.g. CS, science, arts, ...)
+        description (models.TextField): publicly visible course description
+        max_section_size (models.IntegerField): capacity for one section of this course
+        max_sections (models.IntegerField): maximum number of sections for this course that could be taught
+        time_slots_per_session (models.IntegerField): number of time slots one section takes (i.e. how long)
+        number_of_weeks (models.IntegerField): number of weeks this class will last. This may be relevant to HSSPs (as of 11/2022)
+        sessions_per_week (models.IntegerField): number of times a section of this course meets per week
+        prerequisites (models.TextField): prerequisites for taking this course, if any
+        min_grade_level (GradeLevel): lowest eligible grade level for this course
+        max_grade_level (GradeLevel): highest eligible grade level for this course
+        difficulty (CourseDifficulty): difficulty rating of this course (1-4)
+        status (CourseStatus): registration status of this course (e.g. accepted, not reviewed)
+        teacher_notes (models.TextField): notes from teachers to admins
+        admin_notes (models.TextField): notes made by admins
+        flags (CourseFlag): admin flags for this course
+        planned_purchases (models.TextField): planned purchases (e.g. class supplies) for this course
     """
 
     program = models.ForeignKey(
