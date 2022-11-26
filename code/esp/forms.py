@@ -150,12 +150,6 @@ class TeacherCourseForm(CrispyFormMixin, ModelForm):
         queryset=CourseCategory.objects.filter(tag_category=CourseCategoryCategory.course_category),
         help_text="Hold down “Control”, or “Command” on a Mac, to select more than one."
     )
-    additional_tags = forms.ModelMultipleChoiceField(
-        queryset=CourseCategory.objects.exclude(
-            tag_category=CourseCategoryCategory.course_category
-        ).filter(editable_by_teachers=True),
-        required=False,
-    )
 
     class Meta:
         model = Course

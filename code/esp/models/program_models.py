@@ -21,7 +21,17 @@ from esp.constants import (
 
 
 class ProgramConfiguration(BaseModel):
-    """ProgramConfiguration represents a set of configuration for programs, e.g. stages and registration steps."""
+    """
+    ProgramConfiguration represents a set of configuration for programs, e.g. stages and registration steps.
+
+    Fields:
+     * saved_as_preset (BooleanField)
+     * name (CharField)
+     * description (TextField)
+
+    Foreign fields:
+     * PreferenceEntryRound
+    """
 
     saved_as_preset = models.BooleanField(default=False)
     name = models.CharField(max_length=512, null=True, blank=True)
@@ -31,8 +41,75 @@ class ProgramConfiguration(BaseModel):
         return self.name
 
 
+class CourseCategory(BaseModel):
+    """
+    Generally speaking, the category of class (art, science, math, CS, ...).
+    This should be viewable by everyone and editable by teachers.
+
+    Fields:
+     * display_name (CharField): name of category
+     * symbol (CharField): single-letter abbreviation (e.g. math = M)
+
+    """
+
+    display_name = models.CharField(max_length=256, null=True, blank=True)
+    symbol = models.CharField(max_length=256)
+    tag_category = models.CharField(
+        choices=CourseCategoryCategory.choices,
+        default=CourseCategoryCategory.other,
+        max_length=128,
+    )
+
+    def __str__(self):
+        return self.symbol
+
+
+class CourseFlag(BaseModel):
+    """
+    Flags that ESP admins use to indicate information about a course
+    (e.g. review stage, needs director review, specific classroom requests)
+
+    Fields:
+     * tag (CharField)
+     * display_name (CharField): name of flag
+     * tag_category (CharField)
+    """
+
+    tag = models.CharField(max_length=256)
+    display_name = models.CharField(max_length=256, null=True, blank=True)
+    tag_category = models.CharField(
+        choices=CourseFlagCategory.choices,
+        default=CourseFlagCategory.other,
+        max_length=128,
+    )
+
+    def __str__(self):
+        return self.tag
+
+
 class Program(BaseModel):
-    """Program represents an ESP program instance, e.g. Splash 2021"""
+    """Program represents an ESP program instance, e.g. Splash 2021
+    
+    Fields:
+     * name (CharField): name of the program
+     * program_type (ProgramType): type of program (e.g. Splash, Spark, ...)
+     * min_grade_level (GradeLevel)
+     * max_grade_level (GradeLevel)
+     * description (TextField)
+     * notes (TextField)
+     * start_date (DateTimeField)
+     * end_date (DateTimeField)
+     * number_of_weeks (IntegerField)
+     * time_block_minutes (IntegerField)
+    
+    Foreign fields:
+     * ProgramConfiguration
+     * ProgramStage
+     * TeacherProgramRegistrationStep
+     * TimeSlot
+     * ExternalProgramForm
+
+    """
 
     program_configuration = models.ForeignKey(
         ProgramConfiguration, on_delete=models.PROTECT, related_name="+", null=True
@@ -65,7 +142,12 @@ class Program(BaseModel):
     def show_to_teachers(self):
         if not self.teacher_registration_steps.exists():
             return False
-        if timezone.now() < self.teacher_registration_steps.aggregate(start=Min("access_start_date"))["start"]:
+        if (
+            timezone.now()
+            < self.teacher_registration_steps.aggregate(start=Min("access_start_date"))[
+                "start"
+            ]
+        ):
             return False
         if self.archive_on is not None and self.archive_on < timezone.now():
             return False
@@ -91,6 +173,9 @@ class Course(BaseModel):
     display_id = models.BigIntegerField(null=True, blank=True)
     start_date = models.DateTimeField(null=True, blank=True)
     end_date = models.DateTimeField(null=True, blank=True)
+    category = models.ForeignKey(
+        CourseCategory, related_name="category", on_delete=models.PROTECT
+    )
     description = models.TextField(
         help_text="A description of the class that will be shown to students."
     )
@@ -136,6 +221,7 @@ class Course(BaseModel):
         null=True, blank=True, help_text="Notes for admin review - leave blank if none"
     )
     admin_notes = models.TextField(null=True, blank=True)
+    flags = models.ManyToManyField(CourseCategory, related_name="flags", blank=True)
     planned_purchases = models.TextField(null=True, blank=True)
 
     class Meta:
@@ -179,6 +265,7 @@ class Course(BaseModel):
 
 
 class TimeSlot(BaseModel):
+    """A single time block/slot that a course can occupy."""
     program = models.ForeignKey(
         Program, related_name="time_slots", on_delete=models.PROTECT
     )
@@ -221,12 +308,26 @@ class TimeSlot(BaseModel):
 
 
 class Classroom(BaseModel):
+    """Information about a particular MIT classroom."""
     name = models.CharField(max_length=512)
     description = models.TextField(null=True, blank=True)
     max_occupants = models.IntegerField()
 
     def __str__(self):
         return self.name
+
+
+class ClassroomTag(BaseModel):
+    classrooms = models.ManyToManyField(Classroom, related_name="tags", blank=True)
+    tag = models.CharField(max_length=256, unique=True)
+    tag_category = models.CharField(
+        choices=ClassroomTagCategory.choices,
+        max_length=128,
+        default=ClassroomTagCategory.other,
+    )
+
+    def __str__(self):
+        return self.tag
 
 
 #######################
@@ -389,57 +490,6 @@ class ProgramTag(BaseModel):
         choices=ProgramTagCategory.choices,
         default=ProgramTagCategory.other,
         max_length=128,
-    )
-
-    def __str__(self):
-        return self.tag
-
-
-class CourseCategory(BaseModel):
-    """
-    Generally speaking, the category of class (art, science, math, CS, ...)
-    """
-    courses = models.ManyToManyField(Course, related_name="tags", blank=True)
-    tag = models.CharField(max_length=256)
-    display_name = models.CharField(max_length=256, null=True, blank=True)
-    tag_category = models.CharField(
-        choices=CourseCategoryCategory.choices,
-        default=CourseCategoryCategory.other,
-        max_length=128,
-    )
-    editable_by_teachers = models.BooleanField()
-    viewable_by_teachers = models.BooleanField()
-    viewable_by_students = models.BooleanField()
-
-    def __str__(self):
-        return self.tag
-
-
-class CourseFlag(BaseModel):
-    """
-    Flags that ESP admins use to indicate information about a course
-    (e.g. review stage, needs director review, specific classroom requests)
-    """
-    courses = models.ManyToManyField(Course, related_name="flags", blank=True)
-    tag = models.CharField(max_length=256)
-    display_name = models.CharField(max_length=256, null=True, blank=True)
-    tag_category = models.CharField(
-        choices=CourseFlagCategory.choices,
-        default=CourseFlagCategory.other,
-        max_length=128,
-    )
-
-    def __str__(self):
-        return self.tag
-
-
-class ClassroomTag(BaseModel):
-    classrooms = models.ManyToManyField(Classroom, related_name="tags", blank=True)
-    tag = models.CharField(max_length=256, unique=True)
-    tag_category = models.CharField(
-        choices=ClassroomTagCategory.choices,
-        max_length=128,
-        default=ClassroomTagCategory.other,
     )
 
     def __str__(self):
