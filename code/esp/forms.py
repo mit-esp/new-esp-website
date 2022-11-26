@@ -12,12 +12,12 @@ from common.constants import (REGISTRATION_USER_TYPE_CHOICES, GradeLevel,
 from common.forms import (CrispyFormMixin, HiddenOrderingInputFormset,
                           MultiFormMixin)
 from common.models import User
-from esp.constants import (CourseDifficulty, CourseTagCategory,
+from esp.constants import (CourseDifficulty, CourseCategoryCategory,
                            StudentRegistrationStepType,
                            TeacherRegistrationStepType)
 from esp.models.course_scheduling_models import (ClassroomTimeSlot,
                                                  CourseSection)
-from esp.models.program_models import Course, CourseTag, Program, ProgramStage
+from esp.models.program_models import Course, CourseCategory, Program, ProgramStage
 from esp.models.program_registration_models import (Comment,
                                                     FinancialAidRequest,
                                                     ProgramRegistrationStep,
@@ -147,14 +147,8 @@ class TeacherCourseForm(CrispyFormMixin, ModelForm):
     submit_label = "Create Class"
 
     categories = forms.ModelMultipleChoiceField(
-        queryset=CourseTag.objects.filter(tag_category=CourseTagCategory.course_category),
+        queryset=CourseCategory.objects.filter(tag_category=CourseCategoryCategory.course_category),
         help_text="Hold down “Control”, or “Command” on a Mac, to select more than one."
-    )
-    additional_tags = forms.ModelMultipleChoiceField(
-        queryset=CourseTag.objects.exclude(
-            tag_category=CourseTagCategory.course_category
-        ).filter(editable_by_teachers=True),
-        required=False,
     )
 
     class Meta:
@@ -184,8 +178,8 @@ class TeacherCourseForm(CrispyFormMixin, ModelForm):
             self.submit_label = "Update class"
         super().__init__(*args, **kwargs)
         if self.instance:
-            self.fields["categories"].initial = self.instance.tags.filter(tag_category=CourseTagCategory.course_category)
-            self.fields["additional_tags"].initial = self.instance.tags.exclude(tag_category=CourseTagCategory.course_category)
+            self.fields["categories"].initial = self.instance.tags.filter(tag_category=CourseCategoryCategory.course_category)
+            self.fields["additional_tags"].initial = self.instance.tags.exclude(tag_category=CourseCategoryCategory.course_category)
         if not self.fields["additional_tags"].queryset.exists():
             self.fields.pop("additional_tags")
         if not is_update:
@@ -208,7 +202,7 @@ class AdminCourseForm(TeacherCourseForm):
     submit_label = "Update Class"
 
     additional_tags = forms.ModelMultipleChoiceField(
-        queryset=CourseTag.objects.exclude(tag_category=CourseTagCategory.course_category),
+        queryset=CourseCategory.objects.exclude(tag_category=CourseCategoryCategory.course_category),
         required=False,
     )
 

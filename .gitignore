@@ -61,3 +61,6 @@ docs/_build/
 **/dist/*
 node_modules/
 *.log*
+
+.gitignore
+compile

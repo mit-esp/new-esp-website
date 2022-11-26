@@ -141,7 +141,8 @@ class CourseSerializer(serializers.ModelSerializer):
 
 
 class TimeSlotSerializer(serializers.ModelSerializer):
-    course_teacher_availabilities = serializers.JSONField("course_teacher_availabilities")
+    # what kwargs? "course_teacher_availabilities"
+    course_teacher_availabilities = serializers.JSONField()
 
     class Meta:
         model = TimeSlot

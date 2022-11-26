@@ -9,9 +9,12 @@ admin.site.register(course_scheduling_models.ClassroomTimeSlot)
 # admin.site.register(course_scheduling_models.ClassroomConstraint)
 admin.site.register(program_models.Classroom)
 admin.site.register(program_models.ClassroomTag)
-admin.site.register(program_models.CourseTag)
+admin.site.register(program_models.Course)
+admin.site.register(program_models.CourseCategory)
+admin.site.register(program_models.CourseFlag)
 admin.site.register(program_models.PreferenceEntryCategory)
 admin.site.register(program_models.PurchaseableItem)
+admin.site.register(program_registration_models.ProgramRegistration)
 admin.site.register(program_models.ProgramRegistrationStep)
 admin.site.register(program_models.ProgramTag)
 admin.site.register(program_models.TeacherProgramRegistrationStep)
@@ -20,6 +23,7 @@ admin.site.register(program_models.ExternalProgramForm)
 admin.site.register(program_registration_models.ClassPreference)
 admin.site.register(program_registration_models.CompletedRegistrationStep)
 admin.site.register(program_registration_models.StudentProfile)
+admin.site.register(program_registration_models.TeacherProfile)
 
 
 class ProgramRegistrationStepInline(admin.StackedInline):
@@ -94,11 +98,11 @@ class PreferenceEntryConfigurationAdmin(admin.ModelAdmin):
     ]
 
 
-class CourseTagInline(admin.TabularInline):
-    model = program_models.CourseTag.courses.through
-    extra = 0
+# class CourseCategoryInline(admin.TabularInline):
+#     model = program_models.CourseCategory.courses.through
+#     extra = 0
 
 
-@admin.register(program_models.Course)
-class CourseAdmin(admin.ModelAdmin):
-    inlines = [CourseTagInline]
+# @admin.register(program_models.Course)
+# class CourseAdmin(admin.ModelAdmin):
+#     inlines = [CourseCategoryInline]
