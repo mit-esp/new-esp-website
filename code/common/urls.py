@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.conf.urls import url
+from django.urls import re_path
 from django.contrib.auth import views as auth_views
 from django.urls import include, path
 
@@ -24,5 +24,5 @@ if settings.DEBUG_TOOLBAR:
     import debug_toolbar
 
     urlpatterns += [
-        url(r'^__debug__/', include(debug_toolbar.urls)),
+        re_path(r'^__debug__/', include(debug_toolbar.urls)),
     ]
