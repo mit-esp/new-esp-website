@@ -23,7 +23,7 @@ django.setup()
 
 # -- Project information -----------------------------------------------------
 
-project = 'new-esp-website'
+project = 'ESPider'
 copyright = '2021, Zagaran'
 author = 'Zagaran'
 

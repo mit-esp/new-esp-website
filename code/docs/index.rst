@@ -1,4 +1,4 @@
-Welcome to new-esp-website's documentation!
+Welcome to ESPider's documentation!
 ===========================================
 
 .. automodule:: new-website-esp.esp
