@@ -1,3 +1,7 @@
+"""
+Admin panel control -- all models that are registered here will show up on the admin django panel.
+"""
+
 from django.contrib import admin
 
 from esp.models import (course_scheduling_models, program_models,
