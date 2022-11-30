@@ -289,7 +289,14 @@ class Course(BaseModel):
 
 
 class TimeSlot(BaseModel):
-    """A single time block/slot that a course can occupy."""
+    """
+    A single time block/slot that a course can occupy.
+
+    Args:
+        program (Program): program that this timeslot belongs to
+        start_datetime (models.DateTimeField): starting date/time of the timeslot
+        end_datetime (models.DateTimeField): ending date/time of the timeslot
+    """
     program = models.ForeignKey(
         Program, related_name="time_slots", on_delete=models.PROTECT
     )
@@ -332,7 +339,15 @@ class TimeSlot(BaseModel):
 
 
 class Classroom(BaseModel):
-    """Information about a particular MIT classroom."""
+    """
+    Information about a particular MIT classroom.
+
+    Args:
+        name (models.CharField): name of the classroom
+        description (models.TextField): freeform description of classroom
+        max_occupants (models.IntegerField): classroom capacity
+    """
+    # TODO: add types of classrooms
     name = models.CharField(max_length=512)
     description = models.TextField(null=True, blank=True)
     max_occupants = models.IntegerField()
@@ -342,6 +357,14 @@ class Classroom(BaseModel):
 
 
 class ClassroomTag(BaseModel):
+    """
+    Tags that ESP admins use to indicate information about a classroom
+
+    Args:
+        classrooms (Classroom): TODO remove
+        tag (models.CharField): name of tag
+        tag_category (models.CharField)
+    """
     classrooms = models.ManyToManyField(Classroom, related_name="tags", blank=True)
     tag = models.CharField(max_length=256, unique=True)
     tag_category = models.CharField(
@@ -360,7 +383,15 @@ class ClassroomTag(BaseModel):
 
 
 class ProgramStage(BaseModel):
-    """ProgramStage represents configuration for a student-facing program stage, e.g. 'Initiation' or 'Post-Lottery'"""
+    """
+    ProgramStage represents configuration for a student-facing program stage, e.g. 'Initiation' or 'Post-Lottery'
+
+    Args:
+        program (Program): program that this ProgramStage belongs to
+        name (models.CharField): name of the program stage
+        start_date (models.DateTimeField): start date of this program stage
+        end_date (models.DateTimeField): end date of this program stage
+    """
 
     program = models.ForeignKey(
         Program, related_name="stages", on_delete=models.PROTECT
@@ -388,7 +419,17 @@ class ProgramStage(BaseModel):
 
 
 class ProgramRegistrationStep(BaseModel):
-    """ProgramRegistrationStep represents config for a single student interaction step within a program stage."""
+    """
+    ProgramRegistrationStep represents config for a single student interaction step within a program stage.
+    
+    Args:
+        program_stage (ProgramStage): program stage that this step is part of
+        display_name (models.CharField): name of this step
+        step_key (StudentRegistrationStepType): type of registration step (e.g. verify profile, lottery preferences)
+        required_for_stage_completion (models.BooleanField): True if this step is required, False otherwise
+        display_after_completion (models.BooleanField): True if this step is visible after completion, False otherwise
+        allow_changes_after_completion (models.BooleanField): True if this step is modifiable after completion, False otherwise
+    """
 
     program_stage = models.ForeignKey(
         ProgramStage, related_name="steps", on_delete=models.PROTECT
