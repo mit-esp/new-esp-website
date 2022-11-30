@@ -1,7 +1,9 @@
-# MIT ESP
+# MIT ESP new website
 Previous code repository: https://github.com/learning-unlimited/ESP-Website/tree/mit-prod
 
 A website to help manage the logistics of large short-term educational programs. This website was written by the [MIT Educational Studies Program](https://esp.mit.edu) to support [Splash](https://esp.mit.edu/learn/Splash) and other educational programs.
+
+Documentation and setup instructions can be found at https://mit-esp.github.io/new-esp-website/.
 
 ## Setup
 
