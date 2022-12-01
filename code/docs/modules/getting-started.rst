@@ -60,7 +60,3 @@ The Docker image comes with a few dummy accounts to access different parts of th
 +--------------+----------+----------+
 |    Student   | student  | password |
 +--------------+----------+----------+
-
-
-Navigating the codebase
-=======================
