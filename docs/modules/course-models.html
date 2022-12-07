@@ -1,0 +1,1285 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Course scheduling models &mdash; ESPider 0.1.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Program models" href="program-models.html" />
+    <link rel="prev" title="Deployment" href="deployment.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> ESPider
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting-started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deployment.html">Deployment</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Course scheduling models</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#esp.models.course_scheduling_models.ClassroomConstraint"><code class="docutils literal notranslate"><span class="pre">ClassroomConstraint</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.ClassroomConstraint.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">ClassroomConstraint.DoesNotExist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.ClassroomConstraint.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">ClassroomConstraint.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.ClassroomConstraint.constraint"><code class="docutils literal notranslate"><span class="pre">ClassroomConstraint.constraint</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.ClassroomConstraint.course"><code class="docutils literal notranslate"><span class="pre">ClassroomConstraint.course</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.ClassroomConstraint.get_next_by_created_on"><code class="docutils literal notranslate"><span class="pre">ClassroomConstraint.get_next_by_created_on()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.ClassroomConstraint.get_next_by_updated_on"><code class="docutils literal notranslate"><span class="pre">ClassroomConstraint.get_next_by_updated_on()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.ClassroomConstraint.get_previous_by_created_on"><code class="docutils literal notranslate"><span class="pre">ClassroomConstraint.get_previous_by_created_on()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.ClassroomConstraint.get_previous_by_updated_on"><code class="docutils literal notranslate"><span class="pre">ClassroomConstraint.get_previous_by_updated_on()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.ClassroomConstraint.get_require_all_tags_different_category_display"><code class="docutils literal notranslate"><span class="pre">ClassroomConstraint.get_require_all_tags_different_category_display()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.ClassroomConstraint.get_require_all_tags_same_category_display"><code class="docutils literal notranslate"><span class="pre">ClassroomConstraint.get_require_all_tags_same_category_display()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.ClassroomConstraint.history"><code class="docutils literal notranslate"><span class="pre">ClassroomConstraint.history</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.ClassroomConstraint.objects"><code class="docutils literal notranslate"><span class="pre">ClassroomConstraint.objects</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.ClassroomConstraint.require_all_tags_different_category"><code class="docutils literal notranslate"><span class="pre">ClassroomConstraint.require_all_tags_different_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.ClassroomConstraint.require_all_tags_same_category"><code class="docutils literal notranslate"><span class="pre">ClassroomConstraint.require_all_tags_same_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.ClassroomConstraint.required_classroom_tag"><code class="docutils literal notranslate"><span class="pre">ClassroomConstraint.required_classroom_tag</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.ClassroomConstraint.required_classroom_tag_id"><code class="docutils literal notranslate"><span class="pre">ClassroomConstraint.required_classroom_tag_id</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#esp.models.course_scheduling_models.ClassroomTimeSlot"><code class="docutils literal notranslate"><span class="pre">ClassroomTimeSlot</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.ClassroomTimeSlot.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">ClassroomTimeSlot.DoesNotExist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.ClassroomTimeSlot.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">ClassroomTimeSlot.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.ClassroomTimeSlot.classroom"><code class="docutils literal notranslate"><span class="pre">ClassroomTimeSlot.classroom</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.ClassroomTimeSlot.classroom_id"><code class="docutils literal notranslate"><span class="pre">ClassroomTimeSlot.classroom_id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.ClassroomTimeSlot.course_section"><code class="docutils literal notranslate"><span class="pre">ClassroomTimeSlot.course_section</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.ClassroomTimeSlot.course_section_id"><code class="docutils literal notranslate"><span class="pre">ClassroomTimeSlot.course_section_id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.ClassroomTimeSlot.get_next_by_created_on"><code class="docutils literal notranslate"><span class="pre">ClassroomTimeSlot.get_next_by_created_on()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.ClassroomTimeSlot.get_next_by_updated_on"><code class="docutils literal notranslate"><span class="pre">ClassroomTimeSlot.get_next_by_updated_on()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.ClassroomTimeSlot.get_previous_by_created_on"><code class="docutils literal notranslate"><span class="pre">ClassroomTimeSlot.get_previous_by_created_on()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.ClassroomTimeSlot.get_previous_by_updated_on"><code class="docutils literal notranslate"><span class="pre">ClassroomTimeSlot.get_previous_by_updated_on()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.ClassroomTimeSlot.history"><code class="docutils literal notranslate"><span class="pre">ClassroomTimeSlot.history</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.ClassroomTimeSlot.objects"><code class="docutils literal notranslate"><span class="pre">ClassroomTimeSlot.objects</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.ClassroomTimeSlot.time_slot"><code class="docutils literal notranslate"><span class="pre">ClassroomTimeSlot.time_slot</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.ClassroomTimeSlot.time_slot_id"><code class="docutils literal notranslate"><span class="pre">ClassroomTimeSlot.time_slot_id</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#esp.models.course_scheduling_models.CourseSection"><code class="docutils literal notranslate"><span class="pre">CourseSection</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.CourseSection.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">CourseSection.DoesNotExist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.CourseSection.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">CourseSection.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.CourseSection.course"><code class="docutils literal notranslate"><span class="pre">CourseSection.course</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.CourseSection.course_id"><code class="docutils literal notranslate"><span class="pre">CourseSection.course_id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.CourseSection.display_id"><code class="docutils literal notranslate"><span class="pre">CourseSection.display_id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.CourseSection.get_next_by_created_on"><code class="docutils literal notranslate"><span class="pre">CourseSection.get_next_by_created_on()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.CourseSection.get_next_by_updated_on"><code class="docutils literal notranslate"><span class="pre">CourseSection.get_next_by_updated_on()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.CourseSection.get_next_display_id"><code class="docutils literal notranslate"><span class="pre">CourseSection.get_next_display_id()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.CourseSection.get_previous_by_created_on"><code class="docutils literal notranslate"><span class="pre">CourseSection.get_previous_by_created_on()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.CourseSection.get_previous_by_updated_on"><code class="docutils literal notranslate"><span class="pre">CourseSection.get_previous_by_updated_on()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.CourseSection.get_section_times"><code class="docutils literal notranslate"><span class="pre">CourseSection.get_section_times()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.CourseSection.history"><code class="docutils literal notranslate"><span class="pre">CourseSection.history</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.CourseSection.objects"><code class="docutils literal notranslate"><span class="pre">CourseSection.objects</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.CourseSection.preferences"><code class="docutils literal notranslate"><span class="pre">CourseSection.preferences</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.CourseSection.registrations"><code class="docutils literal notranslate"><span class="pre">CourseSection.registrations</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.CourseSection.save"><code class="docutils literal notranslate"><span class="pre">CourseSection.save()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.CourseSection.time_slots"><code class="docutils literal notranslate"><span class="pre">CourseSection.time_slots</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalClassroomConstraint"><code class="docutils literal notranslate"><span class="pre">HistoricalClassroomConstraint</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalClassroomConstraint.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">HistoricalClassroomConstraint.DoesNotExist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalClassroomConstraint.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">HistoricalClassroomConstraint.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalClassroomConstraint.constraint"><code class="docutils literal notranslate"><span class="pre">HistoricalClassroomConstraint.constraint</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalClassroomConstraint.created_on"><code class="docutils literal notranslate"><span class="pre">HistoricalClassroomConstraint.created_on</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalClassroomConstraint.get_default_history_user"><code class="docutils literal notranslate"><span class="pre">HistoricalClassroomConstraint.get_default_history_user()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalClassroomConstraint.get_history_type_display"><code class="docutils literal notranslate"><span class="pre">HistoricalClassroomConstraint.get_history_type_display()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalClassroomConstraint.get_next_by_created_on"><code class="docutils literal notranslate"><span class="pre">HistoricalClassroomConstraint.get_next_by_created_on()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalClassroomConstraint.get_next_by_history_date"><code class="docutils literal notranslate"><span class="pre">HistoricalClassroomConstraint.get_next_by_history_date()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalClassroomConstraint.get_next_by_updated_on"><code class="docutils literal notranslate"><span class="pre">HistoricalClassroomConstraint.get_next_by_updated_on()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalClassroomConstraint.get_previous_by_created_on"><code class="docutils literal notranslate"><span class="pre">HistoricalClassroomConstraint.get_previous_by_created_on()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalClassroomConstraint.get_previous_by_history_date"><code class="docutils literal notranslate"><span class="pre">HistoricalClassroomConstraint.get_previous_by_history_date()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalClassroomConstraint.get_previous_by_updated_on"><code class="docutils literal notranslate"><span class="pre">HistoricalClassroomConstraint.get_previous_by_updated_on()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalClassroomConstraint.get_require_all_tags_different_category_display"><code class="docutils literal notranslate"><span class="pre">HistoricalClassroomConstraint.get_require_all_tags_different_category_display()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalClassroomConstraint.get_require_all_tags_same_category_display"><code class="docutils literal notranslate"><span class="pre">HistoricalClassroomConstraint.get_require_all_tags_same_category_display()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalClassroomConstraint.history_change_reason"><code class="docutils literal notranslate"><span class="pre">HistoricalClassroomConstraint.history_change_reason</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalClassroomConstraint.history_date"><code class="docutils literal notranslate"><span class="pre">HistoricalClassroomConstraint.history_date</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalClassroomConstraint.history_id"><code class="docutils literal notranslate"><span class="pre">HistoricalClassroomConstraint.history_id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalClassroomConstraint.history_object"><code class="docutils literal notranslate"><span class="pre">HistoricalClassroomConstraint.history_object</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalClassroomConstraint.history_type"><code class="docutils literal notranslate"><span class="pre">HistoricalClassroomConstraint.history_type</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalClassroomConstraint.history_user"><code class="docutils literal notranslate"><span class="pre">HistoricalClassroomConstraint.history_user</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalClassroomConstraint.history_user_id"><code class="docutils literal notranslate"><span class="pre">HistoricalClassroomConstraint.history_user_id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalClassroomConstraint.id"><code class="docutils literal notranslate"><span class="pre">HistoricalClassroomConstraint.id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalClassroomConstraint.instance"><code class="docutils literal notranslate"><span class="pre">HistoricalClassroomConstraint.instance</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalClassroomConstraint.instance_type"><code class="docutils literal notranslate"><span class="pre">HistoricalClassroomConstraint.instance_type</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalClassroomConstraint.is_deleted"><code class="docutils literal notranslate"><span class="pre">HistoricalClassroomConstraint.is_deleted</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalClassroomConstraint.next_record"><code class="docutils literal notranslate"><span class="pre">HistoricalClassroomConstraint.next_record</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalClassroomConstraint.objects"><code class="docutils literal notranslate"><span class="pre">HistoricalClassroomConstraint.objects</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalClassroomConstraint.prev_record"><code class="docutils literal notranslate"><span class="pre">HistoricalClassroomConstraint.prev_record</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalClassroomConstraint.require_all_tags_different_category"><code class="docutils literal notranslate"><span class="pre">HistoricalClassroomConstraint.require_all_tags_different_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalClassroomConstraint.require_all_tags_same_category"><code class="docutils literal notranslate"><span class="pre">HistoricalClassroomConstraint.require_all_tags_same_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalClassroomConstraint.required_classroom_tag"><code class="docutils literal notranslate"><span class="pre">HistoricalClassroomConstraint.required_classroom_tag</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalClassroomConstraint.required_classroom_tag_id"><code class="docutils literal notranslate"><span class="pre">HistoricalClassroomConstraint.required_classroom_tag_id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalClassroomConstraint.revert_url"><code class="docutils literal notranslate"><span class="pre">HistoricalClassroomConstraint.revert_url()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalClassroomConstraint.updated_on"><code class="docutils literal notranslate"><span class="pre">HistoricalClassroomConstraint.updated_on</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalClassroomTimeSlot"><code class="docutils literal notranslate"><span class="pre">HistoricalClassroomTimeSlot</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">HistoricalClassroomTimeSlot.DoesNotExist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">HistoricalClassroomTimeSlot.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.classroom"><code class="docutils literal notranslate"><span class="pre">HistoricalClassroomTimeSlot.classroom</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.classroom_id"><code class="docutils literal notranslate"><span class="pre">HistoricalClassroomTimeSlot.classroom_id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.course_section"><code class="docutils literal notranslate"><span class="pre">HistoricalClassroomTimeSlot.course_section</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.course_section_id"><code class="docutils literal notranslate"><span class="pre">HistoricalClassroomTimeSlot.course_section_id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.created_on"><code class="docutils literal notranslate"><span class="pre">HistoricalClassroomTimeSlot.created_on</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.get_default_history_user"><code class="docutils literal notranslate"><span class="pre">HistoricalClassroomTimeSlot.get_default_history_user()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.get_history_type_display"><code class="docutils literal notranslate"><span class="pre">HistoricalClassroomTimeSlot.get_history_type_display()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.get_next_by_created_on"><code class="docutils literal notranslate"><span class="pre">HistoricalClassroomTimeSlot.get_next_by_created_on()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.get_next_by_history_date"><code class="docutils literal notranslate"><span class="pre">HistoricalClassroomTimeSlot.get_next_by_history_date()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.get_next_by_updated_on"><code class="docutils literal notranslate"><span class="pre">HistoricalClassroomTimeSlot.get_next_by_updated_on()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.get_previous_by_created_on"><code class="docutils literal notranslate"><span class="pre">HistoricalClassroomTimeSlot.get_previous_by_created_on()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.get_previous_by_history_date"><code class="docutils literal notranslate"><span class="pre">HistoricalClassroomTimeSlot.get_previous_by_history_date()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.get_previous_by_updated_on"><code class="docutils literal notranslate"><span class="pre">HistoricalClassroomTimeSlot.get_previous_by_updated_on()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.history_change_reason"><code class="docutils literal notranslate"><span class="pre">HistoricalClassroomTimeSlot.history_change_reason</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.history_date"><code class="docutils literal notranslate"><span class="pre">HistoricalClassroomTimeSlot.history_date</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.history_id"><code class="docutils literal notranslate"><span class="pre">HistoricalClassroomTimeSlot.history_id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.history_object"><code class="docutils literal notranslate"><span class="pre">HistoricalClassroomTimeSlot.history_object</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.history_type"><code class="docutils literal notranslate"><span class="pre">HistoricalClassroomTimeSlot.history_type</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.history_user"><code class="docutils literal notranslate"><span class="pre">HistoricalClassroomTimeSlot.history_user</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.history_user_id"><code class="docutils literal notranslate"><span class="pre">HistoricalClassroomTimeSlot.history_user_id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.id"><code class="docutils literal notranslate"><span class="pre">HistoricalClassroomTimeSlot.id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.instance"><code class="docutils literal notranslate"><span class="pre">HistoricalClassroomTimeSlot.instance</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.instance_type"><code class="docutils literal notranslate"><span class="pre">HistoricalClassroomTimeSlot.instance_type</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.is_deleted"><code class="docutils literal notranslate"><span class="pre">HistoricalClassroomTimeSlot.is_deleted</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.next_record"><code class="docutils literal notranslate"><span class="pre">HistoricalClassroomTimeSlot.next_record</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.objects"><code class="docutils literal notranslate"><span class="pre">HistoricalClassroomTimeSlot.objects</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.prev_record"><code class="docutils literal notranslate"><span class="pre">HistoricalClassroomTimeSlot.prev_record</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.revert_url"><code class="docutils literal notranslate"><span class="pre">HistoricalClassroomTimeSlot.revert_url()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.time_slot"><code class="docutils literal notranslate"><span class="pre">HistoricalClassroomTimeSlot.time_slot</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.time_slot_id"><code class="docutils literal notranslate"><span class="pre">HistoricalClassroomTimeSlot.time_slot_id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.updated_on"><code class="docutils literal notranslate"><span class="pre">HistoricalClassroomTimeSlot.updated_on</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalCourseSection"><code class="docutils literal notranslate"><span class="pre">HistoricalCourseSection</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalCourseSection.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">HistoricalCourseSection.DoesNotExist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalCourseSection.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">HistoricalCourseSection.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalCourseSection.course"><code class="docutils literal notranslate"><span class="pre">HistoricalCourseSection.course</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalCourseSection.course_id"><code class="docutils literal notranslate"><span class="pre">HistoricalCourseSection.course_id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalCourseSection.created_on"><code class="docutils literal notranslate"><span class="pre">HistoricalCourseSection.created_on</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalCourseSection.display_id"><code class="docutils literal notranslate"><span class="pre">HistoricalCourseSection.display_id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalCourseSection.get_default_history_user"><code class="docutils literal notranslate"><span class="pre">HistoricalCourseSection.get_default_history_user()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalCourseSection.get_history_type_display"><code class="docutils literal notranslate"><span class="pre">HistoricalCourseSection.get_history_type_display()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalCourseSection.get_next_by_created_on"><code class="docutils literal notranslate"><span class="pre">HistoricalCourseSection.get_next_by_created_on()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalCourseSection.get_next_by_history_date"><code class="docutils literal notranslate"><span class="pre">HistoricalCourseSection.get_next_by_history_date()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalCourseSection.get_next_by_updated_on"><code class="docutils literal notranslate"><span class="pre">HistoricalCourseSection.get_next_by_updated_on()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalCourseSection.get_previous_by_created_on"><code class="docutils literal notranslate"><span class="pre">HistoricalCourseSection.get_previous_by_created_on()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalCourseSection.get_previous_by_history_date"><code class="docutils literal notranslate"><span class="pre">HistoricalCourseSection.get_previous_by_history_date()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalCourseSection.get_previous_by_updated_on"><code class="docutils literal notranslate"><span class="pre">HistoricalCourseSection.get_previous_by_updated_on()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalCourseSection.history_change_reason"><code class="docutils literal notranslate"><span class="pre">HistoricalCourseSection.history_change_reason</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalCourseSection.history_date"><code class="docutils literal notranslate"><span class="pre">HistoricalCourseSection.history_date</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalCourseSection.history_id"><code class="docutils literal notranslate"><span class="pre">HistoricalCourseSection.history_id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalCourseSection.history_object"><code class="docutils literal notranslate"><span class="pre">HistoricalCourseSection.history_object</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalCourseSection.history_type"><code class="docutils literal notranslate"><span class="pre">HistoricalCourseSection.history_type</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalCourseSection.history_user"><code class="docutils literal notranslate"><span class="pre">HistoricalCourseSection.history_user</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalCourseSection.history_user_id"><code class="docutils literal notranslate"><span class="pre">HistoricalCourseSection.history_user_id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalCourseSection.id"><code class="docutils literal notranslate"><span class="pre">HistoricalCourseSection.id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalCourseSection.instance"><code class="docutils literal notranslate"><span class="pre">HistoricalCourseSection.instance</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalCourseSection.instance_type"><code class="docutils literal notranslate"><span class="pre">HistoricalCourseSection.instance_type</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalCourseSection.is_deleted"><code class="docutils literal notranslate"><span class="pre">HistoricalCourseSection.is_deleted</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalCourseSection.next_record"><code class="docutils literal notranslate"><span class="pre">HistoricalCourseSection.next_record</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalCourseSection.objects"><code class="docutils literal notranslate"><span class="pre">HistoricalCourseSection.objects</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalCourseSection.prev_record"><code class="docutils literal notranslate"><span class="pre">HistoricalCourseSection.prev_record</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalCourseSection.revert_url"><code class="docutils literal notranslate"><span class="pre">HistoricalCourseSection.revert_url()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.course_scheduling_models.HistoricalCourseSection.updated_on"><code class="docutils literal notranslate"><span class="pre">HistoricalCourseSection.updated_on</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="program-models.html">Program models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="program-registration-models.html">Program registration models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="views.html">Views</a></li>
+<li class="toctree-l1"><a class="reference internal" href="accessibility.html">Accessibility (a11y)</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ESPider</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a></li>
+      <li class="breadcrumb-item active">Course scheduling models</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/modules/course-models.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-esp.models.course_scheduling_models">
+<span id="course-scheduling-models"></span><h1>Course scheduling models<a class="headerlink" href="#module-esp.models.course_scheduling_models" title="Permalink to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.ClassroomConstraint">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">esp.models.course_scheduling_models.</span></span><span class="sig-name descname"><span class="pre">ClassroomConstraint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#esp.models.course_scheduling_models.ClassroomConstraint" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="../common.html#common.models.BaseModel" title="common.models.BaseModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></a></p>
+<p>Generic model to represent a scheduling constraint, which may specify requirements on classroom tags</p>
+<dl class="py exception">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.ClassroomConstraint.DoesNotExist">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.ClassroomConstraint.DoesNotExist" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectDoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.ClassroomConstraint.MultipleObjectsReturned">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.ClassroomConstraint.MultipleObjectsReturned" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">MultipleObjectsReturned</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.ClassroomConstraint.constraint">
+<span class="sig-name descname"><span class="pre">constraint</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.ClassroomConstraint.constraint" title="Permalink to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.ClassroomConstraint.course">
+<span class="sig-name descname"><span class="pre">course</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.ClassroomConstraint.course" title="Permalink to this definition"></a></dt>
+<dd><p>Accessor to the related objects manager on the forward and reverse sides of
+a many-to-many relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Pizza</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">toppings</span> <span class="o">=</span> <span class="n">ManyToManyField</span><span class="p">(</span><span class="n">Topping</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;pizzas&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Pizza.toppings</span></code> and <code class="docutils literal notranslate"><span class="pre">Topping.pizzas</span></code> are <code class="docutils literal notranslate"><span class="pre">ManyToManyDescriptor</span></code>
+instances.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <code class="docutils literal notranslate"><span class="pre">create_forward_many_to_many_manager()</span></code> defined below.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.ClassroomConstraint.get_next_by_created_on">
+<span class="sig-name descname"><span class="pre">get_next_by_created_on</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">created_on&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#esp.models.course_scheduling_models.ClassroomConstraint.get_next_by_created_on" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.ClassroomConstraint.get_next_by_updated_on">
+<span class="sig-name descname"><span class="pre">get_next_by_updated_on</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">updated_on&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#esp.models.course_scheduling_models.ClassroomConstraint.get_next_by_updated_on" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.ClassroomConstraint.get_previous_by_created_on">
+<span class="sig-name descname"><span class="pre">get_previous_by_created_on</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">created_on&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#esp.models.course_scheduling_models.ClassroomConstraint.get_previous_by_created_on" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.ClassroomConstraint.get_previous_by_updated_on">
+<span class="sig-name descname"><span class="pre">get_previous_by_updated_on</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">updated_on&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#esp.models.course_scheduling_models.ClassroomConstraint.get_previous_by_updated_on" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.ClassroomConstraint.get_require_all_tags_different_category_display">
+<span class="sig-name descname"><span class="pre">get_require_all_tags_different_category_display</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.CharField:</span> <span class="pre">require_all_tags_different_category&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#esp.models.course_scheduling_models.ClassroomConstraint.get_require_all_tags_different_category_display" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.ClassroomConstraint.get_require_all_tags_same_category_display">
+<span class="sig-name descname"><span class="pre">get_require_all_tags_same_category_display</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.CharField:</span> <span class="pre">require_all_tags_same_category&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#esp.models.course_scheduling_models.ClassroomConstraint.get_require_all_tags_same_category_display" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.ClassroomConstraint.history">
+<span class="sig-name descname"><span class="pre">history</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;simple_history.manager.HistoryManager</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#esp.models.course_scheduling_models.ClassroomConstraint.history" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.ClassroomConstraint.objects">
+<span class="sig-name descname"><span class="pre">objects</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;django.db.models.manager.Manager</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#esp.models.course_scheduling_models.ClassroomConstraint.objects" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.ClassroomConstraint.require_all_tags_different_category">
+<span class="sig-name descname"><span class="pre">require_all_tags_different_category</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.ClassroomConstraint.require_all_tags_different_category" title="Permalink to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.ClassroomConstraint.require_all_tags_same_category">
+<span class="sig-name descname"><span class="pre">require_all_tags_same_category</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.ClassroomConstraint.require_all_tags_same_category" title="Permalink to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.ClassroomConstraint.required_classroom_tag">
+<span class="sig-name descname"><span class="pre">required_classroom_tag</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.ClassroomConstraint.required_classroom_tag" title="Permalink to this definition"></a></dt>
+<dd><p>Accessor to the related object on the forward side of a many-to-one or
+one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Child.parent</span></code> is a <code class="docutils literal notranslate"><span class="pre">ForwardManyToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.ClassroomConstraint.required_classroom_tag_id">
+<span class="sig-name descname"><span class="pre">required_classroom_tag_id</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.ClassroomConstraint.required_classroom_tag_id" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.ClassroomTimeSlot">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">esp.models.course_scheduling_models.</span></span><span class="sig-name descname"><span class="pre">ClassroomTimeSlot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#esp.models.course_scheduling_models.ClassroomTimeSlot" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="../common.html#common.models.BaseModel" title="common.models.BaseModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></a></p>
+<dl class="simple">
+<dt>A ClassroomTimeSlot instance exists for a given classroom, time slot pair</dt><dd><p>only if the classroom is reserved by ESP for that time slot.</p>
+</dd>
+</dl>
+<p>If course_section is non-null, the classroom slot is booked for that class section.</p>
+<dl class="py exception">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.ClassroomTimeSlot.DoesNotExist">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.ClassroomTimeSlot.DoesNotExist" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectDoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.ClassroomTimeSlot.MultipleObjectsReturned">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.ClassroomTimeSlot.MultipleObjectsReturned" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">MultipleObjectsReturned</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.ClassroomTimeSlot.classroom">
+<span class="sig-name descname"><span class="pre">classroom</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.ClassroomTimeSlot.classroom" title="Permalink to this definition"></a></dt>
+<dd><p>Accessor to the related object on the forward side of a many-to-one or
+one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Child.parent</span></code> is a <code class="docutils literal notranslate"><span class="pre">ForwardManyToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.ClassroomTimeSlot.classroom_id">
+<span class="sig-name descname"><span class="pre">classroom_id</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.ClassroomTimeSlot.classroom_id" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.ClassroomTimeSlot.course_section">
+<span class="sig-name descname"><span class="pre">course_section</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.ClassroomTimeSlot.course_section" title="Permalink to this definition"></a></dt>
+<dd><p>Accessor to the related object on the forward side of a many-to-one or
+one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Child.parent</span></code> is a <code class="docutils literal notranslate"><span class="pre">ForwardManyToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.ClassroomTimeSlot.course_section_id">
+<span class="sig-name descname"><span class="pre">course_section_id</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.ClassroomTimeSlot.course_section_id" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.ClassroomTimeSlot.get_next_by_created_on">
+<span class="sig-name descname"><span class="pre">get_next_by_created_on</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">created_on&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#esp.models.course_scheduling_models.ClassroomTimeSlot.get_next_by_created_on" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.ClassroomTimeSlot.get_next_by_updated_on">
+<span class="sig-name descname"><span class="pre">get_next_by_updated_on</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">updated_on&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#esp.models.course_scheduling_models.ClassroomTimeSlot.get_next_by_updated_on" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.ClassroomTimeSlot.get_previous_by_created_on">
+<span class="sig-name descname"><span class="pre">get_previous_by_created_on</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">created_on&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#esp.models.course_scheduling_models.ClassroomTimeSlot.get_previous_by_created_on" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.ClassroomTimeSlot.get_previous_by_updated_on">
+<span class="sig-name descname"><span class="pre">get_previous_by_updated_on</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">updated_on&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#esp.models.course_scheduling_models.ClassroomTimeSlot.get_previous_by_updated_on" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.ClassroomTimeSlot.history">
+<span class="sig-name descname"><span class="pre">history</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;simple_history.manager.HistoryManager</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#esp.models.course_scheduling_models.ClassroomTimeSlot.history" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.ClassroomTimeSlot.objects">
+<span class="sig-name descname"><span class="pre">objects</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;django.db.models.manager.Manager</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#esp.models.course_scheduling_models.ClassroomTimeSlot.objects" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.ClassroomTimeSlot.time_slot">
+<span class="sig-name descname"><span class="pre">time_slot</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.ClassroomTimeSlot.time_slot" title="Permalink to this definition"></a></dt>
+<dd><p>Accessor to the related object on the forward side of a many-to-one or
+one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Child.parent</span></code> is a <code class="docutils literal notranslate"><span class="pre">ForwardManyToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.ClassroomTimeSlot.time_slot_id">
+<span class="sig-name descname"><span class="pre">time_slot_id</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.ClassroomTimeSlot.time_slot_id" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.CourseSection">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">esp.models.course_scheduling_models.</span></span><span class="sig-name descname"><span class="pre">CourseSection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#esp.models.course_scheduling_models.CourseSection" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="../common.html#common.models.BaseModel" title="common.models.BaseModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></a></p>
+<p>CourseSection represents a particular enrollment section of a Course.
+Courses that meet multiple times still have a single CourseSection for all meetings of the same group of students,
+which will be related to multiple ClassroomTimeSlots.</p>
+<dl class="py exception">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.CourseSection.DoesNotExist">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.CourseSection.DoesNotExist" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectDoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.CourseSection.MultipleObjectsReturned">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.CourseSection.MultipleObjectsReturned" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">MultipleObjectsReturned</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.CourseSection.course">
+<span class="sig-name descname"><span class="pre">course</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.CourseSection.course" title="Permalink to this definition"></a></dt>
+<dd><p>Accessor to the related object on the forward side of a many-to-one or
+one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Child.parent</span></code> is a <code class="docutils literal notranslate"><span class="pre">ForwardManyToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.CourseSection.course_id">
+<span class="sig-name descname"><span class="pre">course_id</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.CourseSection.course_id" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.CourseSection.display_id">
+<span class="sig-name descname"><span class="pre">display_id</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.CourseSection.display_id" title="Permalink to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.CourseSection.get_next_by_created_on">
+<span class="sig-name descname"><span class="pre">get_next_by_created_on</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">created_on&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#esp.models.course_scheduling_models.CourseSection.get_next_by_created_on" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.CourseSection.get_next_by_updated_on">
+<span class="sig-name descname"><span class="pre">get_next_by_updated_on</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">updated_on&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#esp.models.course_scheduling_models.CourseSection.get_next_by_updated_on" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.CourseSection.get_next_display_id">
+<span class="sig-name descname"><span class="pre">get_next_display_id</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#esp.models.course_scheduling_models.CourseSection.get_next_display_id" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.CourseSection.get_previous_by_created_on">
+<span class="sig-name descname"><span class="pre">get_previous_by_created_on</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">created_on&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#esp.models.course_scheduling_models.CourseSection.get_previous_by_created_on" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.CourseSection.get_previous_by_updated_on">
+<span class="sig-name descname"><span class="pre">get_previous_by_updated_on</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">updated_on&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#esp.models.course_scheduling_models.CourseSection.get_previous_by_updated_on" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.CourseSection.get_section_times">
+<span class="sig-name descname"><span class="pre">get_section_times</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#esp.models.course_scheduling_models.CourseSection.get_section_times" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.CourseSection.history">
+<span class="sig-name descname"><span class="pre">history</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;simple_history.manager.HistoryManager</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#esp.models.course_scheduling_models.CourseSection.history" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.CourseSection.objects">
+<span class="sig-name descname"><span class="pre">objects</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;django.db.models.manager.Manager</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#esp.models.course_scheduling_models.CourseSection.objects" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.CourseSection.preferences">
+<span class="sig-name descname"><span class="pre">preferences</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.CourseSection.preferences" title="Permalink to this definition"></a></dt>
+<dd><p>Accessor to the related objects manager on the reverse side of a
+many-to-one relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Parent.children</span></code> is a <code class="docutils literal notranslate"><span class="pre">ReverseManyToOneDescriptor</span></code> instance.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <code class="docutils literal notranslate"><span class="pre">create_forward_many_to_many_manager()</span></code> defined below.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.CourseSection.registrations">
+<span class="sig-name descname"><span class="pre">registrations</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.CourseSection.registrations" title="Permalink to this definition"></a></dt>
+<dd><p>Accessor to the related objects manager on the reverse side of a
+many-to-one relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Parent.children</span></code> is a <code class="docutils literal notranslate"><span class="pre">ReverseManyToOneDescriptor</span></code> instance.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <code class="docutils literal notranslate"><span class="pre">create_forward_many_to_many_manager()</span></code> defined below.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.CourseSection.save">
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#esp.models.course_scheduling_models.CourseSection.save" title="Permalink to this definition"></a></dt>
+<dd><p>Save the current instance. Override this in a subclass if you want to
+control the saving process.</p>
+<p>The ‘force_insert’ and ‘force_update’ parameters can be used to insist
+that the “save” must be an SQL insert or update (or equivalent for
+non-SQL backends), respectively. Normally, they should not be set.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.CourseSection.time_slots">
+<span class="sig-name descname"><span class="pre">time_slots</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.CourseSection.time_slots" title="Permalink to this definition"></a></dt>
+<dd><p>Accessor to the related objects manager on the reverse side of a
+many-to-one relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Parent.children</span></code> is a <code class="docutils literal notranslate"><span class="pre">ReverseManyToOneDescriptor</span></code> instance.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <code class="docutils literal notranslate"><span class="pre">create_forward_many_to_many_manager()</span></code> defined below.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalClassroomConstraint">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">esp.models.course_scheduling_models.</span></span><span class="sig-name descname"><span class="pre">HistoricalClassroomConstraint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">created_on</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">updated_on</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_deleted</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">require_all_tags_same_category</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">require_all_tags_different_category</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">constraint</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">required_classroom_tag</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">history_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">history_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">history_change_reason</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">history_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">history_user</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalClassroomConstraint" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">HistoricalChanges</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></p>
+<dl class="py exception">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalClassroomConstraint.DoesNotExist">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalClassroomConstraint.DoesNotExist" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectDoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalClassroomConstraint.MultipleObjectsReturned">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalClassroomConstraint.MultipleObjectsReturned" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">MultipleObjectsReturned</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalClassroomConstraint.constraint">
+<span class="sig-name descname"><span class="pre">constraint</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalClassroomConstraint.constraint" title="Permalink to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalClassroomConstraint.created_on">
+<span class="sig-name descname"><span class="pre">created_on</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalClassroomConstraint.created_on" title="Permalink to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalClassroomConstraint.get_default_history_user">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_default_history_user</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instance</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalClassroomConstraint.get_default_history_user" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the user specified by <cite>get_user</cite> method for manually creating
+historical objects</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalClassroomConstraint.get_history_type_display">
+<span class="sig-name descname"><span class="pre">get_history_type_display</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.CharField:</span> <span class="pre">history_type&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalClassroomConstraint.get_history_type_display" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalClassroomConstraint.get_next_by_created_on">
+<span class="sig-name descname"><span class="pre">get_next_by_created_on</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">created_on&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalClassroomConstraint.get_next_by_created_on" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalClassroomConstraint.get_next_by_history_date">
+<span class="sig-name descname"><span class="pre">get_next_by_history_date</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">history_date&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalClassroomConstraint.get_next_by_history_date" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalClassroomConstraint.get_next_by_updated_on">
+<span class="sig-name descname"><span class="pre">get_next_by_updated_on</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">updated_on&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalClassroomConstraint.get_next_by_updated_on" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalClassroomConstraint.get_previous_by_created_on">
+<span class="sig-name descname"><span class="pre">get_previous_by_created_on</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">created_on&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalClassroomConstraint.get_previous_by_created_on" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalClassroomConstraint.get_previous_by_history_date">
+<span class="sig-name descname"><span class="pre">get_previous_by_history_date</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">history_date&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalClassroomConstraint.get_previous_by_history_date" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalClassroomConstraint.get_previous_by_updated_on">
+<span class="sig-name descname"><span class="pre">get_previous_by_updated_on</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">updated_on&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalClassroomConstraint.get_previous_by_updated_on" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalClassroomConstraint.get_require_all_tags_different_category_display">
+<span class="sig-name descname"><span class="pre">get_require_all_tags_different_category_display</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.CharField:</span> <span class="pre">require_all_tags_different_category&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalClassroomConstraint.get_require_all_tags_different_category_display" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalClassroomConstraint.get_require_all_tags_same_category_display">
+<span class="sig-name descname"><span class="pre">get_require_all_tags_same_category_display</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.CharField:</span> <span class="pre">require_all_tags_same_category&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalClassroomConstraint.get_require_all_tags_same_category_display" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalClassroomConstraint.history_change_reason">
+<span class="sig-name descname"><span class="pre">history_change_reason</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalClassroomConstraint.history_change_reason" title="Permalink to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalClassroomConstraint.history_date">
+<span class="sig-name descname"><span class="pre">history_date</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalClassroomConstraint.history_date" title="Permalink to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalClassroomConstraint.history_id">
+<span class="sig-name descname"><span class="pre">history_id</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalClassroomConstraint.history_id" title="Permalink to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalClassroomConstraint.history_object">
+<span class="sig-name descname"><span class="pre">history_object</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalClassroomConstraint.history_object" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalClassroomConstraint.history_type">
+<span class="sig-name descname"><span class="pre">history_type</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalClassroomConstraint.history_type" title="Permalink to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalClassroomConstraint.history_user">
+<span class="sig-name descname"><span class="pre">history_user</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalClassroomConstraint.history_user" title="Permalink to this definition"></a></dt>
+<dd><p>Accessor to the related object on the forward side of a many-to-one or
+one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Child.parent</span></code> is a <code class="docutils literal notranslate"><span class="pre">ForwardManyToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalClassroomConstraint.history_user_id">
+<span class="sig-name descname"><span class="pre">history_user_id</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalClassroomConstraint.history_user_id" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalClassroomConstraint.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalClassroomConstraint.id" title="Permalink to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalClassroomConstraint.instance">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">instance</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalClassroomConstraint.instance" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalClassroomConstraint.instance_type">
+<span class="sig-name descname"><span class="pre">instance_type</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalClassroomConstraint.instance_type" title="Permalink to this definition"></a></dt>
+<dd><p>alias of <a class="reference internal" href="models.html#esp.models.course_scheduling_models.ClassroomConstraint" title="esp.models.course_scheduling_models.ClassroomConstraint"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClassroomConstraint</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalClassroomConstraint.is_deleted">
+<span class="sig-name descname"><span class="pre">is_deleted</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalClassroomConstraint.is_deleted" title="Permalink to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalClassroomConstraint.next_record">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">next_record</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalClassroomConstraint.next_record" title="Permalink to this definition"></a></dt>
+<dd><p>Get the next history record for the instance. <cite>None</cite> if last.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalClassroomConstraint.objects">
+<span class="sig-name descname"><span class="pre">objects</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;django.db.models.manager.Manager</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalClassroomConstraint.objects" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalClassroomConstraint.prev_record">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">prev_record</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalClassroomConstraint.prev_record" title="Permalink to this definition"></a></dt>
+<dd><p>Get the previous history record for the instance. <cite>None</cite> if first.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalClassroomConstraint.require_all_tags_different_category">
+<span class="sig-name descname"><span class="pre">require_all_tags_different_category</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalClassroomConstraint.require_all_tags_different_category" title="Permalink to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalClassroomConstraint.require_all_tags_same_category">
+<span class="sig-name descname"><span class="pre">require_all_tags_same_category</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalClassroomConstraint.require_all_tags_same_category" title="Permalink to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalClassroomConstraint.required_classroom_tag">
+<span class="sig-name descname"><span class="pre">required_classroom_tag</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalClassroomConstraint.required_classroom_tag" title="Permalink to this definition"></a></dt>
+<dd><p>Accessor to the related object on the forward side of a many-to-one or
+one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Child.parent</span></code> is a <code class="docutils literal notranslate"><span class="pre">ForwardManyToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalClassroomConstraint.required_classroom_tag_id">
+<span class="sig-name descname"><span class="pre">required_classroom_tag_id</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalClassroomConstraint.required_classroom_tag_id" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalClassroomConstraint.revert_url">
+<span class="sig-name descname"><span class="pre">revert_url</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalClassroomConstraint.revert_url" title="Permalink to this definition"></a></dt>
+<dd><p>URL for this change in the default admin site.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalClassroomConstraint.updated_on">
+<span class="sig-name descname"><span class="pre">updated_on</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalClassroomConstraint.updated_on" title="Permalink to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalClassroomTimeSlot">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">esp.models.course_scheduling_models.</span></span><span class="sig-name descname"><span class="pre">HistoricalClassroomTimeSlot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">created_on</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">updated_on</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_deleted</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">classroom</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_slot</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">course_section</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">history_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">history_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">history_change_reason</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">history_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">history_user</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalClassroomTimeSlot" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">HistoricalChanges</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></p>
+<dl class="py exception">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.DoesNotExist">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.DoesNotExist" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectDoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.MultipleObjectsReturned">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.MultipleObjectsReturned" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">MultipleObjectsReturned</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.classroom">
+<span class="sig-name descname"><span class="pre">classroom</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.classroom" title="Permalink to this definition"></a></dt>
+<dd><p>Accessor to the related object on the forward side of a many-to-one or
+one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Child.parent</span></code> is a <code class="docutils literal notranslate"><span class="pre">ForwardManyToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.classroom_id">
+<span class="sig-name descname"><span class="pre">classroom_id</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.classroom_id" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.course_section">
+<span class="sig-name descname"><span class="pre">course_section</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.course_section" title="Permalink to this definition"></a></dt>
+<dd><p>Accessor to the related object on the forward side of a many-to-one or
+one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Child.parent</span></code> is a <code class="docutils literal notranslate"><span class="pre">ForwardManyToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.course_section_id">
+<span class="sig-name descname"><span class="pre">course_section_id</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.course_section_id" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.created_on">
+<span class="sig-name descname"><span class="pre">created_on</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.created_on" title="Permalink to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.get_default_history_user">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_default_history_user</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instance</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.get_default_history_user" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the user specified by <cite>get_user</cite> method for manually creating
+historical objects</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.get_history_type_display">
+<span class="sig-name descname"><span class="pre">get_history_type_display</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.CharField:</span> <span class="pre">history_type&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.get_history_type_display" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.get_next_by_created_on">
+<span class="sig-name descname"><span class="pre">get_next_by_created_on</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">created_on&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.get_next_by_created_on" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.get_next_by_history_date">
+<span class="sig-name descname"><span class="pre">get_next_by_history_date</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">history_date&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.get_next_by_history_date" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.get_next_by_updated_on">
+<span class="sig-name descname"><span class="pre">get_next_by_updated_on</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">updated_on&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.get_next_by_updated_on" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.get_previous_by_created_on">
+<span class="sig-name descname"><span class="pre">get_previous_by_created_on</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">created_on&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.get_previous_by_created_on" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.get_previous_by_history_date">
+<span class="sig-name descname"><span class="pre">get_previous_by_history_date</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">history_date&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.get_previous_by_history_date" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.get_previous_by_updated_on">
+<span class="sig-name descname"><span class="pre">get_previous_by_updated_on</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">updated_on&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.get_previous_by_updated_on" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.history_change_reason">
+<span class="sig-name descname"><span class="pre">history_change_reason</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.history_change_reason" title="Permalink to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.history_date">
+<span class="sig-name descname"><span class="pre">history_date</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.history_date" title="Permalink to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.history_id">
+<span class="sig-name descname"><span class="pre">history_id</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.history_id" title="Permalink to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.history_object">
+<span class="sig-name descname"><span class="pre">history_object</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.history_object" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.history_type">
+<span class="sig-name descname"><span class="pre">history_type</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.history_type" title="Permalink to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.history_user">
+<span class="sig-name descname"><span class="pre">history_user</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.history_user" title="Permalink to this definition"></a></dt>
+<dd><p>Accessor to the related object on the forward side of a many-to-one or
+one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Child.parent</span></code> is a <code class="docutils literal notranslate"><span class="pre">ForwardManyToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.history_user_id">
+<span class="sig-name descname"><span class="pre">history_user_id</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.history_user_id" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.id" title="Permalink to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.instance">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">instance</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.instance" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.instance_type">
+<span class="sig-name descname"><span class="pre">instance_type</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.instance_type" title="Permalink to this definition"></a></dt>
+<dd><p>alias of <a class="reference internal" href="models.html#esp.models.course_scheduling_models.ClassroomTimeSlot" title="esp.models.course_scheduling_models.ClassroomTimeSlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClassroomTimeSlot</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.is_deleted">
+<span class="sig-name descname"><span class="pre">is_deleted</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.is_deleted" title="Permalink to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.next_record">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">next_record</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.next_record" title="Permalink to this definition"></a></dt>
+<dd><p>Get the next history record for the instance. <cite>None</cite> if last.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.objects">
+<span class="sig-name descname"><span class="pre">objects</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;django.db.models.manager.Manager</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.objects" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.prev_record">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">prev_record</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.prev_record" title="Permalink to this definition"></a></dt>
+<dd><p>Get the previous history record for the instance. <cite>None</cite> if first.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.revert_url">
+<span class="sig-name descname"><span class="pre">revert_url</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.revert_url" title="Permalink to this definition"></a></dt>
+<dd><p>URL for this change in the default admin site.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.time_slot">
+<span class="sig-name descname"><span class="pre">time_slot</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.time_slot" title="Permalink to this definition"></a></dt>
+<dd><p>Accessor to the related object on the forward side of a many-to-one or
+one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Child.parent</span></code> is a <code class="docutils literal notranslate"><span class="pre">ForwardManyToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.time_slot_id">
+<span class="sig-name descname"><span class="pre">time_slot_id</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.time_slot_id" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.updated_on">
+<span class="sig-name descname"><span class="pre">updated_on</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalClassroomTimeSlot.updated_on" title="Permalink to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalCourseSection">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">esp.models.course_scheduling_models.</span></span><span class="sig-name descname"><span class="pre">HistoricalCourseSection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">created_on</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">updated_on</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_deleted</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">display_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">course</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">history_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">history_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">history_change_reason</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">history_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">history_user</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalCourseSection" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">HistoricalChanges</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></p>
+<dl class="py exception">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalCourseSection.DoesNotExist">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalCourseSection.DoesNotExist" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectDoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalCourseSection.MultipleObjectsReturned">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalCourseSection.MultipleObjectsReturned" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">MultipleObjectsReturned</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalCourseSection.course">
+<span class="sig-name descname"><span class="pre">course</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalCourseSection.course" title="Permalink to this definition"></a></dt>
+<dd><p>Accessor to the related object on the forward side of a many-to-one or
+one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Child.parent</span></code> is a <code class="docutils literal notranslate"><span class="pre">ForwardManyToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalCourseSection.course_id">
+<span class="sig-name descname"><span class="pre">course_id</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalCourseSection.course_id" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalCourseSection.created_on">
+<span class="sig-name descname"><span class="pre">created_on</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalCourseSection.created_on" title="Permalink to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalCourseSection.display_id">
+<span class="sig-name descname"><span class="pre">display_id</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalCourseSection.display_id" title="Permalink to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalCourseSection.get_default_history_user">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_default_history_user</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instance</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalCourseSection.get_default_history_user" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the user specified by <cite>get_user</cite> method for manually creating
+historical objects</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalCourseSection.get_history_type_display">
+<span class="sig-name descname"><span class="pre">get_history_type_display</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.CharField:</span> <span class="pre">history_type&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalCourseSection.get_history_type_display" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalCourseSection.get_next_by_created_on">
+<span class="sig-name descname"><span class="pre">get_next_by_created_on</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">created_on&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalCourseSection.get_next_by_created_on" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalCourseSection.get_next_by_history_date">
+<span class="sig-name descname"><span class="pre">get_next_by_history_date</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">history_date&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalCourseSection.get_next_by_history_date" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalCourseSection.get_next_by_updated_on">
+<span class="sig-name descname"><span class="pre">get_next_by_updated_on</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">updated_on&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalCourseSection.get_next_by_updated_on" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalCourseSection.get_previous_by_created_on">
+<span class="sig-name descname"><span class="pre">get_previous_by_created_on</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">created_on&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalCourseSection.get_previous_by_created_on" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalCourseSection.get_previous_by_history_date">
+<span class="sig-name descname"><span class="pre">get_previous_by_history_date</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">history_date&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalCourseSection.get_previous_by_history_date" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalCourseSection.get_previous_by_updated_on">
+<span class="sig-name descname"><span class="pre">get_previous_by_updated_on</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">updated_on&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalCourseSection.get_previous_by_updated_on" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalCourseSection.history_change_reason">
+<span class="sig-name descname"><span class="pre">history_change_reason</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalCourseSection.history_change_reason" title="Permalink to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalCourseSection.history_date">
+<span class="sig-name descname"><span class="pre">history_date</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalCourseSection.history_date" title="Permalink to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalCourseSection.history_id">
+<span class="sig-name descname"><span class="pre">history_id</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalCourseSection.history_id" title="Permalink to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalCourseSection.history_object">
+<span class="sig-name descname"><span class="pre">history_object</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalCourseSection.history_object" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalCourseSection.history_type">
+<span class="sig-name descname"><span class="pre">history_type</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalCourseSection.history_type" title="Permalink to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalCourseSection.history_user">
+<span class="sig-name descname"><span class="pre">history_user</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalCourseSection.history_user" title="Permalink to this definition"></a></dt>
+<dd><p>Accessor to the related object on the forward side of a many-to-one or
+one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Child.parent</span></code> is a <code class="docutils literal notranslate"><span class="pre">ForwardManyToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalCourseSection.history_user_id">
+<span class="sig-name descname"><span class="pre">history_user_id</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalCourseSection.history_user_id" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalCourseSection.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalCourseSection.id" title="Permalink to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalCourseSection.instance">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">instance</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalCourseSection.instance" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalCourseSection.instance_type">
+<span class="sig-name descname"><span class="pre">instance_type</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalCourseSection.instance_type" title="Permalink to this definition"></a></dt>
+<dd><p>alias of <a class="reference internal" href="models.html#esp.models.course_scheduling_models.CourseSection" title="esp.models.course_scheduling_models.CourseSection"><code class="xref py py-class docutils literal notranslate"><span class="pre">CourseSection</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalCourseSection.is_deleted">
+<span class="sig-name descname"><span class="pre">is_deleted</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalCourseSection.is_deleted" title="Permalink to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalCourseSection.next_record">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">next_record</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalCourseSection.next_record" title="Permalink to this definition"></a></dt>
+<dd><p>Get the next history record for the instance. <cite>None</cite> if last.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalCourseSection.objects">
+<span class="sig-name descname"><span class="pre">objects</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;django.db.models.manager.Manager</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalCourseSection.objects" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalCourseSection.prev_record">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">prev_record</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalCourseSection.prev_record" title="Permalink to this definition"></a></dt>
+<dd><p>Get the previous history record for the instance. <cite>None</cite> if first.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalCourseSection.revert_url">
+<span class="sig-name descname"><span class="pre">revert_url</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalCourseSection.revert_url" title="Permalink to this definition"></a></dt>
+<dd><p>URL for this change in the default admin site.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.course_scheduling_models.HistoricalCourseSection.updated_on">
+<span class="sig-name descname"><span class="pre">updated_on</span></span><a class="headerlink" href="#esp.models.course_scheduling_models.HistoricalCourseSection.updated_on" title="Permalink to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="deployment.html" class="btn btn-neutral float-left" title="Deployment" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="program-models.html" class="btn btn-neutral float-right" title="Program models" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Zagaran.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

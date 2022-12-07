@@ -20,7 +20,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Accessibility (a11y)" href="modules/accessibility.html" /> 
+    <link rel="next" title="Getting started" href="modules/getting-started.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -40,9 +40,13 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="modules/accessibility.html">Accessibility (a11y)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="modules/models.html">Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/getting-started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/deployment.html">Deployment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/course-models.html">Course scheduling models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/program-models.html">Program models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/program-registration-models.html">Program registration models</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/views.html">Views</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/accessibility.html">Accessibility (a11y)</a></li>
 </ul>
 
         </div>
@@ -71,9 +75,6 @@
              
   <section id="welcome-to-espider-s-documentation">
 <h1>Welcome to ESPider’s documentation!<a class="headerlink" href="#welcome-to-espider-s-documentation" title="Permalink to this heading"></a></h1>
-<section id="what-is-espider">
-<h2>What is ESPider?<a class="headerlink" href="#what-is-espider" title="Permalink to this heading"></a></h2>
-</section>
 <section id="indices-and-tables">
 <h2>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this heading"></a></h2>
 <ul class="simple">
@@ -83,85 +84,98 @@
 <div class="toctree-wrapper compound">
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="modules/accessibility.html">Accessibility (a11y)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="modules/models.html">Models</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="modules/models.html#esp.models.course_scheduling_models.ClassroomConstraint"><code class="docutils literal notranslate"><span class="pre">ClassroomConstraint</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/models.html#esp.models.course_scheduling_models.ClassroomTimeSlot"><code class="docutils literal notranslate"><span class="pre">ClassroomTimeSlot</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/models.html#esp.models.course_scheduling_models.CourseSection"><code class="docutils literal notranslate"><span class="pre">CourseSection</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/models.html#esp.models.course_scheduling_models.HistoricalClassroomConstraint"><code class="docutils literal notranslate"><span class="pre">HistoricalClassroomConstraint</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/models.html#esp.models.course_scheduling_models.HistoricalClassroomTimeSlot"><code class="docutils literal notranslate"><span class="pre">HistoricalClassroomTimeSlot</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/models.html#esp.models.course_scheduling_models.HistoricalCourseSection"><code class="docutils literal notranslate"><span class="pre">HistoricalCourseSection</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/models.html#esp.models.program_models.Classroom"><code class="docutils literal notranslate"><span class="pre">Classroom</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/models.html#esp.models.program_models.ClassroomTag"><code class="docutils literal notranslate"><span class="pre">ClassroomTag</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/models.html#esp.models.program_models.Course"><code class="docutils literal notranslate"><span class="pre">Course</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/models.html#esp.models.program_models.CourseCategory"><code class="docutils literal notranslate"><span class="pre">CourseCategory</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/models.html#esp.models.program_models.CourseFlag"><code class="docutils literal notranslate"><span class="pre">CourseFlag</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/models.html#esp.models.program_models.ExternalProgramForm"><code class="docutils literal notranslate"><span class="pre">ExternalProgramForm</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/models.html#esp.models.program_models.HistoricalClassroom"><code class="docutils literal notranslate"><span class="pre">HistoricalClassroom</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/models.html#esp.models.program_models.HistoricalClassroomTag"><code class="docutils literal notranslate"><span class="pre">HistoricalClassroomTag</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/models.html#esp.models.program_models.HistoricalCourse"><code class="docutils literal notranslate"><span class="pre">HistoricalCourse</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/models.html#esp.models.program_models.HistoricalCourseCategory"><code class="docutils literal notranslate"><span class="pre">HistoricalCourseCategory</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/models.html#esp.models.program_models.HistoricalCourseFlag"><code class="docutils literal notranslate"><span class="pre">HistoricalCourseFlag</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/models.html#esp.models.program_models.HistoricalExternalProgramForm"><code class="docutils literal notranslate"><span class="pre">HistoricalExternalProgramForm</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/models.html#esp.models.program_models.HistoricalPreferenceEntryCategory"><code class="docutils literal notranslate"><span class="pre">HistoricalPreferenceEntryCategory</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/models.html#esp.models.program_models.HistoricalPreferenceEntryRound"><code class="docutils literal notranslate"><span class="pre">HistoricalPreferenceEntryRound</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/models.html#esp.models.program_models.HistoricalProgram"><code class="docutils literal notranslate"><span class="pre">HistoricalProgram</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/models.html#esp.models.program_models.HistoricalProgramConfiguration"><code class="docutils literal notranslate"><span class="pre">HistoricalProgramConfiguration</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/models.html#esp.models.program_models.HistoricalProgramRegistrationStep"><code class="docutils literal notranslate"><span class="pre">HistoricalProgramRegistrationStep</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/models.html#esp.models.program_models.HistoricalProgramStage"><code class="docutils literal notranslate"><span class="pre">HistoricalProgramStage</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/models.html#esp.models.program_models.HistoricalProgramTag"><code class="docutils literal notranslate"><span class="pre">HistoricalProgramTag</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/models.html#esp.models.program_models.HistoricalPurchaseableItem"><code class="docutils literal notranslate"><span class="pre">HistoricalPurchaseableItem</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/models.html#esp.models.program_models.HistoricalTeacherProgramRegistrationStep"><code class="docutils literal notranslate"><span class="pre">HistoricalTeacherProgramRegistrationStep</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/models.html#esp.models.program_models.HistoricalTimeSlot"><code class="docutils literal notranslate"><span class="pre">HistoricalTimeSlot</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/models.html#esp.models.program_models.PreferenceEntryCategory"><code class="docutils literal notranslate"><span class="pre">PreferenceEntryCategory</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/models.html#esp.models.program_models.PreferenceEntryRound"><code class="docutils literal notranslate"><span class="pre">PreferenceEntryRound</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/models.html#esp.models.program_models.Program"><code class="docutils literal notranslate"><span class="pre">Program</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/models.html#esp.models.program_models.ProgramConfiguration"><code class="docutils literal notranslate"><span class="pre">ProgramConfiguration</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/models.html#esp.models.program_models.ProgramRegistrationStep"><code class="docutils literal notranslate"><span class="pre">ProgramRegistrationStep</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/models.html#esp.models.program_models.ProgramStage"><code class="docutils literal notranslate"><span class="pre">ProgramStage</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/models.html#esp.models.program_models.ProgramTag"><code class="docutils literal notranslate"><span class="pre">ProgramTag</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/models.html#esp.models.program_models.PurchaseableItem"><code class="docutils literal notranslate"><span class="pre">PurchaseableItem</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/models.html#esp.models.program_models.TeacherProgramRegistrationStep"><code class="docutils literal notranslate"><span class="pre">TeacherProgramRegistrationStep</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/models.html#esp.models.program_models.TimeSlot"><code class="docutils literal notranslate"><span class="pre">TimeSlot</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/models.html#esp.models.program_registration_models.ClassPreference"><code class="docutils literal notranslate"><span class="pre">ClassPreference</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/models.html#esp.models.program_registration_models.ClassRegistration"><code class="docutils literal notranslate"><span class="pre">ClassRegistration</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/models.html#esp.models.program_registration_models.Comment"><code class="docutils literal notranslate"><span class="pre">Comment</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/models.html#esp.models.program_registration_models.CompletedForm"><code class="docutils literal notranslate"><span class="pre">CompletedForm</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/models.html#esp.models.program_registration_models.CompletedRegistrationStep"><code class="docutils literal notranslate"><span class="pre">CompletedRegistrationStep</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/models.html#esp.models.program_registration_models.CompletedStudentForm"><code class="docutils literal notranslate"><span class="pre">CompletedStudentForm</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/models.html#esp.models.program_registration_models.CompletedTeacherForm"><code class="docutils literal notranslate"><span class="pre">CompletedTeacherForm</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/models.html#esp.models.program_registration_models.CompletedTeacherRegistrationStep"><code class="docutils literal notranslate"><span class="pre">CompletedTeacherRegistrationStep</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/models.html#esp.models.program_registration_models.CourseTeacher"><code class="docutils literal notranslate"><span class="pre">CourseTeacher</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/models.html#esp.models.program_registration_models.FinancialAidRequest"><code class="docutils literal notranslate"><span class="pre">FinancialAidRequest</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/models.html#esp.models.program_registration_models.HistoricalClassPreference"><code class="docutils literal notranslate"><span class="pre">HistoricalClassPreference</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/models.html#esp.models.program_registration_models.HistoricalClassRegistration"><code class="docutils literal notranslate"><span class="pre">HistoricalClassRegistration</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/models.html#esp.models.program_registration_models.HistoricalComment"><code class="docutils literal notranslate"><span class="pre">HistoricalComment</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/models.html#esp.models.program_registration_models.HistoricalCompletedForm"><code class="docutils literal notranslate"><span class="pre">HistoricalCompletedForm</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/models.html#esp.models.program_registration_models.HistoricalCompletedRegistrationStep"><code class="docutils literal notranslate"><span class="pre">HistoricalCompletedRegistrationStep</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/models.html#esp.models.program_registration_models.HistoricalCompletedStudentForm"><code class="docutils literal notranslate"><span class="pre">HistoricalCompletedStudentForm</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/models.html#esp.models.program_registration_models.HistoricalCompletedTeacherForm"><code class="docutils literal notranslate"><span class="pre">HistoricalCompletedTeacherForm</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/models.html#esp.models.program_registration_models.HistoricalCompletedTeacherRegistrationStep"><code class="docutils literal notranslate"><span class="pre">HistoricalCompletedTeacherRegistrationStep</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/models.html#esp.models.program_registration_models.HistoricalCourseTeacher"><code class="docutils literal notranslate"><span class="pre">HistoricalCourseTeacher</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/models.html#esp.models.program_registration_models.HistoricalFinancialAidRequest"><code class="docutils literal notranslate"><span class="pre">HistoricalFinancialAidRequest</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/models.html#esp.models.program_registration_models.HistoricalProgramRegistration"><code class="docutils literal notranslate"><span class="pre">HistoricalProgramRegistration</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/models.html#esp.models.program_registration_models.HistoricalPurchaseLineItem"><code class="docutils literal notranslate"><span class="pre">HistoricalPurchaseLineItem</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/models.html#esp.models.program_registration_models.HistoricalStudentAvailability"><code class="docutils literal notranslate"><span class="pre">HistoricalStudentAvailability</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/models.html#esp.models.program_registration_models.HistoricalStudentProfile"><code class="docutils literal notranslate"><span class="pre">HistoricalStudentProfile</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/models.html#esp.models.program_registration_models.HistoricalTeacherAvailability"><code class="docutils literal notranslate"><span class="pre">HistoricalTeacherAvailability</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/models.html#esp.models.program_registration_models.HistoricalTeacherProfile"><code class="docutils literal notranslate"><span class="pre">HistoricalTeacherProfile</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/models.html#esp.models.program_registration_models.HistoricalTeacherRegistration"><code class="docutils literal notranslate"><span class="pre">HistoricalTeacherRegistration</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/models.html#esp.models.program_registration_models.HistoricalUserPayment"><code class="docutils literal notranslate"><span class="pre">HistoricalUserPayment</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/models.html#esp.models.program_registration_models.ProgramRegistration"><code class="docutils literal notranslate"><span class="pre">ProgramRegistration</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/models.html#esp.models.program_registration_models.PurchaseLineItem"><code class="docutils literal notranslate"><span class="pre">PurchaseLineItem</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/models.html#esp.models.program_registration_models.StudentAvailability"><code class="docutils literal notranslate"><span class="pre">StudentAvailability</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/models.html#esp.models.program_registration_models.StudentProfile"><code class="docutils literal notranslate"><span class="pre">StudentProfile</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/models.html#esp.models.program_registration_models.TeacherAvailability"><code class="docutils literal notranslate"><span class="pre">TeacherAvailability</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/models.html#esp.models.program_registration_models.TeacherProfile"><code class="docutils literal notranslate"><span class="pre">TeacherProfile</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/models.html#esp.models.program_registration_models.TeacherRegistration"><code class="docutils literal notranslate"><span class="pre">TeacherRegistration</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/models.html#esp.models.program_registration_models.UserPayment"><code class="docutils literal notranslate"><span class="pre">UserPayment</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/getting-started.html">Getting started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="modules/getting-started.html#setup">Setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/getting-started.html#navigating-the-website">Navigating the website</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/getting-started.html#navigating-the-codebase">Navigating the codebase</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="modules/deployment.html">Deployment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/course-models.html">Course scheduling models</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="modules/course-models.html#esp.models.course_scheduling_models.ClassroomConstraint"><code class="docutils literal notranslate"><span class="pre">ClassroomConstraint</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/course-models.html#esp.models.course_scheduling_models.ClassroomTimeSlot"><code class="docutils literal notranslate"><span class="pre">ClassroomTimeSlot</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/course-models.html#esp.models.course_scheduling_models.CourseSection"><code class="docutils literal notranslate"><span class="pre">CourseSection</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/course-models.html#esp.models.course_scheduling_models.HistoricalClassroomConstraint"><code class="docutils literal notranslate"><span class="pre">HistoricalClassroomConstraint</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/course-models.html#esp.models.course_scheduling_models.HistoricalClassroomTimeSlot"><code class="docutils literal notranslate"><span class="pre">HistoricalClassroomTimeSlot</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/course-models.html#esp.models.course_scheduling_models.HistoricalCourseSection"><code class="docutils literal notranslate"><span class="pre">HistoricalCourseSection</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="modules/program-models.html">Program models</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="modules/program-models.html#esp.models.program_models.Classroom"><code class="docutils literal notranslate"><span class="pre">Classroom</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/program-models.html#esp.models.program_models.ClassroomTag"><code class="docutils literal notranslate"><span class="pre">ClassroomTag</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/program-models.html#esp.models.program_models.Course"><code class="docutils literal notranslate"><span class="pre">Course</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/program-models.html#esp.models.program_models.CourseCategory"><code class="docutils literal notranslate"><span class="pre">CourseCategory</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/program-models.html#esp.models.program_models.CourseFlag"><code class="docutils literal notranslate"><span class="pre">CourseFlag</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/program-models.html#esp.models.program_models.ExternalProgramForm"><code class="docutils literal notranslate"><span class="pre">ExternalProgramForm</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/program-models.html#esp.models.program_models.HistoricalClassroom"><code class="docutils literal notranslate"><span class="pre">HistoricalClassroom</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/program-models.html#esp.models.program_models.HistoricalClassroomTag"><code class="docutils literal notranslate"><span class="pre">HistoricalClassroomTag</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/program-models.html#esp.models.program_models.HistoricalCourse"><code class="docutils literal notranslate"><span class="pre">HistoricalCourse</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/program-models.html#esp.models.program_models.HistoricalCourseCategory"><code class="docutils literal notranslate"><span class="pre">HistoricalCourseCategory</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/program-models.html#esp.models.program_models.HistoricalCourseFlag"><code class="docutils literal notranslate"><span class="pre">HistoricalCourseFlag</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/program-models.html#esp.models.program_models.HistoricalExternalProgramForm"><code class="docutils literal notranslate"><span class="pre">HistoricalExternalProgramForm</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/program-models.html#esp.models.program_models.HistoricalPreferenceEntryCategory"><code class="docutils literal notranslate"><span class="pre">HistoricalPreferenceEntryCategory</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/program-models.html#esp.models.program_models.HistoricalPreferenceEntryRound"><code class="docutils literal notranslate"><span class="pre">HistoricalPreferenceEntryRound</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/program-models.html#esp.models.program_models.HistoricalProgram"><code class="docutils literal notranslate"><span class="pre">HistoricalProgram</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/program-models.html#esp.models.program_models.HistoricalProgramConfiguration"><code class="docutils literal notranslate"><span class="pre">HistoricalProgramConfiguration</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/program-models.html#esp.models.program_models.HistoricalProgramRegistrationStep"><code class="docutils literal notranslate"><span class="pre">HistoricalProgramRegistrationStep</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/program-models.html#esp.models.program_models.HistoricalProgramStage"><code class="docutils literal notranslate"><span class="pre">HistoricalProgramStage</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/program-models.html#esp.models.program_models.HistoricalProgramTag"><code class="docutils literal notranslate"><span class="pre">HistoricalProgramTag</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/program-models.html#esp.models.program_models.HistoricalPurchaseableItem"><code class="docutils literal notranslate"><span class="pre">HistoricalPurchaseableItem</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/program-models.html#esp.models.program_models.HistoricalTeacherProgramRegistrationStep"><code class="docutils literal notranslate"><span class="pre">HistoricalTeacherProgramRegistrationStep</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/program-models.html#esp.models.program_models.HistoricalTimeSlot"><code class="docutils literal notranslate"><span class="pre">HistoricalTimeSlot</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/program-models.html#esp.models.program_models.PreferenceEntryCategory"><code class="docutils literal notranslate"><span class="pre">PreferenceEntryCategory</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/program-models.html#esp.models.program_models.PreferenceEntryRound"><code class="docutils literal notranslate"><span class="pre">PreferenceEntryRound</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/program-models.html#esp.models.program_models.Program"><code class="docutils literal notranslate"><span class="pre">Program</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/program-models.html#esp.models.program_models.ProgramConfiguration"><code class="docutils literal notranslate"><span class="pre">ProgramConfiguration</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/program-models.html#esp.models.program_models.ProgramRegistrationStep"><code class="docutils literal notranslate"><span class="pre">ProgramRegistrationStep</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/program-models.html#esp.models.program_models.ProgramStage"><code class="docutils literal notranslate"><span class="pre">ProgramStage</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/program-models.html#esp.models.program_models.ProgramTag"><code class="docutils literal notranslate"><span class="pre">ProgramTag</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/program-models.html#esp.models.program_models.PurchaseableItem"><code class="docutils literal notranslate"><span class="pre">PurchaseableItem</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/program-models.html#esp.models.program_models.TeacherProgramRegistrationStep"><code class="docutils literal notranslate"><span class="pre">TeacherProgramRegistrationStep</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/program-models.html#esp.models.program_models.TimeSlot"><code class="docutils literal notranslate"><span class="pre">TimeSlot</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="modules/program-registration-models.html">Program registration models</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="modules/program-registration-models.html#esp.models.program_registration_models.ClassPreference"><code class="docutils literal notranslate"><span class="pre">ClassPreference</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/program-registration-models.html#esp.models.program_registration_models.ClassRegistration"><code class="docutils literal notranslate"><span class="pre">ClassRegistration</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/program-registration-models.html#esp.models.program_registration_models.Comment"><code class="docutils literal notranslate"><span class="pre">Comment</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/program-registration-models.html#esp.models.program_registration_models.CompletedForm"><code class="docutils literal notranslate"><span class="pre">CompletedForm</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/program-registration-models.html#esp.models.program_registration_models.CompletedRegistrationStep"><code class="docutils literal notranslate"><span class="pre">CompletedRegistrationStep</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/program-registration-models.html#esp.models.program_registration_models.CompletedStudentForm"><code class="docutils literal notranslate"><span class="pre">CompletedStudentForm</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/program-registration-models.html#esp.models.program_registration_models.CompletedTeacherForm"><code class="docutils literal notranslate"><span class="pre">CompletedTeacherForm</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/program-registration-models.html#esp.models.program_registration_models.CompletedTeacherRegistrationStep"><code class="docutils literal notranslate"><span class="pre">CompletedTeacherRegistrationStep</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/program-registration-models.html#esp.models.program_registration_models.CourseTeacher"><code class="docutils literal notranslate"><span class="pre">CourseTeacher</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/program-registration-models.html#esp.models.program_registration_models.FinancialAidRequest"><code class="docutils literal notranslate"><span class="pre">FinancialAidRequest</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/program-registration-models.html#esp.models.program_registration_models.HistoricalClassPreference"><code class="docutils literal notranslate"><span class="pre">HistoricalClassPreference</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/program-registration-models.html#esp.models.program_registration_models.HistoricalClassRegistration"><code class="docutils literal notranslate"><span class="pre">HistoricalClassRegistration</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/program-registration-models.html#esp.models.program_registration_models.HistoricalComment"><code class="docutils literal notranslate"><span class="pre">HistoricalComment</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/program-registration-models.html#esp.models.program_registration_models.HistoricalCompletedForm"><code class="docutils literal notranslate"><span class="pre">HistoricalCompletedForm</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/program-registration-models.html#esp.models.program_registration_models.HistoricalCompletedRegistrationStep"><code class="docutils literal notranslate"><span class="pre">HistoricalCompletedRegistrationStep</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/program-registration-models.html#esp.models.program_registration_models.HistoricalCompletedStudentForm"><code class="docutils literal notranslate"><span class="pre">HistoricalCompletedStudentForm</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/program-registration-models.html#esp.models.program_registration_models.HistoricalCompletedTeacherForm"><code class="docutils literal notranslate"><span class="pre">HistoricalCompletedTeacherForm</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/program-registration-models.html#esp.models.program_registration_models.HistoricalCompletedTeacherRegistrationStep"><code class="docutils literal notranslate"><span class="pre">HistoricalCompletedTeacherRegistrationStep</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/program-registration-models.html#esp.models.program_registration_models.HistoricalCourseTeacher"><code class="docutils literal notranslate"><span class="pre">HistoricalCourseTeacher</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/program-registration-models.html#esp.models.program_registration_models.HistoricalFinancialAidRequest"><code class="docutils literal notranslate"><span class="pre">HistoricalFinancialAidRequest</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/program-registration-models.html#esp.models.program_registration_models.HistoricalProgramRegistration"><code class="docutils literal notranslate"><span class="pre">HistoricalProgramRegistration</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/program-registration-models.html#esp.models.program_registration_models.HistoricalPurchaseLineItem"><code class="docutils literal notranslate"><span class="pre">HistoricalPurchaseLineItem</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/program-registration-models.html#esp.models.program_registration_models.HistoricalStudentAvailability"><code class="docutils literal notranslate"><span class="pre">HistoricalStudentAvailability</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/program-registration-models.html#esp.models.program_registration_models.HistoricalStudentProfile"><code class="docutils literal notranslate"><span class="pre">HistoricalStudentProfile</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/program-registration-models.html#esp.models.program_registration_models.HistoricalTeacherAvailability"><code class="docutils literal notranslate"><span class="pre">HistoricalTeacherAvailability</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/program-registration-models.html#esp.models.program_registration_models.HistoricalTeacherProfile"><code class="docutils literal notranslate"><span class="pre">HistoricalTeacherProfile</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/program-registration-models.html#esp.models.program_registration_models.HistoricalTeacherRegistration"><code class="docutils literal notranslate"><span class="pre">HistoricalTeacherRegistration</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/program-registration-models.html#esp.models.program_registration_models.HistoricalUserPayment"><code class="docutils literal notranslate"><span class="pre">HistoricalUserPayment</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/program-registration-models.html#esp.models.program_registration_models.ProgramRegistration"><code class="docutils literal notranslate"><span class="pre">ProgramRegistration</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/program-registration-models.html#esp.models.program_registration_models.PurchaseLineItem"><code class="docutils literal notranslate"><span class="pre">PurchaseLineItem</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/program-registration-models.html#esp.models.program_registration_models.StudentAvailability"><code class="docutils literal notranslate"><span class="pre">StudentAvailability</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/program-registration-models.html#esp.models.program_registration_models.StudentProfile"><code class="docutils literal notranslate"><span class="pre">StudentProfile</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/program-registration-models.html#esp.models.program_registration_models.TeacherAvailability"><code class="docutils literal notranslate"><span class="pre">TeacherAvailability</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/program-registration-models.html#esp.models.program_registration_models.TeacherProfile"><code class="docutils literal notranslate"><span class="pre">TeacherProfile</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/program-registration-models.html#esp.models.program_registration_models.TeacherRegistration"><code class="docutils literal notranslate"><span class="pre">TeacherRegistration</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/program-registration-models.html#esp.models.program_registration_models.UserPayment"><code class="docutils literal notranslate"><span class="pre">UserPayment</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="modules/views.html">Views</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/accessibility.html">Accessibility (a11y)</a></li>
 </ul>
 </div>
 </section>
@@ -171,7 +185,7 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="modules/accessibility.html" class="btn btn-neutral float-right" title="Accessibility (a11y)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="modules/getting-started.html" class="btn btn-neutral float-right" title="Getting started" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

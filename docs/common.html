@@ -39,9 +39,13 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="modules/accessibility.html">Accessibility (a11y)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="modules/models.html">Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/getting-started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/deployment.html">Deployment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/course-models.html">Course scheduling models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/program-models.html">Program models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/program-registration-models.html">Program registration models</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/views.html">Views</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/accessibility.html">Accessibility (a11y)</a></li>
 </ul>
 
         </div>
@@ -1437,13 +1441,6 @@ object the first time, the query is executed.</p>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">MultipleObjectsReturned</span></code></p>
 </dd></dl>
 
-<dl class="py attribute">
-<dt class="sig sig-object py" id="common.models.SiteRedirectPath.created_on">
-<span class="sig-name descname"><span class="pre">created_on</span></span><a class="headerlink" href="#common.models.SiteRedirectPath.created_on" title="Permalink to this definition"></a></dt>
-<dd><p>A wrapper for a deferred-loading field. When the value is read from this
-object the first time, the query is executed.</p>
-</dd></dl>
-
 <dl class="py method">
 <dt class="sig sig-object py" id="common.models.SiteRedirectPath.get_next_by_created_on">
 <span class="sig-name descname"><span class="pre">get_next_by_created_on</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">created_on&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#common.models.SiteRedirectPath.get_next_by_created_on" title="Permalink to this definition"></a></dt>
@@ -1471,22 +1468,8 @@ object the first time, the query is executed.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="common.models.SiteRedirectPath.history">
-<span class="sig-name descname"><span class="pre">history</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;django.db.models.manager.HistoryManagerFromHistoricalQuerySet</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#common.models.SiteRedirectPath.history" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">history</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;simple_history.manager.HistoryManager</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#common.models.SiteRedirectPath.history" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="common.models.SiteRedirectPath.id">
-<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#common.models.SiteRedirectPath.id" title="Permalink to this definition"></a></dt>
-<dd><p>A wrapper for a deferred-loading field. When the value is read from this
-object the first time, the query is executed.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="common.models.SiteRedirectPath.is_deleted">
-<span class="sig-name descname"><span class="pre">is_deleted</span></span><a class="headerlink" href="#common.models.SiteRedirectPath.is_deleted" title="Permalink to this definition"></a></dt>
-<dd><p>A wrapper for a deferred-loading field. When the value is read from this
-object the first time, the query is executed.</p>
-</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="common.models.SiteRedirectPath.objects">
@@ -1510,13 +1493,6 @@ object the first time, the query is executed.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="common.models.SiteRedirectPath.redirect_url_name">
 <span class="sig-name descname"><span class="pre">redirect_url_name</span></span><a class="headerlink" href="#common.models.SiteRedirectPath.redirect_url_name" title="Permalink to this definition"></a></dt>
-<dd><p>A wrapper for a deferred-loading field. When the value is read from this
-object the first time, the query is executed.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="common.models.SiteRedirectPath.updated_on">
-<span class="sig-name descname"><span class="pre">updated_on</span></span><a class="headerlink" href="#common.models.SiteRedirectPath.updated_on" title="Permalink to this definition"></a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
@@ -1557,34 +1533,6 @@ many-to-one relation.</p>
 <p><code class="docutils literal notranslate"><span class="pre">Parent.children</span></code> is a <code class="docutils literal notranslate"><span class="pre">ReverseManyToOneDescriptor</span></code> instance.</p>
 <p>Most of the implementation is delegated to a dynamically defined manager
 class built by <code class="docutils literal notranslate"><span class="pre">create_forward_many_to_many_manager()</span></code> defined below.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="common.models.User.created_on">
-<span class="sig-name descname"><span class="pre">created_on</span></span><a class="headerlink" href="#common.models.User.created_on" title="Permalink to this definition"></a></dt>
-<dd><p>A wrapper for a deferred-loading field. When the value is read from this
-object the first time, the query is executed.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="common.models.User.date_joined">
-<span class="sig-name descname"><span class="pre">date_joined</span></span><a class="headerlink" href="#common.models.User.date_joined" title="Permalink to this definition"></a></dt>
-<dd><p>A wrapper for a deferred-loading field. When the value is read from this
-object the first time, the query is executed.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="common.models.User.email">
-<span class="sig-name descname"><span class="pre">email</span></span><a class="headerlink" href="#common.models.User.email" title="Permalink to this definition"></a></dt>
-<dd><p>A wrapper for a deferred-loading field. When the value is read from this
-object the first time, the query is executed.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="common.models.User.first_name">
-<span class="sig-name descname"><span class="pre">first_name</span></span><a class="headerlink" href="#common.models.User.first_name" title="Permalink to this definition"></a></dt>
-<dd><p>A wrapper for a deferred-loading field. When the value is read from this
-object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1650,57 +1598,8 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="common.models.User.history">
-<span class="sig-name descname"><span class="pre">history</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;django.db.models.manager.HistoryManagerFromHistoricalQuerySet</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#common.models.User.history" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">history</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;simple_history.manager.HistoryManager</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#common.models.User.history" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="common.models.User.id">
-<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#common.models.User.id" title="Permalink to this definition"></a></dt>
-<dd><p>A wrapper for a deferred-loading field. When the value is read from this
-object the first time, the query is executed.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="common.models.User.is_active">
-<span class="sig-name descname"><span class="pre">is_active</span></span><a class="headerlink" href="#common.models.User.is_active" title="Permalink to this definition"></a></dt>
-<dd><p>A wrapper for a deferred-loading field. When the value is read from this
-object the first time, the query is executed.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="common.models.User.is_deleted">
-<span class="sig-name descname"><span class="pre">is_deleted</span></span><a class="headerlink" href="#common.models.User.is_deleted" title="Permalink to this definition"></a></dt>
-<dd><p>A wrapper for a deferred-loading field. When the value is read from this
-object the first time, the query is executed.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="common.models.User.is_staff">
-<span class="sig-name descname"><span class="pre">is_staff</span></span><a class="headerlink" href="#common.models.User.is_staff" title="Permalink to this definition"></a></dt>
-<dd><p>A wrapper for a deferred-loading field. When the value is read from this
-object the first time, the query is executed.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="common.models.User.is_superuser">
-<span class="sig-name descname"><span class="pre">is_superuser</span></span><a class="headerlink" href="#common.models.User.is_superuser" title="Permalink to this definition"></a></dt>
-<dd><p>A wrapper for a deferred-loading field. When the value is read from this
-object the first time, the query is executed.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="common.models.User.last_login">
-<span class="sig-name descname"><span class="pre">last_login</span></span><a class="headerlink" href="#common.models.User.last_login" title="Permalink to this definition"></a></dt>
-<dd><p>A wrapper for a deferred-loading field. When the value is read from this
-object the first time, the query is executed.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="common.models.User.last_name">
-<span class="sig-name descname"><span class="pre">last_name</span></span><a class="headerlink" href="#common.models.User.last_name" title="Permalink to this definition"></a></dt>
-<dd><p>A wrapper for a deferred-loading field. When the value is read from this
-object the first time, the query is executed.</p>
-</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="common.models.User.logentry_set">
@@ -1726,13 +1625,6 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 <dt class="sig sig-object py" id="common.models.User.objects">
 <span class="sig-name descname"><span class="pre">objects</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;common.managers.UserManager</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#common.models.User.objects" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="common.models.User.password">
-<span class="sig-name descname"><span class="pre">password</span></span><a class="headerlink" href="#common.models.User.password" title="Permalink to this definition"></a></dt>
-<dd><p>A wrapper for a deferred-loading field. When the value is read from this
-object the first time, the query is executed.</p>
-</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="common.models.User.payments">
@@ -1821,13 +1713,6 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="common.models.User.updated_on">
-<span class="sig-name descname"><span class="pre">updated_on</span></span><a class="headerlink" href="#common.models.User.updated_on" title="Permalink to this definition"></a></dt>
-<dd><p>A wrapper for a deferred-loading field. When the value is read from this
-object the first time, the query is executed.</p>
-</dd></dl>
-
-<dl class="py attribute">
 <dt class="sig sig-object py" id="common.models.User.user_permissions">
 <span class="sig-name descname"><span class="pre">user_permissions</span></span><a class="headerlink" href="#common.models.User.user_permissions" title="Permalink to this definition"></a></dt>
 <dd><p>Accessor to the related objects manager on the forward and reverse sides of
@@ -1846,13 +1731,6 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 <dl class="py attribute">
 <dt class="sig sig-object py" id="common.models.User.user_type">
 <span class="sig-name descname"><span class="pre">user_type</span></span><a class="headerlink" href="#common.models.User.user_type" title="Permalink to this definition"></a></dt>
-<dd><p>A wrapper for a deferred-loading field. When the value is read from this
-object the first time, the query is executed.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="common.models.User.username">
-<span class="sig-name descname"><span class="pre">username</span></span><a class="headerlink" href="#common.models.User.username" title="Permalink to this definition"></a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
