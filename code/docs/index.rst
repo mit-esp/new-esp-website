@@ -2,10 +2,6 @@ Welcome to ESPider's documentation!
 ===========================================
 
 
-What is ESPider?
-----------------
-
-
 Indices and tables
 ------------------
 
@@ -21,6 +17,10 @@ Indices and tables
     :maxdepth: 2
     :caption: Contents:
 
-    modules/accessibility.rst
-    modules/models.rst
+    modules/getting-started.rst
+    modules/deployment.rst
+    modules/course-models.rst
+    modules/program-models.rst
+    modules/program-registration-models.rst
     modules/views.rst
+    modules/accessibility.rst
