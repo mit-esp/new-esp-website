@@ -5,7 +5,15 @@ Getting started
 Setup
 =====
 
-Before setup, clone this repo. File paths in these instructions are relative with respect to the repo's home directory.
+Before setup, clone this repo, create a branch for yourself, and checkout into that branch:
+
+.. code-block::
+
+    git clone git@github.com:mit-esp/new-esp-website.git
+    git branch dev-[your name]
+    git checkout dev-[your name]
+
+File paths in these instructions are relative with respect to the repo's home directory.
 
 Docker Setup
 ------------
