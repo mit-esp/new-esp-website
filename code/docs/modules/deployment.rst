@@ -4,13 +4,9 @@ Deployment
 
 These are instructions for deploying the website from GitHub to esp-dev.mit.edu.
 
+SSH into the esp-dev.mit.edu server.
+
 Install Postgres:
-
-.. code-block::
-
-    sudo apt install -y postgresql
-
-or
 
 .. code-block::
 
