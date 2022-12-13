@@ -21,7 +21,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Course scheduling models" href="course-models.html" />
-    <link rel="prev" title="Getting started" href="getting-started.html" /> 
+    <link rel="prev" title="Navigating the codebase" href="navigating-codebase.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -42,6 +42,7 @@
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="getting-started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="navigating-codebase.html">Navigating the codebase</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Deployment</a></li>
 <li class="toctree-l1"><a class="reference internal" href="course-models.html">Course scheduling models</a></li>
 <li class="toctree-l1"><a class="reference internal" href="program-models.html">Program models</a></li>
@@ -77,9 +78,9 @@
   <section id="deployment">
 <h1>Deployment<a class="headerlink" href="#deployment" title="Permalink to this heading"></a></h1>
 <p>These are instructions for deploying the website from GitHub to esp-dev.mit.edu.</p>
+<p>SSH into the esp-dev.mit.edu server.</p>
 <p>Install Postgres:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">buildoutcfg</span>
-<span class="n">sudo</span> <span class="n">yum</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> <span class="n">postgresql</span><span class="o">-</span><span class="n">devel</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">yum</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> <span class="n">postgresql</span><span class="o">-</span><span class="n">devel</span>
 </pre></div>
 </div>
 <p>Configure environment variables in <code class="docutils literal notranslate"><span class="pre">config/.env</span></code> (backend environment variables file) e.g.</p>
@@ -114,7 +115,7 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="getting-started.html" class="btn btn-neutral float-left" title="Getting started" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="navigating-codebase.html" class="btn btn-neutral float-left" title="Navigating the codebase" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="course-models.html" class="btn btn-neutral float-right" title="Course scheduling models" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

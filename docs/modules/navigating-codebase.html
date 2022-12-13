@@ -43,6 +43,7 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="getting-started.html">Getting started</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Navigating the codebase</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#django-panel">Django Panel</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#views">Views</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#dashboards">Dashboards</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#forms">Forms</a></li>
@@ -85,6 +86,14 @@
   <section id="navigating-the-codebase">
 <h1>Navigating the codebase<a class="headerlink" href="#navigating-the-codebase" title="Permalink to this heading"></a></h1>
 <p>This assumes basic knowledge of Python and preferably some Django.</p>
+<section id="django-panel">
+<h2>Django Panel<a class="headerlink" href="#django-panel" title="Permalink to this heading"></a></h2>
+<p>The Django panel is where direct changes to the data in our databases can be made. On the dev site, it’s located at <a class="reference external" href="https://esp-dev.mit.edu/django_admin/">https://esp-dev.mit.edu/django_admin/</a>.</p>
+<p>To make a model (object representing information about a course, program, user, etc.) visible on the panel, go to <code class="docutils literal notranslate"><span class="pre">code/esp/admin.py</span></code> and register it. For example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">course_scheduling_models</span><span class="o">.</span><span class="n">ClassroomConstraint</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
 <section id="views">
 <h2>Views<a class="headerlink" href="#views" title="Permalink to this heading"></a></h2>
 <section id="dashboards">
