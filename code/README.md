@@ -3,6 +3,8 @@ Previous code repository: https://github.com/learning-unlimited/ESP-Website/tree
 
 A website to help manage the logistics of large short-term educational programs. This website was written by the [MIT Educational Studies Program](https://esp.mit.edu) to support [Splash](https://esp.mit.edu/learn/Splash) and other educational programs.
 
+**Check out the README in the root directory**
+
 
 ## Local Project Setup
 ```
