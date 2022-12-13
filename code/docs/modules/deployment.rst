@@ -8,7 +8,12 @@ Install Postgres:
 
 .. code-block::
 
-    buildoutcfg
+    sudo apt install -y postgresql
+
+or
+
+.. code-block::
+
     sudo yum install -y postgresql-devel
 
 Configure environment variables in ``config/.env`` (backend environment variables file) e.g.

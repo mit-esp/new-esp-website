@@ -4,6 +4,17 @@ Navigating the codebase
 
 This assumes basic knowledge of Python and preferably some Django.
 
+Django Panel
+============
+
+The Django panel is where direct changes to the data in our databases can be made. On the dev site, it's located at https://esp-dev.mit.edu/django_admin/.
+
+To make a model (object representing information about a course, program, user, etc.) visible on the panel, go to ``code/esp/admin.py`` and register it. For example:
+
+.. code-block:: python
+
+    admin.site.register(course_scheduling_models.ClassroomConstraint)
+
 Views
 =====
 
