@@ -29,7 +29,7 @@ class ProgramConfiguration(BaseModel):
     """
     ProgramConfiguration represents a set of configuration for programs, e.g. stages and registration steps.
 
-    Args:
+    Attributes:
         saved_as_preset (models.BooleanField): True if this program configuration is saved as a preset, False otherwise
         name (models.CharField): name of program configuration
         description (models.TextField): description
@@ -49,7 +49,7 @@ class CourseCategory(BaseModel):
     Generally speaking, the category of class (art, science, math, CS, ...).
     This should be viewable by everyone and editable by teachers.
 
-    Args:
+    Attributes:
         display_name (CharField): name of category
         symbol (CharField): single-letter abbreviation (e.g. math = M)
         tag_category (CourseCategoryCategory): TODO remove
@@ -73,7 +73,7 @@ class CourseFlag(BaseModel):
     Flags that ESP admins use to indicate information about a course
     (e.g. review stage, needs director review, specific classroom requests)
 
-    Args:
+    Attributes:
         tag (models.CharField)
         display_name (models.CharField): name of flag
         tag_category (models.CharField)
@@ -94,7 +94,7 @@ class CourseFlag(BaseModel):
 class Program(BaseModel):
     """An ESP program instance, e.g. Splash 2021
     
-    Args:
+    Attributes:
         name (models.CharField): name of the program
         program_type (ProgramType): type of program (e.g. Splash, Spark, ...)
         min_grade_level (GradeLevel): lowest allowed student grade level
@@ -109,7 +109,7 @@ class Program(BaseModel):
 
         program_stages (ProgramStage): set of ProgramStages
         teacher_program_registration_steps (TeacherProgramRegistrationStep): set of TeacherProgramRegistrationSteps
-        timeslots (TimeSlot): set of all allowed TimeSlots for this program
+        time_slots (TimeSlot): set of all allowed TimeSlots for this program
         external_program_forms (ExternalProgramForm): set of ExternalProgramForms
 
     """
@@ -168,7 +168,7 @@ class Course(BaseModel):
     Course represents an ESP class in a specific program (named to avoid reserved word 'class' conflicts).
     It is still referred to as 'class' in urls and on the frontend to match existing terminology.
 
-    Args:
+    Attributes:
         program (Program): program in which this course is offered
         name (models.CharField): course title
         display_id (models.BigIntegerField): unique ID for this course; should be automatically generated?
@@ -292,7 +292,7 @@ class TimeSlot(BaseModel):
     """
     A single time block/slot that a course can occupy.
 
-    Args:
+    Attributes:
         program (Program): program that this timeslot belongs to
         start_datetime (models.DateTimeField): starting date/time of the timeslot
         end_datetime (models.DateTimeField): ending date/time of the timeslot
@@ -342,7 +342,7 @@ class Classroom(BaseModel):
     """
     Information about a particular MIT classroom.
 
-    Args:
+    Attributes:
         name (models.CharField): name of the classroom
         description (models.TextField): freeform description of classroom
         max_occupants (models.IntegerField): classroom capacity
@@ -360,7 +360,7 @@ class ClassroomTag(BaseModel):
     """
     Tags that ESP admins use to indicate information about a classroom
 
-    Args:
+    Attributes:
         classrooms (Classroom): TODO remove
         tag (models.CharField): name of tag
         tag_category (models.CharField)
@@ -386,7 +386,7 @@ class ProgramStage(BaseModel):
     """
     ProgramStage represents configuration for a student-facing program stage, e.g. 'Initiation' or 'Post-Lottery'
 
-    Args:
+    Attributes:
         program (Program): program that this ProgramStage belongs to
         name (models.CharField): name of the program stage
         start_date (models.DateTimeField): start date of this program stage
@@ -422,7 +422,7 @@ class ProgramRegistrationStep(BaseModel):
     """
     ProgramRegistrationStep represents config for a single student interaction step within a program stage.
     
-    Args:
+    Attributes:
         program_stage (ProgramStage): program stage that this step is part of
         display_name (models.CharField): name of this step
         step_key (StudentRegistrationStepType): type of registration step (e.g. verify profile, lottery preferences)
