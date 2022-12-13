@@ -40,6 +40,7 @@
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="getting-started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="navigating-codebase.html">Navigating the codebase</a></li>
 <li class="toctree-l1"><a class="reference internal" href="deployment.html">Deployment</a></li>
 <li class="toctree-l1"><a class="reference internal" href="course-models.html">Course scheduling models</a></li>
 <li class="toctree-l1"><a class="reference internal" href="program-models.html">Program models</a></li>
@@ -1092,15 +1093,39 @@ TODO separate these models into different categories? e.g. program-relevant, cou
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">esp.models.program_models.</span></span><span class="sig-name descname"><span class="pre">Classroom</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#esp.models.program_models.Classroom" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="../common.html#common.models.BaseModel" title="common.models.BaseModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></a></p>
 <p>Information about a particular MIT classroom.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.program_models.Classroom.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#esp.models.program_models.Classroom.name" title="Permalink to this definition"></a></dt>
+<dd><p>name of the classroom</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<em>models.CharField</em>) – name of the classroom</p></li>
-<li><p><strong>description</strong> (<em>models.TextField</em>) – freeform description of classroom</p></li>
-<li><p><strong>max_occupants</strong> (<em>models.IntegerField</em>) – classroom capacity</p></li>
-</ul>
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>models.CharField</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.program_models.Classroom.description">
+<span class="sig-name descname"><span class="pre">description</span></span><a class="headerlink" href="#esp.models.program_models.Classroom.description" title="Permalink to this definition"></a></dt>
+<dd><p>freeform description of classroom</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>models.TextField</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.program_models.Classroom.max_occupants">
+<span class="sig-name descname"><span class="pre">max_occupants</span></span><a class="headerlink" href="#esp.models.program_models.Classroom.max_occupants" title="Permalink to this definition"></a></dt>
+<dd><p>classroom capacity</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>models.IntegerField</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py exception">
 <dt class="sig sig-object py" id="esp.models.program_models.Classroom.DoesNotExist">
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#esp.models.program_models.Classroom.DoesNotExist" title="Permalink to this definition"></a></dt>
@@ -1114,8 +1139,8 @@ TODO separate these models into different categories? e.g. program-relevant, cou
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="esp.models.program_models.Classroom.description">
-<span class="sig-name descname"><span class="pre">description</span></span><a class="headerlink" href="#esp.models.program_models.Classroom.description" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">description</span></span><a class="headerlink" href="#id0" title="Permalink to this definition"></a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
@@ -1146,15 +1171,15 @@ object the first time, the query is executed.</p>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="esp.models.program_models.Classroom.max_occupants">
-<span class="sig-name descname"><span class="pre">max_occupants</span></span><a class="headerlink" href="#esp.models.program_models.Classroom.max_occupants" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id1">
+<span class="sig-name descname"><span class="pre">max_occupants</span></span><a class="headerlink" href="#id1" title="Permalink to this definition"></a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="esp.models.program_models.Classroom.name">
-<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#esp.models.program_models.Classroom.name" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id2">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#id2" title="Permalink to this definition"></a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
@@ -1202,15 +1227,38 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">esp.models.program_models.</span></span><span class="sig-name descname"><span class="pre">ClassroomTag</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#esp.models.program_models.ClassroomTag" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="../common.html#common.models.BaseModel" title="common.models.BaseModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></a></p>
 <p>Tags that ESP admins use to indicate information about a classroom</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.program_models.ClassroomTag.classrooms">
+<span class="sig-name descname"><span class="pre">classrooms</span></span><a class="headerlink" href="#esp.models.program_models.ClassroomTag.classrooms" title="Permalink to this definition"></a></dt>
+<dd><p>TODO remove</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>classrooms</strong> (<a class="reference internal" href="program-models.html#esp.models.program_models.Classroom" title="esp.models.program_models.Classroom"><em>Classroom</em></a>) – TODO remove</p></li>
-<li><p><strong>tag</strong> (<em>models.CharField</em>) – name of tag</p></li>
-<li><p><strong>tag_category</strong> (<em>models.CharField</em>) – </p></li>
-</ul>
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#esp.models.program_models.Classroom" title="esp.models.program_models.Classroom">Classroom</a></p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.program_models.ClassroomTag.tag">
+<span class="sig-name descname"><span class="pre">tag</span></span><a class="headerlink" href="#esp.models.program_models.ClassroomTag.tag" title="Permalink to this definition"></a></dt>
+<dd><p>name of tag</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>models.CharField</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.program_models.ClassroomTag.tag_category">
+<span class="sig-name descname"><span class="pre">tag_category</span></span><a class="headerlink" href="#esp.models.program_models.ClassroomTag.tag_category" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>models.CharField</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py exception">
 <dt class="sig sig-object py" id="esp.models.program_models.ClassroomTag.DoesNotExist">
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#esp.models.program_models.ClassroomTag.DoesNotExist" title="Permalink to this definition"></a></dt>
@@ -1224,8 +1272,8 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="esp.models.program_models.ClassroomTag.classrooms">
-<span class="sig-name descname"><span class="pre">classrooms</span></span><a class="headerlink" href="#esp.models.program_models.ClassroomTag.classrooms" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id3">
+<span class="sig-name descname"><span class="pre">classrooms</span></span><a class="headerlink" href="#id3" title="Permalink to this definition"></a></dt>
 <dd><p>Accessor to the related objects manager on the forward and reverse sides of
 a many-to-many relation.</p>
 <p>In the example:</p>
@@ -1290,15 +1338,15 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="esp.models.program_models.ClassroomTag.tag">
-<span class="sig-name descname"><span class="pre">tag</span></span><a class="headerlink" href="#esp.models.program_models.ClassroomTag.tag" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id4">
+<span class="sig-name descname"><span class="pre">tag</span></span><a class="headerlink" href="#id4" title="Permalink to this definition"></a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="esp.models.program_models.ClassroomTag.tag_category">
-<span class="sig-name descname"><span class="pre">tag_category</span></span><a class="headerlink" href="#esp.models.program_models.ClassroomTag.tag_category" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id5">
+<span class="sig-name descname"><span class="pre">tag_category</span></span><a class="headerlink" href="#id5" title="Permalink to this definition"></a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
@@ -1311,31 +1359,215 @@ object the first time, the query is executed.</p>
 <dd><p>Bases: <a class="reference internal" href="../common.html#common.models.BaseModel" title="common.models.BaseModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></a></p>
 <p>Course represents an ESP class in a specific program (named to avoid reserved word ‘class’ conflicts).
 It is still referred to as ‘class’ in urls and on the frontend to match existing terminology.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.program_models.Course.program">
+<span class="sig-name descname"><span class="pre">program</span></span><a class="headerlink" href="#esp.models.program_models.Course.program" title="Permalink to this definition"></a></dt>
+<dd><p>program in which this course is offered</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>program</strong> (<a class="reference internal" href="program-models.html#esp.models.program_models.Program" title="esp.models.program_models.Program"><em>Program</em></a>) – program in which this course is offered</p></li>
-<li><p><strong>name</strong> (<em>models.CharField</em>) – course title</p></li>
-<li><p><strong>display_id</strong> (<em>models.BigIntegerField</em>) – unique ID for this course; should be automatically generated?</p></li>
-<li><p><strong>category</strong> (<a class="reference internal" href="program-models.html#esp.models.program_models.CourseCategory" title="esp.models.program_models.CourseCategory"><em>CourseCategory</em></a>) – subject area of this course (e.g. CS, science, arts, …)</p></li>
-<li><p><strong>description</strong> (<em>models.TextField</em>) – publicly visible course description</p></li>
-<li><p><strong>max_section_size</strong> (<em>models.IntegerField</em>) – capacity for one section of this course</p></li>
-<li><p><strong>max_sections</strong> (<em>models.IntegerField</em>) – maximum number of sections for this course that could be taught</p></li>
-<li><p><strong>time_slots_per_session</strong> (<em>models.IntegerField</em>) – number of time slots one section takes (i.e. how long)</p></li>
-<li><p><strong>number_of_weeks</strong> (<em>models.IntegerField</em>) – number of weeks this class will last. This may be relevant to HSSPs (as of 11/2022)</p></li>
-<li><p><strong>sessions_per_week</strong> (<em>models.IntegerField</em>) – number of times a section of this course meets per week</p></li>
-<li><p><strong>prerequisites</strong> (<em>models.TextField</em>) – prerequisites for taking this course, if any</p></li>
-<li><p><strong>min_grade_level</strong> (<a class="reference internal" href="../common.html#common.constants.GradeLevel" title="common.constants.GradeLevel"><em>GradeLevel</em></a>) – lowest eligible grade level for this course</p></li>
-<li><p><strong>max_grade_level</strong> (<a class="reference internal" href="../common.html#common.constants.GradeLevel" title="common.constants.GradeLevel"><em>GradeLevel</em></a>) – highest eligible grade level for this course</p></li>
-<li><p><strong>difficulty</strong> (<a class="reference internal" href="../esp.html#esp.constants.CourseDifficulty" title="esp.constants.CourseDifficulty"><em>CourseDifficulty</em></a>) – difficulty rating of this course (1-4)</p></li>
-<li><p><strong>status</strong> (<a class="reference internal" href="../esp.html#esp.constants.CourseStatus" title="esp.constants.CourseStatus"><em>CourseStatus</em></a>) – registration status of this course (e.g. accepted, not reviewed)</p></li>
-<li><p><strong>teacher_notes</strong> (<em>models.TextField</em>) – notes from teachers to admins</p></li>
-<li><p><strong>admin_notes</strong> (<em>models.TextField</em>) – notes made by admins</p></li>
-<li><p><strong>flags</strong> (<a class="reference internal" href="program-models.html#esp.models.program_models.CourseFlag" title="esp.models.program_models.CourseFlag"><em>CourseFlag</em></a>) – admin flags for this course</p></li>
-<li><p><strong>planned_purchases</strong> (<em>models.TextField</em>) – planned purchases (e.g. class supplies) for this course</p></li>
-</ul>
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#esp.models.program_models.Program" title="esp.models.program_models.Program">Program</a></p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.program_models.Course.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#esp.models.program_models.Course.name" title="Permalink to this definition"></a></dt>
+<dd><p>course title</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>models.CharField</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.program_models.Course.display_id">
+<span class="sig-name descname"><span class="pre">display_id</span></span><a class="headerlink" href="#esp.models.program_models.Course.display_id" title="Permalink to this definition"></a></dt>
+<dd><p>unique ID for this course; should be automatically generated?</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>models.BigIntegerField</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.program_models.Course.category">
+<span class="sig-name descname"><span class="pre">category</span></span><a class="headerlink" href="#esp.models.program_models.Course.category" title="Permalink to this definition"></a></dt>
+<dd><p>subject area of this course (e.g. CS, science, arts, …)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#esp.models.program_models.CourseCategory" title="esp.models.program_models.CourseCategory">CourseCategory</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.program_models.Course.description">
+<span class="sig-name descname"><span class="pre">description</span></span><a class="headerlink" href="#esp.models.program_models.Course.description" title="Permalink to this definition"></a></dt>
+<dd><p>publicly visible course description</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>models.TextField</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.program_models.Course.max_section_size">
+<span class="sig-name descname"><span class="pre">max_section_size</span></span><a class="headerlink" href="#esp.models.program_models.Course.max_section_size" title="Permalink to this definition"></a></dt>
+<dd><p>capacity for one section of this course</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>models.IntegerField</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.program_models.Course.max_sections">
+<span class="sig-name descname"><span class="pre">max_sections</span></span><a class="headerlink" href="#esp.models.program_models.Course.max_sections" title="Permalink to this definition"></a></dt>
+<dd><p>maximum number of sections for this course that could be taught</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>models.IntegerField</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.program_models.Course.time_slots_per_session">
+<span class="sig-name descname"><span class="pre">time_slots_per_session</span></span><a class="headerlink" href="#esp.models.program_models.Course.time_slots_per_session" title="Permalink to this definition"></a></dt>
+<dd><p>number of time slots one section takes (i.e. how long)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>models.IntegerField</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.program_models.Course.number_of_weeks">
+<span class="sig-name descname"><span class="pre">number_of_weeks</span></span><a class="headerlink" href="#esp.models.program_models.Course.number_of_weeks" title="Permalink to this definition"></a></dt>
+<dd><p>number of weeks this class will last. This may be relevant to HSSPs (as of 11/2022)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>models.IntegerField</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.program_models.Course.sessions_per_week">
+<span class="sig-name descname"><span class="pre">sessions_per_week</span></span><a class="headerlink" href="#esp.models.program_models.Course.sessions_per_week" title="Permalink to this definition"></a></dt>
+<dd><p>number of times a section of this course meets per week</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>models.IntegerField</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.program_models.Course.prerequisites">
+<span class="sig-name descname"><span class="pre">prerequisites</span></span><a class="headerlink" href="#esp.models.program_models.Course.prerequisites" title="Permalink to this definition"></a></dt>
+<dd><p>prerequisites for taking this course, if any</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>models.TextField</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.program_models.Course.min_grade_level">
+<span class="sig-name descname"><span class="pre">min_grade_level</span></span><a class="headerlink" href="#esp.models.program_models.Course.min_grade_level" title="Permalink to this definition"></a></dt>
+<dd><p>lowest eligible grade level for this course</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="../common.html#common.constants.GradeLevel" title="common.constants.GradeLevel">GradeLevel</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.program_models.Course.max_grade_level">
+<span class="sig-name descname"><span class="pre">max_grade_level</span></span><a class="headerlink" href="#esp.models.program_models.Course.max_grade_level" title="Permalink to this definition"></a></dt>
+<dd><p>highest eligible grade level for this course</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="../common.html#common.constants.GradeLevel" title="common.constants.GradeLevel">GradeLevel</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.program_models.Course.difficulty">
+<span class="sig-name descname"><span class="pre">difficulty</span></span><a class="headerlink" href="#esp.models.program_models.Course.difficulty" title="Permalink to this definition"></a></dt>
+<dd><p>difficulty rating of this course (1-4)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="../esp.html#esp.constants.CourseDifficulty" title="esp.constants.CourseDifficulty">CourseDifficulty</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.program_models.Course.status">
+<span class="sig-name descname"><span class="pre">status</span></span><a class="headerlink" href="#esp.models.program_models.Course.status" title="Permalink to this definition"></a></dt>
+<dd><p>registration status of this course (e.g. accepted, not reviewed)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="../esp.html#esp.constants.CourseStatus" title="esp.constants.CourseStatus">CourseStatus</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.program_models.Course.teacher_notes">
+<span class="sig-name descname"><span class="pre">teacher_notes</span></span><a class="headerlink" href="#esp.models.program_models.Course.teacher_notes" title="Permalink to this definition"></a></dt>
+<dd><p>notes from teachers to admins</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>models.TextField</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.program_models.Course.admin_notes">
+<span class="sig-name descname"><span class="pre">admin_notes</span></span><a class="headerlink" href="#esp.models.program_models.Course.admin_notes" title="Permalink to this definition"></a></dt>
+<dd><p>notes made by admins</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>models.TextField</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.program_models.Course.flags">
+<span class="sig-name descname"><span class="pre">flags</span></span><a class="headerlink" href="#esp.models.program_models.Course.flags" title="Permalink to this definition"></a></dt>
+<dd><p>admin flags for this course</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#esp.models.program_models.CourseFlag" title="esp.models.program_models.CourseFlag">CourseFlag</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.program_models.Course.planned_purchases">
+<span class="sig-name descname"><span class="pre">planned_purchases</span></span><a class="headerlink" href="#esp.models.program_models.Course.planned_purchases" title="Permalink to this definition"></a></dt>
+<dd><p>planned purchases (e.g. class supplies) for this course</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>models.TextField</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py exception">
 <dt class="sig sig-object py" id="esp.models.program_models.Course.DoesNotExist">
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#esp.models.program_models.Course.DoesNotExist" title="Permalink to this definition"></a></dt>
@@ -1349,15 +1581,15 @@ It is still referred to as ‘class’ in urls and on the frontend to match exis
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="esp.models.program_models.Course.admin_notes">
-<span class="sig-name descname"><span class="pre">admin_notes</span></span><a class="headerlink" href="#esp.models.program_models.Course.admin_notes" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id6">
+<span class="sig-name descname"><span class="pre">admin_notes</span></span><a class="headerlink" href="#id6" title="Permalink to this definition"></a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="esp.models.program_models.Course.category">
-<span class="sig-name descname"><span class="pre">category</span></span><a class="headerlink" href="#esp.models.program_models.Course.category" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id7">
+<span class="sig-name descname"><span class="pre">category</span></span><a class="headerlink" href="#id7" title="Permalink to this definition"></a></dt>
 <dd><p>Accessor to the related object on the forward side of a many-to-one or
 one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
 <p>In the example:</p>
@@ -1389,29 +1621,29 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="esp.models.program_models.Course.description">
-<span class="sig-name descname"><span class="pre">description</span></span><a class="headerlink" href="#esp.models.program_models.Course.description" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id8">
+<span class="sig-name descname"><span class="pre">description</span></span><a class="headerlink" href="#id8" title="Permalink to this definition"></a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="esp.models.program_models.Course.difficulty">
-<span class="sig-name descname"><span class="pre">difficulty</span></span><a class="headerlink" href="#esp.models.program_models.Course.difficulty" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id9">
+<span class="sig-name descname"><span class="pre">difficulty</span></span><a class="headerlink" href="#id9" title="Permalink to this definition"></a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="esp.models.program_models.Course.display_id">
-<span class="sig-name descname"><span class="pre">display_id</span></span><a class="headerlink" href="#esp.models.program_models.Course.display_id" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id10">
+<span class="sig-name descname"><span class="pre">display_id</span></span><a class="headerlink" href="#id10" title="Permalink to this definition"></a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="esp.models.program_models.Course.flags">
-<span class="sig-name descname"><span class="pre">flags</span></span><a class="headerlink" href="#esp.models.program_models.Course.flags" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id11">
+<span class="sig-name descname"><span class="pre">flags</span></span><a class="headerlink" href="#id11" title="Permalink to this definition"></a></dt>
 <dd><p>Accessor to the related objects manager on the forward and reverse sides of
 a many-to-many relation.</p>
 <p>In the example:</p>
@@ -1491,43 +1723,43 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="esp.models.program_models.Course.max_grade_level">
-<span class="sig-name descname"><span class="pre">max_grade_level</span></span><a class="headerlink" href="#esp.models.program_models.Course.max_grade_level" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id12">
+<span class="sig-name descname"><span class="pre">max_grade_level</span></span><a class="headerlink" href="#id12" title="Permalink to this definition"></a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="esp.models.program_models.Course.max_section_size">
-<span class="sig-name descname"><span class="pre">max_section_size</span></span><a class="headerlink" href="#esp.models.program_models.Course.max_section_size" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id13">
+<span class="sig-name descname"><span class="pre">max_section_size</span></span><a class="headerlink" href="#id13" title="Permalink to this definition"></a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="esp.models.program_models.Course.max_sections">
-<span class="sig-name descname"><span class="pre">max_sections</span></span><a class="headerlink" href="#esp.models.program_models.Course.max_sections" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id14">
+<span class="sig-name descname"><span class="pre">max_sections</span></span><a class="headerlink" href="#id14" title="Permalink to this definition"></a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="esp.models.program_models.Course.min_grade_level">
-<span class="sig-name descname"><span class="pre">min_grade_level</span></span><a class="headerlink" href="#esp.models.program_models.Course.min_grade_level" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id15">
+<span class="sig-name descname"><span class="pre">min_grade_level</span></span><a class="headerlink" href="#id15" title="Permalink to this definition"></a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="esp.models.program_models.Course.name">
-<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#esp.models.program_models.Course.name" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id16">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#id16" title="Permalink to this definition"></a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="esp.models.program_models.Course.number_of_weeks">
-<span class="sig-name descname"><span class="pre">number_of_weeks</span></span><a class="headerlink" href="#esp.models.program_models.Course.number_of_weeks" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id17">
+<span class="sig-name descname"><span class="pre">number_of_weeks</span></span><a class="headerlink" href="#id17" title="Permalink to this definition"></a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
@@ -1538,22 +1770,22 @@ object the first time, the query is executed.</p>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="esp.models.program_models.Course.planned_purchases">
-<span class="sig-name descname"><span class="pre">planned_purchases</span></span><a class="headerlink" href="#esp.models.program_models.Course.planned_purchases" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id18">
+<span class="sig-name descname"><span class="pre">planned_purchases</span></span><a class="headerlink" href="#id18" title="Permalink to this definition"></a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="esp.models.program_models.Course.prerequisites">
-<span class="sig-name descname"><span class="pre">prerequisites</span></span><a class="headerlink" href="#esp.models.program_models.Course.prerequisites" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id19">
+<span class="sig-name descname"><span class="pre">prerequisites</span></span><a class="headerlink" href="#id19" title="Permalink to this definition"></a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="esp.models.program_models.Course.program">
-<span class="sig-name descname"><span class="pre">program</span></span><a class="headerlink" href="#esp.models.program_models.Course.program" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id20">
+<span class="sig-name descname"><span class="pre">program</span></span><a class="headerlink" href="#id20" title="Permalink to this definition"></a></dt>
 <dd><p>Accessor to the related object on the forward side of a many-to-one or
 one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
 <p>In the example:</p>
@@ -1611,22 +1843,22 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="esp.models.program_models.Course.sessions_per_week">
-<span class="sig-name descname"><span class="pre">sessions_per_week</span></span><a class="headerlink" href="#esp.models.program_models.Course.sessions_per_week" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id21">
+<span class="sig-name descname"><span class="pre">sessions_per_week</span></span><a class="headerlink" href="#id21" title="Permalink to this definition"></a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="esp.models.program_models.Course.status">
-<span class="sig-name descname"><span class="pre">status</span></span><a class="headerlink" href="#esp.models.program_models.Course.status" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id22">
+<span class="sig-name descname"><span class="pre">status</span></span><a class="headerlink" href="#id22" title="Permalink to this definition"></a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="esp.models.program_models.Course.teacher_notes">
-<span class="sig-name descname"><span class="pre">teacher_notes</span></span><a class="headerlink" href="#esp.models.program_models.Course.teacher_notes" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id23">
+<span class="sig-name descname"><span class="pre">teacher_notes</span></span><a class="headerlink" href="#id23" title="Permalink to this definition"></a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
@@ -1648,8 +1880,8 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="esp.models.program_models.Course.time_slots_per_session">
-<span class="sig-name descname"><span class="pre">time_slots_per_session</span></span><a class="headerlink" href="#esp.models.program_models.Course.time_slots_per_session" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id24">
+<span class="sig-name descname"><span class="pre">time_slots_per_session</span></span><a class="headerlink" href="#id24" title="Permalink to this definition"></a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
@@ -1662,15 +1894,39 @@ object the first time, the query is executed.</p>
 <dd><p>Bases: <a class="reference internal" href="../common.html#common.models.BaseModel" title="common.models.BaseModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></a></p>
 <p>Generally speaking, the category of class (art, science, math, CS, …).
 This should be viewable by everyone and editable by teachers.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.program_models.CourseCategory.display_name">
+<span class="sig-name descname"><span class="pre">display_name</span></span><a class="headerlink" href="#esp.models.program_models.CourseCategory.display_name" title="Permalink to this definition"></a></dt>
+<dd><p>name of category</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>display_name</strong> (<em>CharField</em>) – name of category</p></li>
-<li><p><strong>symbol</strong> (<em>CharField</em>) – single-letter abbreviation (e.g. math = M)</p></li>
-<li><p><strong>tag_category</strong> (<a class="reference internal" href="../esp.html#esp.constants.CourseCategoryCategory" title="esp.constants.CourseCategoryCategory"><em>CourseCategoryCategory</em></a>) – TODO remove</p></li>
-</ul>
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>CharField</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.program_models.CourseCategory.symbol">
+<span class="sig-name descname"><span class="pre">symbol</span></span><a class="headerlink" href="#esp.models.program_models.CourseCategory.symbol" title="Permalink to this definition"></a></dt>
+<dd><p>single-letter abbreviation (e.g. math = M)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>CharField</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.program_models.CourseCategory.tag_category">
+<span class="sig-name descname"><span class="pre">tag_category</span></span><a class="headerlink" href="#esp.models.program_models.CourseCategory.tag_category" title="Permalink to this definition"></a></dt>
+<dd><p>TODO remove</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="../esp.html#esp.constants.CourseCategoryCategory" title="esp.constants.CourseCategoryCategory">CourseCategoryCategory</a></p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py exception">
 <dt class="sig sig-object py" id="esp.models.program_models.CourseCategory.DoesNotExist">
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#esp.models.program_models.CourseCategory.DoesNotExist" title="Permalink to this definition"></a></dt>
@@ -1699,8 +1955,8 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="esp.models.program_models.CourseCategory.display_name">
-<span class="sig-name descname"><span class="pre">display_name</span></span><a class="headerlink" href="#esp.models.program_models.CourseCategory.display_name" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id25">
+<span class="sig-name descname"><span class="pre">display_name</span></span><a class="headerlink" href="#id25" title="Permalink to this definition"></a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
@@ -1741,15 +1997,15 @@ object the first time, the query is executed.</p>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="esp.models.program_models.CourseCategory.symbol">
-<span class="sig-name descname"><span class="pre">symbol</span></span><a class="headerlink" href="#esp.models.program_models.CourseCategory.symbol" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id26">
+<span class="sig-name descname"><span class="pre">symbol</span></span><a class="headerlink" href="#id26" title="Permalink to this definition"></a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="esp.models.program_models.CourseCategory.tag_category">
-<span class="sig-name descname"><span class="pre">tag_category</span></span><a class="headerlink" href="#esp.models.program_models.CourseCategory.tag_category" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id27">
+<span class="sig-name descname"><span class="pre">tag_category</span></span><a class="headerlink" href="#id27" title="Permalink to this definition"></a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
@@ -1762,15 +2018,37 @@ object the first time, the query is executed.</p>
 <dd><p>Bases: <a class="reference internal" href="../common.html#common.models.BaseModel" title="common.models.BaseModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></a></p>
 <p>Flags that ESP admins use to indicate information about a course
 (e.g. review stage, needs director review, specific classroom requests)</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>tag</strong> (<em>models.CharField</em>) – </p></li>
-<li><p><strong>display_name</strong> (<em>models.CharField</em>) – name of flag</p></li>
-<li><p><strong>tag_category</strong> (<em>models.CharField</em>) – </p></li>
-</ul>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.program_models.CourseFlag.tag">
+<span class="sig-name descname"><span class="pre">tag</span></span><a class="headerlink" href="#esp.models.program_models.CourseFlag.tag" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>models.CharField</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.program_models.CourseFlag.display_name">
+<span class="sig-name descname"><span class="pre">display_name</span></span><a class="headerlink" href="#esp.models.program_models.CourseFlag.display_name" title="Permalink to this definition"></a></dt>
+<dd><p>name of flag</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>models.CharField</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.program_models.CourseFlag.tag_category">
+<span class="sig-name descname"><span class="pre">tag_category</span></span><a class="headerlink" href="#esp.models.program_models.CourseFlag.tag_category" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>models.CharField</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py exception">
 <dt class="sig sig-object py" id="esp.models.program_models.CourseFlag.DoesNotExist">
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#esp.models.program_models.CourseFlag.DoesNotExist" title="Permalink to this definition"></a></dt>
@@ -1784,8 +2062,8 @@ object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="esp.models.program_models.CourseFlag.display_name">
-<span class="sig-name descname"><span class="pre">display_name</span></span><a class="headerlink" href="#esp.models.program_models.CourseFlag.display_name" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id28">
+<span class="sig-name descname"><span class="pre">display_name</span></span><a class="headerlink" href="#id28" title="Permalink to this definition"></a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
@@ -1842,15 +2120,15 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="esp.models.program_models.CourseFlag.tag">
-<span class="sig-name descname"><span class="pre">tag</span></span><a class="headerlink" href="#esp.models.program_models.CourseFlag.tag" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id29">
+<span class="sig-name descname"><span class="pre">tag</span></span><a class="headerlink" href="#id29" title="Permalink to this definition"></a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="esp.models.program_models.CourseFlag.tag_category">
-<span class="sig-name descname"><span class="pre">tag_category</span></span><a class="headerlink" href="#esp.models.program_models.CourseFlag.tag_category" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id30">
+<span class="sig-name descname"><span class="pre">tag_category</span></span><a class="headerlink" href="#id30" title="Permalink to this definition"></a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
@@ -2145,7 +2423,7 @@ object the first time, the query is executed.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="esp.models.program_models.HistoricalClassroom.instance_type">
 <span class="sig-name descname"><span class="pre">instance_type</span></span><a class="headerlink" href="#esp.models.program_models.HistoricalClassroom.instance_type" title="Permalink to this definition"></a></dt>
-<dd><p>alias of <a class="reference internal" href="program-models.html#esp.models.program_models.Classroom" title="esp.models.program_models.Classroom"><code class="xref py py-class docutils literal notranslate"><span class="pre">Classroom</span></code></a></p>
+<dd><p>alias of <a class="reference internal" href="#esp.models.program_models.Classroom" title="esp.models.program_models.Classroom"><code class="xref py py-class docutils literal notranslate"><span class="pre">Classroom</span></code></a></p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -2337,7 +2615,7 @@ object the first time, the query is executed.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="esp.models.program_models.HistoricalClassroomTag.instance_type">
 <span class="sig-name descname"><span class="pre">instance_type</span></span><a class="headerlink" href="#esp.models.program_models.HistoricalClassroomTag.instance_type" title="Permalink to this definition"></a></dt>
-<dd><p>alias of <a class="reference internal" href="program-models.html#esp.models.program_models.ClassroomTag" title="esp.models.program_models.ClassroomTag"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClassroomTag</span></code></a></p>
+<dd><p>alias of <a class="reference internal" href="#esp.models.program_models.ClassroomTag" title="esp.models.program_models.ClassroomTag"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClassroomTag</span></code></a></p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -2590,7 +2868,7 @@ object the first time, the query is executed.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="esp.models.program_models.HistoricalCourse.instance_type">
 <span class="sig-name descname"><span class="pre">instance_type</span></span><a class="headerlink" href="#esp.models.program_models.HistoricalCourse.instance_type" title="Permalink to this definition"></a></dt>
-<dd><p>alias of <a class="reference internal" href="program-models.html#esp.models.program_models.Course" title="esp.models.program_models.Course"><code class="xref py py-class docutils literal notranslate"><span class="pre">Course</span></code></a></p>
+<dd><p>alias of <a class="reference internal" href="#esp.models.program_models.Course" title="esp.models.program_models.Course"><code class="xref py py-class docutils literal notranslate"><span class="pre">Course</span></code></a></p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -2877,7 +3155,7 @@ object the first time, the query is executed.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="esp.models.program_models.HistoricalCourseCategory.instance_type">
 <span class="sig-name descname"><span class="pre">instance_type</span></span><a class="headerlink" href="#esp.models.program_models.HistoricalCourseCategory.instance_type" title="Permalink to this definition"></a></dt>
-<dd><p>alias of <a class="reference internal" href="program-models.html#esp.models.program_models.CourseCategory" title="esp.models.program_models.CourseCategory"><code class="xref py py-class docutils literal notranslate"><span class="pre">CourseCategory</span></code></a></p>
+<dd><p>alias of <a class="reference internal" href="#esp.models.program_models.CourseCategory" title="esp.models.program_models.CourseCategory"><code class="xref py py-class docutils literal notranslate"><span class="pre">CourseCategory</span></code></a></p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -3076,7 +3354,7 @@ object the first time, the query is executed.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="esp.models.program_models.HistoricalCourseFlag.instance_type">
 <span class="sig-name descname"><span class="pre">instance_type</span></span><a class="headerlink" href="#esp.models.program_models.HistoricalCourseFlag.instance_type" title="Permalink to this definition"></a></dt>
-<dd><p>alias of <a class="reference internal" href="program-models.html#esp.models.program_models.CourseFlag" title="esp.models.program_models.CourseFlag"><code class="xref py py-class docutils literal notranslate"><span class="pre">CourseFlag</span></code></a></p>
+<dd><p>alias of <a class="reference internal" href="#esp.models.program_models.CourseFlag" title="esp.models.program_models.CourseFlag"><code class="xref py py-class docutils literal notranslate"><span class="pre">CourseFlag</span></code></a></p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -3280,7 +3558,7 @@ object the first time, the query is executed.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="esp.models.program_models.HistoricalExternalProgramForm.instance_type">
 <span class="sig-name descname"><span class="pre">instance_type</span></span><a class="headerlink" href="#esp.models.program_models.HistoricalExternalProgramForm.instance_type" title="Permalink to this definition"></a></dt>
-<dd><p>alias of <a class="reference internal" href="program-models.html#esp.models.program_models.ExternalProgramForm" title="esp.models.program_models.ExternalProgramForm"><code class="xref py py-class docutils literal notranslate"><span class="pre">ExternalProgramForm</span></code></a></p>
+<dd><p>alias of <a class="reference internal" href="#esp.models.program_models.ExternalProgramForm" title="esp.models.program_models.ExternalProgramForm"><code class="xref py py-class docutils literal notranslate"><span class="pre">ExternalProgramForm</span></code></a></p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -3520,7 +3798,7 @@ object the first time, the query is executed.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="esp.models.program_models.HistoricalPreferenceEntryCategory.instance_type">
 <span class="sig-name descname"><span class="pre">instance_type</span></span><a class="headerlink" href="#esp.models.program_models.HistoricalPreferenceEntryCategory.instance_type" title="Permalink to this definition"></a></dt>
-<dd><p>alias of <a class="reference internal" href="program-models.html#esp.models.program_models.PreferenceEntryCategory" title="esp.models.program_models.PreferenceEntryCategory"><code class="xref py py-class docutils literal notranslate"><span class="pre">PreferenceEntryCategory</span></code></a></p>
+<dd><p>alias of <a class="reference internal" href="#esp.models.program_models.PreferenceEntryCategory" title="esp.models.program_models.PreferenceEntryCategory"><code class="xref py py-class docutils literal notranslate"><span class="pre">PreferenceEntryCategory</span></code></a></p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -3795,7 +4073,7 @@ object the first time, the query is executed.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="esp.models.program_models.HistoricalPreferenceEntryRound.instance_type">
 <span class="sig-name descname"><span class="pre">instance_type</span></span><a class="headerlink" href="#esp.models.program_models.HistoricalPreferenceEntryRound.instance_type" title="Permalink to this definition"></a></dt>
-<dd><p>alias of <a class="reference internal" href="program-models.html#esp.models.program_models.PreferenceEntryRound" title="esp.models.program_models.PreferenceEntryRound"><code class="xref py py-class docutils literal notranslate"><span class="pre">PreferenceEntryRound</span></code></a></p>
+<dd><p>alias of <a class="reference internal" href="#esp.models.program_models.PreferenceEntryRound" title="esp.models.program_models.PreferenceEntryRound"><code class="xref py py-class docutils literal notranslate"><span class="pre">PreferenceEntryRound</span></code></a></p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -4049,7 +4327,7 @@ object the first time, the query is executed.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="esp.models.program_models.HistoricalProgram.instance_type">
 <span class="sig-name descname"><span class="pre">instance_type</span></span><a class="headerlink" href="#esp.models.program_models.HistoricalProgram.instance_type" title="Permalink to this definition"></a></dt>
-<dd><p>alias of <a class="reference internal" href="program-models.html#esp.models.program_models.Program" title="esp.models.program_models.Program"><code class="xref py py-class docutils literal notranslate"><span class="pre">Program</span></code></a></p>
+<dd><p>alias of <a class="reference internal" href="#esp.models.program_models.Program" title="esp.models.program_models.Program"><code class="xref py py-class docutils literal notranslate"><span class="pre">Program</span></code></a></p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -4303,7 +4581,7 @@ object the first time, the query is executed.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="esp.models.program_models.HistoricalProgramConfiguration.instance_type">
 <span class="sig-name descname"><span class="pre">instance_type</span></span><a class="headerlink" href="#esp.models.program_models.HistoricalProgramConfiguration.instance_type" title="Permalink to this definition"></a></dt>
-<dd><p>alias of <a class="reference internal" href="program-models.html#esp.models.program_models.ProgramConfiguration" title="esp.models.program_models.ProgramConfiguration"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProgramConfiguration</span></code></a></p>
+<dd><p>alias of <a class="reference internal" href="#esp.models.program_models.ProgramConfiguration" title="esp.models.program_models.ProgramConfiguration"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProgramConfiguration</span></code></a></p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -4523,7 +4801,7 @@ object the first time, the query is executed.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="esp.models.program_models.HistoricalProgramRegistrationStep.instance_type">
 <span class="sig-name descname"><span class="pre">instance_type</span></span><a class="headerlink" href="#esp.models.program_models.HistoricalProgramRegistrationStep.instance_type" title="Permalink to this definition"></a></dt>
-<dd><p>alias of <a class="reference internal" href="program-models.html#esp.models.program_models.ProgramRegistrationStep" title="esp.models.program_models.ProgramRegistrationStep"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProgramRegistrationStep</span></code></a></p>
+<dd><p>alias of <a class="reference internal" href="#esp.models.program_models.ProgramRegistrationStep" title="esp.models.program_models.ProgramRegistrationStep"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProgramRegistrationStep</span></code></a></p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -4762,7 +5040,7 @@ object the first time, the query is executed.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="esp.models.program_models.HistoricalProgramStage.instance_type">
 <span class="sig-name descname"><span class="pre">instance_type</span></span><a class="headerlink" href="#esp.models.program_models.HistoricalProgramStage.instance_type" title="Permalink to this definition"></a></dt>
-<dd><p>alias of <a class="reference internal" href="program-models.html#esp.models.program_models.ProgramStage" title="esp.models.program_models.ProgramStage"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProgramStage</span></code></a></p>
+<dd><p>alias of <a class="reference internal" href="#esp.models.program_models.ProgramStage" title="esp.models.program_models.ProgramStage"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProgramStage</span></code></a></p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -4972,7 +5250,7 @@ object the first time, the query is executed.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="esp.models.program_models.HistoricalProgramTag.instance_type">
 <span class="sig-name descname"><span class="pre">instance_type</span></span><a class="headerlink" href="#esp.models.program_models.HistoricalProgramTag.instance_type" title="Permalink to this definition"></a></dt>
-<dd><p>alias of <a class="reference internal" href="program-models.html#esp.models.program_models.ProgramTag" title="esp.models.program_models.ProgramTag"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProgramTag</span></code></a></p>
+<dd><p>alias of <a class="reference internal" href="#esp.models.program_models.ProgramTag" title="esp.models.program_models.ProgramTag"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProgramTag</span></code></a></p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -5173,7 +5451,7 @@ object the first time, the query is executed.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="esp.models.program_models.HistoricalPurchaseableItem.instance_type">
 <span class="sig-name descname"><span class="pre">instance_type</span></span><a class="headerlink" href="#esp.models.program_models.HistoricalPurchaseableItem.instance_type" title="Permalink to this definition"></a></dt>
-<dd><p>alias of <a class="reference internal" href="program-models.html#esp.models.program_models.PurchaseableItem" title="esp.models.program_models.PurchaseableItem"><code class="xref py py-class docutils literal notranslate"><span class="pre">PurchaseableItem</span></code></a></p>
+<dd><p>alias of <a class="reference internal" href="#esp.models.program_models.PurchaseableItem" title="esp.models.program_models.PurchaseableItem"><code class="xref py py-class docutils literal notranslate"><span class="pre">PurchaseableItem</span></code></a></p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -5459,7 +5737,7 @@ object the first time, the query is executed.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="esp.models.program_models.HistoricalTeacherProgramRegistrationStep.instance_type">
 <span class="sig-name descname"><span class="pre">instance_type</span></span><a class="headerlink" href="#esp.models.program_models.HistoricalTeacherProgramRegistrationStep.instance_type" title="Permalink to this definition"></a></dt>
-<dd><p>alias of <a class="reference internal" href="program-models.html#esp.models.program_models.TeacherProgramRegistrationStep" title="esp.models.program_models.TeacherProgramRegistrationStep"><code class="xref py py-class docutils literal notranslate"><span class="pre">TeacherProgramRegistrationStep</span></code></a></p>
+<dd><p>alias of <a class="reference internal" href="#esp.models.program_models.TeacherProgramRegistrationStep" title="esp.models.program_models.TeacherProgramRegistrationStep"><code class="xref py py-class docutils literal notranslate"><span class="pre">TeacherProgramRegistrationStep</span></code></a></p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -5691,7 +5969,7 @@ object the first time, the query is executed.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="esp.models.program_models.HistoricalTimeSlot.instance_type">
 <span class="sig-name descname"><span class="pre">instance_type</span></span><a class="headerlink" href="#esp.models.program_models.HistoricalTimeSlot.instance_type" title="Permalink to this definition"></a></dt>
-<dd><p>alias of <a class="reference internal" href="program-models.html#esp.models.program_models.TimeSlot" title="esp.models.program_models.TimeSlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSlot</span></code></a></p>
+<dd><p>alias of <a class="reference internal" href="#esp.models.program_models.TimeSlot" title="esp.models.program_models.TimeSlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSlot</span></code></a></p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -6040,27 +6318,170 @@ object the first time, the query is executed.</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">esp.models.program_models.</span></span><span class="sig-name descname"><span class="pre">Program</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#esp.models.program_models.Program" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="../common.html#common.models.BaseModel" title="common.models.BaseModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></a></p>
 <p>An ESP program instance, e.g. Splash 2021</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.program_models.Program.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#esp.models.program_models.Program.name" title="Permalink to this definition"></a></dt>
+<dd><p>name of the program</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<em>models.CharField</em>) – name of the program</p></li>
-<li><p><strong>program_type</strong> (<a class="reference internal" href="../esp.html#esp.constants.ProgramType" title="esp.constants.ProgramType"><em>ProgramType</em></a>) – type of program (e.g. Splash, Spark, …)</p></li>
-<li><p><strong>min_grade_level</strong> (<a class="reference internal" href="../common.html#common.constants.GradeLevel" title="common.constants.GradeLevel"><em>GradeLevel</em></a>) – lowest allowed student grade level</p></li>
-<li><p><strong>max_grade_level</strong> (<a class="reference internal" href="../common.html#common.constants.GradeLevel" title="common.constants.GradeLevel"><em>GradeLevel</em></a>) – highest allowed student grade level</p></li>
-<li><p><strong>description</strong> (<em>models.TextField</em>) – brief description of the program</p></li>
-<li><p><strong>notes</strong> (<em>models.TextField</em>) – for admin use</p></li>
-<li><p><strong>start_date</strong> (<em>models.DateTimeField</em>) – start date of program</p></li>
-<li><p><strong>end_date</strong> (<em>models.DateTimeField</em>) – end date of program</p></li>
-<li><p><strong>number_of_weeks</strong> (<em>models.IntegerField</em>) – number of weeks</p></li>
-<li><p><strong>time_block_minutes</strong> (<em>models.IntegerField</em>) – duration of each course block</p></li>
-<li><p><strong>program_configuration</strong> (<a class="reference internal" href="program-models.html#esp.models.program_models.ProgramConfiguration" title="esp.models.program_models.ProgramConfiguration"><em>ProgramConfiguration</em></a>) – </p></li>
-<li><p><strong>program_stages</strong> (<a class="reference internal" href="program-models.html#esp.models.program_models.ProgramStage" title="esp.models.program_models.ProgramStage"><em>ProgramStage</em></a>) – set of ProgramStages</p></li>
-<li><p><strong>teacher_program_registration_steps</strong> (<a class="reference internal" href="program-models.html#esp.models.program_models.TeacherProgramRegistrationStep" title="esp.models.program_models.TeacherProgramRegistrationStep"><em>TeacherProgramRegistrationStep</em></a>) – set of TeacherProgramRegistrationSteps</p></li>
-<li><p><strong>timeslots</strong> (<a class="reference internal" href="program-models.html#esp.models.program_models.TimeSlot" title="esp.models.program_models.TimeSlot"><em>TimeSlot</em></a>) – set of all allowed TimeSlots for this program</p></li>
-<li><p><strong>external_program_forms</strong> (<a class="reference internal" href="program-models.html#esp.models.program_models.ExternalProgramForm" title="esp.models.program_models.ExternalProgramForm"><em>ExternalProgramForm</em></a>) – set of ExternalProgramForms</p></li>
-</ul>
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>models.CharField</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.program_models.Program.program_type">
+<span class="sig-name descname"><span class="pre">program_type</span></span><a class="headerlink" href="#esp.models.program_models.Program.program_type" title="Permalink to this definition"></a></dt>
+<dd><p>type of program (e.g. Splash, Spark, …)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="../esp.html#esp.constants.ProgramType" title="esp.constants.ProgramType">ProgramType</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.program_models.Program.min_grade_level">
+<span class="sig-name descname"><span class="pre">min_grade_level</span></span><a class="headerlink" href="#esp.models.program_models.Program.min_grade_level" title="Permalink to this definition"></a></dt>
+<dd><p>lowest allowed student grade level</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="../common.html#common.constants.GradeLevel" title="common.constants.GradeLevel">GradeLevel</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.program_models.Program.max_grade_level">
+<span class="sig-name descname"><span class="pre">max_grade_level</span></span><a class="headerlink" href="#esp.models.program_models.Program.max_grade_level" title="Permalink to this definition"></a></dt>
+<dd><p>highest allowed student grade level</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="../common.html#common.constants.GradeLevel" title="common.constants.GradeLevel">GradeLevel</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.program_models.Program.description">
+<span class="sig-name descname"><span class="pre">description</span></span><a class="headerlink" href="#esp.models.program_models.Program.description" title="Permalink to this definition"></a></dt>
+<dd><p>brief description of the program</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>models.TextField</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.program_models.Program.notes">
+<span class="sig-name descname"><span class="pre">notes</span></span><a class="headerlink" href="#esp.models.program_models.Program.notes" title="Permalink to this definition"></a></dt>
+<dd><p>for admin use</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>models.TextField</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.program_models.Program.start_date">
+<span class="sig-name descname"><span class="pre">start_date</span></span><a class="headerlink" href="#esp.models.program_models.Program.start_date" title="Permalink to this definition"></a></dt>
+<dd><p>start date of program</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>models.DateTimeField</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.program_models.Program.end_date">
+<span class="sig-name descname"><span class="pre">end_date</span></span><a class="headerlink" href="#esp.models.program_models.Program.end_date" title="Permalink to this definition"></a></dt>
+<dd><p>end date of program</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>models.DateTimeField</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.program_models.Program.number_of_weeks">
+<span class="sig-name descname"><span class="pre">number_of_weeks</span></span><a class="headerlink" href="#esp.models.program_models.Program.number_of_weeks" title="Permalink to this definition"></a></dt>
+<dd><p>number of weeks</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>models.IntegerField</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.program_models.Program.time_block_minutes">
+<span class="sig-name descname"><span class="pre">time_block_minutes</span></span><a class="headerlink" href="#esp.models.program_models.Program.time_block_minutes" title="Permalink to this definition"></a></dt>
+<dd><p>duration of each course block</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>models.IntegerField</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.program_models.Program.program_configuration">
+<span class="sig-name descname"><span class="pre">program_configuration</span></span><a class="headerlink" href="#esp.models.program_models.Program.program_configuration" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#esp.models.program_models.ProgramConfiguration" title="esp.models.program_models.ProgramConfiguration">ProgramConfiguration</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.program_models.Program.program_stages">
+<span class="sig-name descname"><span class="pre">program_stages</span></span><a class="headerlink" href="#esp.models.program_models.Program.program_stages" title="Permalink to this definition"></a></dt>
+<dd><p>set of ProgramStages</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#esp.models.program_models.ProgramStage" title="esp.models.program_models.ProgramStage">ProgramStage</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.program_models.Program.teacher_program_registration_steps">
+<span class="sig-name descname"><span class="pre">teacher_program_registration_steps</span></span><a class="headerlink" href="#esp.models.program_models.Program.teacher_program_registration_steps" title="Permalink to this definition"></a></dt>
+<dd><p>set of TeacherProgramRegistrationSteps</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#esp.models.program_models.TeacherProgramRegistrationStep" title="esp.models.program_models.TeacherProgramRegistrationStep">TeacherProgramRegistrationStep</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.program_models.Program.time_slots">
+<span class="sig-name descname"><span class="pre">time_slots</span></span><a class="headerlink" href="#esp.models.program_models.Program.time_slots" title="Permalink to this definition"></a></dt>
+<dd><p>set of all allowed TimeSlots for this program</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#esp.models.program_models.TimeSlot" title="esp.models.program_models.TimeSlot">TimeSlot</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.program_models.Program.external_program_forms">
+<span class="sig-name descname"><span class="pre">external_program_forms</span></span><a class="headerlink" href="#esp.models.program_models.Program.external_program_forms" title="Permalink to this definition"></a></dt>
+<dd><p>set of ExternalProgramForms</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#esp.models.program_models.ExternalProgramForm" title="esp.models.program_models.ExternalProgramForm">ExternalProgramForm</a></p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py exception">
 <dt class="sig sig-object py" id="esp.models.program_models.Program.DoesNotExist">
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#esp.models.program_models.Program.DoesNotExist" title="Permalink to this definition"></a></dt>
@@ -6096,15 +6517,15 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="esp.models.program_models.Program.description">
-<span class="sig-name descname"><span class="pre">description</span></span><a class="headerlink" href="#esp.models.program_models.Program.description" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id31">
+<span class="sig-name descname"><span class="pre">description</span></span><a class="headerlink" href="#id31" title="Permalink to this definition"></a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="esp.models.program_models.Program.end_date">
-<span class="sig-name descname"><span class="pre">end_date</span></span><a class="headerlink" href="#esp.models.program_models.Program.end_date" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id32">
+<span class="sig-name descname"><span class="pre">end_date</span></span><a class="headerlink" href="#id32" title="Permalink to this definition"></a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
@@ -6195,36 +6616,36 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="esp.models.program_models.Program.max_grade_level">
-<span class="sig-name descname"><span class="pre">max_grade_level</span></span><a class="headerlink" href="#esp.models.program_models.Program.max_grade_level" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id33">
+<span class="sig-name descname"><span class="pre">max_grade_level</span></span><a class="headerlink" href="#id33" title="Permalink to this definition"></a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="esp.models.program_models.Program.min_grade_level">
-<span class="sig-name descname"><span class="pre">min_grade_level</span></span><a class="headerlink" href="#esp.models.program_models.Program.min_grade_level" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id34">
+<span class="sig-name descname"><span class="pre">min_grade_level</span></span><a class="headerlink" href="#id34" title="Permalink to this definition"></a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="esp.models.program_models.Program.name">
-<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#esp.models.program_models.Program.name" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id35">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#id35" title="Permalink to this definition"></a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="esp.models.program_models.Program.notes">
-<span class="sig-name descname"><span class="pre">notes</span></span><a class="headerlink" href="#esp.models.program_models.Program.notes" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id36">
+<span class="sig-name descname"><span class="pre">notes</span></span><a class="headerlink" href="#id36" title="Permalink to this definition"></a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="esp.models.program_models.Program.number_of_weeks">
-<span class="sig-name descname"><span class="pre">number_of_weeks</span></span><a class="headerlink" href="#esp.models.program_models.Program.number_of_weeks" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id37">
+<span class="sig-name descname"><span class="pre">number_of_weeks</span></span><a class="headerlink" href="#id37" title="Permalink to this definition"></a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
@@ -6235,8 +6656,8 @@ object the first time, the query is executed.</p>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="esp.models.program_models.Program.program_configuration">
-<span class="sig-name descname"><span class="pre">program_configuration</span></span><a class="headerlink" href="#esp.models.program_models.Program.program_configuration" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id38">
+<span class="sig-name descname"><span class="pre">program_configuration</span></span><a class="headerlink" href="#id38" title="Permalink to this definition"></a></dt>
 <dd><p>Accessor to the related object on the forward side of a many-to-one or
 one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
 <p>In the example:</p>
@@ -6253,8 +6674,8 @@ one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="esp.models.program_models.Program.program_type">
-<span class="sig-name descname"><span class="pre">program_type</span></span><a class="headerlink" href="#esp.models.program_models.Program.program_type" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id39">
+<span class="sig-name descname"><span class="pre">program_type</span></span><a class="headerlink" href="#id39" title="Permalink to this definition"></a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
@@ -6330,8 +6751,8 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="esp.models.program_models.Program.start_date">
-<span class="sig-name descname"><span class="pre">start_date</span></span><a class="headerlink" href="#esp.models.program_models.Program.start_date" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id40">
+<span class="sig-name descname"><span class="pre">start_date</span></span><a class="headerlink" href="#id40" title="Permalink to this definition"></a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
@@ -6383,15 +6804,15 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="esp.models.program_models.Program.time_block_minutes">
-<span class="sig-name descname"><span class="pre">time_block_minutes</span></span><a class="headerlink" href="#esp.models.program_models.Program.time_block_minutes" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id41">
+<span class="sig-name descname"><span class="pre">time_block_minutes</span></span><a class="headerlink" href="#id41" title="Permalink to this definition"></a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="esp.models.program_models.Program.time_slots">
-<span class="sig-name descname"><span class="pre">time_slots</span></span><a class="headerlink" href="#esp.models.program_models.Program.time_slots" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id42">
+<span class="sig-name descname"><span class="pre">time_slots</span></span><a class="headerlink" href="#id42" title="Permalink to this definition"></a></dt>
 <dd><p>Accessor to the related objects manager on the reverse side of a
 many-to-one relation.</p>
 <p>In the example:</p>
@@ -6411,16 +6832,49 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">esp.models.program_models.</span></span><span class="sig-name descname"><span class="pre">ProgramConfiguration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#esp.models.program_models.ProgramConfiguration" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="../common.html#common.models.BaseModel" title="common.models.BaseModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></a></p>
 <p>ProgramConfiguration represents a set of configuration for programs, e.g. stages and registration steps.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.program_models.ProgramConfiguration.saved_as_preset">
+<span class="sig-name descname"><span class="pre">saved_as_preset</span></span><a class="headerlink" href="#esp.models.program_models.ProgramConfiguration.saved_as_preset" title="Permalink to this definition"></a></dt>
+<dd><p>True if this program configuration is saved as a preset, False otherwise</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>saved_as_preset</strong> (<em>models.BooleanField</em>) – True if this program configuration is saved as a preset, False otherwise</p></li>
-<li><p><strong>name</strong> (<em>models.CharField</em>) – name of program configuration</p></li>
-<li><p><strong>description</strong> (<em>models.TextField</em>) – description</p></li>
-<li><p><strong>PreferenceEntryRounds</strong> (<a class="reference internal" href="program-models.html#esp.models.program_models.PreferenceEntryRound" title="esp.models.program_models.PreferenceEntryRound"><em>PreferenceEntryRound</em></a>) – </p></li>
-</ul>
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>models.BooleanField</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.program_models.ProgramConfiguration.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#esp.models.program_models.ProgramConfiguration.name" title="Permalink to this definition"></a></dt>
+<dd><p>name of program configuration</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>models.CharField</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.program_models.ProgramConfiguration.description">
+<span class="sig-name descname"><span class="pre">description</span></span><a class="headerlink" href="#esp.models.program_models.ProgramConfiguration.description" title="Permalink to this definition"></a></dt>
+<dd><p>description</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>models.TextField</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.program_models.ProgramConfiguration.PreferenceEntryRounds">
+<span class="sig-name descname"><span class="pre">PreferenceEntryRounds</span></span><a class="headerlink" href="#esp.models.program_models.ProgramConfiguration.PreferenceEntryRounds" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#esp.models.program_models.PreferenceEntryRound" title="esp.models.program_models.PreferenceEntryRound">PreferenceEntryRound</a></p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py exception">
 <dt class="sig sig-object py" id="esp.models.program_models.ProgramConfiguration.DoesNotExist">
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#esp.models.program_models.ProgramConfiguration.DoesNotExist" title="Permalink to this definition"></a></dt>
@@ -6434,8 +6888,8 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="esp.models.program_models.ProgramConfiguration.description">
-<span class="sig-name descname"><span class="pre">description</span></span><a class="headerlink" href="#esp.models.program_models.ProgramConfiguration.description" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id43">
+<span class="sig-name descname"><span class="pre">description</span></span><a class="headerlink" href="#id43" title="Permalink to this definition"></a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
@@ -6471,8 +6925,8 @@ object the first time, the query is executed.</p>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="esp.models.program_models.ProgramConfiguration.name">
-<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#esp.models.program_models.ProgramConfiguration.name" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id44">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#id44" title="Permalink to this definition"></a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
@@ -6498,8 +6952,8 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="esp.models.program_models.ProgramConfiguration.saved_as_preset">
-<span class="sig-name descname"><span class="pre">saved_as_preset</span></span><a class="headerlink" href="#esp.models.program_models.ProgramConfiguration.saved_as_preset" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id45">
+<span class="sig-name descname"><span class="pre">saved_as_preset</span></span><a class="headerlink" href="#id45" title="Permalink to this definition"></a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
@@ -6516,18 +6970,72 @@ object the first time, the query is executed.</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">esp.models.program_models.</span></span><span class="sig-name descname"><span class="pre">ProgramRegistrationStep</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#esp.models.program_models.ProgramRegistrationStep" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="../common.html#common.models.BaseModel" title="common.models.BaseModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></a></p>
 <p>ProgramRegistrationStep represents config for a single student interaction step within a program stage.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.program_models.ProgramRegistrationStep.program_stage">
+<span class="sig-name descname"><span class="pre">program_stage</span></span><a class="headerlink" href="#esp.models.program_models.ProgramRegistrationStep.program_stage" title="Permalink to this definition"></a></dt>
+<dd><p>program stage that this step is part of</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>program_stage</strong> (<a class="reference internal" href="program-models.html#esp.models.program_models.ProgramStage" title="esp.models.program_models.ProgramStage"><em>ProgramStage</em></a>) – program stage that this step is part of</p></li>
-<li><p><strong>display_name</strong> (<em>models.CharField</em>) – name of this step</p></li>
-<li><p><strong>step_key</strong> (<a class="reference internal" href="../esp.html#esp.constants.StudentRegistrationStepType" title="esp.constants.StudentRegistrationStepType"><em>StudentRegistrationStepType</em></a>) – type of registration step (e.g. verify profile, lottery preferences)</p></li>
-<li><p><strong>required_for_stage_completion</strong> (<em>models.BooleanField</em>) – True if this step is required, False otherwise</p></li>
-<li><p><strong>display_after_completion</strong> (<em>models.BooleanField</em>) – True if this step is visible after completion, False otherwise</p></li>
-<li><p><strong>allow_changes_after_completion</strong> (<em>models.BooleanField</em>) – True if this step is modifiable after completion, False otherwise</p></li>
-</ul>
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#esp.models.program_models.ProgramStage" title="esp.models.program_models.ProgramStage">ProgramStage</a></p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.program_models.ProgramRegistrationStep.display_name">
+<span class="sig-name descname"><span class="pre">display_name</span></span><a class="headerlink" href="#esp.models.program_models.ProgramRegistrationStep.display_name" title="Permalink to this definition"></a></dt>
+<dd><p>name of this step</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>models.CharField</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.program_models.ProgramRegistrationStep.step_key">
+<span class="sig-name descname"><span class="pre">step_key</span></span><a class="headerlink" href="#esp.models.program_models.ProgramRegistrationStep.step_key" title="Permalink to this definition"></a></dt>
+<dd><p>type of registration step (e.g. verify profile, lottery preferences)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="../esp.html#esp.constants.StudentRegistrationStepType" title="esp.constants.StudentRegistrationStepType">StudentRegistrationStepType</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.program_models.ProgramRegistrationStep.required_for_stage_completion">
+<span class="sig-name descname"><span class="pre">required_for_stage_completion</span></span><a class="headerlink" href="#esp.models.program_models.ProgramRegistrationStep.required_for_stage_completion" title="Permalink to this definition"></a></dt>
+<dd><p>True if this step is required, False otherwise</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>models.BooleanField</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.program_models.ProgramRegistrationStep.display_after_completion">
+<span class="sig-name descname"><span class="pre">display_after_completion</span></span><a class="headerlink" href="#esp.models.program_models.ProgramRegistrationStep.display_after_completion" title="Permalink to this definition"></a></dt>
+<dd><p>True if this step is visible after completion, False otherwise</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>models.BooleanField</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.program_models.ProgramRegistrationStep.allow_changes_after_completion">
+<span class="sig-name descname"><span class="pre">allow_changes_after_completion</span></span><a class="headerlink" href="#esp.models.program_models.ProgramRegistrationStep.allow_changes_after_completion" title="Permalink to this definition"></a></dt>
+<dd><p>True if this step is modifiable after completion, False otherwise</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>models.BooleanField</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py exception">
 <dt class="sig sig-object py" id="esp.models.program_models.ProgramRegistrationStep.DoesNotExist">
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#esp.models.program_models.ProgramRegistrationStep.DoesNotExist" title="Permalink to this definition"></a></dt>
@@ -6541,8 +7049,8 @@ object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="esp.models.program_models.ProgramRegistrationStep.allow_changes_after_completion">
-<span class="sig-name descname"><span class="pre">allow_changes_after_completion</span></span><a class="headerlink" href="#esp.models.program_models.ProgramRegistrationStep.allow_changes_after_completion" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id46">
+<span class="sig-name descname"><span class="pre">allow_changes_after_completion</span></span><a class="headerlink" href="#id46" title="Permalink to this definition"></a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
@@ -6555,15 +7063,15 @@ object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="esp.models.program_models.ProgramRegistrationStep.display_after_completion">
-<span class="sig-name descname"><span class="pre">display_after_completion</span></span><a class="headerlink" href="#esp.models.program_models.ProgramRegistrationStep.display_after_completion" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id47">
+<span class="sig-name descname"><span class="pre">display_after_completion</span></span><a class="headerlink" href="#id47" title="Permalink to this definition"></a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="esp.models.program_models.ProgramRegistrationStep.display_name">
-<span class="sig-name descname"><span class="pre">display_name</span></span><a class="headerlink" href="#esp.models.program_models.ProgramRegistrationStep.display_name" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id48">
+<span class="sig-name descname"><span class="pre">display_name</span></span><a class="headerlink" href="#id48" title="Permalink to this definition"></a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
@@ -6609,8 +7117,8 @@ object the first time, the query is executed.</p>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="esp.models.program_models.ProgramRegistrationStep.program_stage">
-<span class="sig-name descname"><span class="pre">program_stage</span></span><a class="headerlink" href="#esp.models.program_models.ProgramRegistrationStep.program_stage" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id49">
+<span class="sig-name descname"><span class="pre">program_stage</span></span><a class="headerlink" href="#id49" title="Permalink to this definition"></a></dt>
 <dd><p>Accessor to the related object on the forward side of a many-to-one or
 one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
 <p>In the example:</p>
@@ -6642,15 +7150,15 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="esp.models.program_models.ProgramRegistrationStep.required_for_stage_completion">
-<span class="sig-name descname"><span class="pre">required_for_stage_completion</span></span><a class="headerlink" href="#esp.models.program_models.ProgramRegistrationStep.required_for_stage_completion" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id50">
+<span class="sig-name descname"><span class="pre">required_for_stage_completion</span></span><a class="headerlink" href="#id50" title="Permalink to this definition"></a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="esp.models.program_models.ProgramRegistrationStep.step_key">
-<span class="sig-name descname"><span class="pre">step_key</span></span><a class="headerlink" href="#esp.models.program_models.ProgramRegistrationStep.step_key" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id51">
+<span class="sig-name descname"><span class="pre">step_key</span></span><a class="headerlink" href="#id51" title="Permalink to this definition"></a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
@@ -6662,16 +7170,50 @@ object the first time, the query is executed.</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">esp.models.program_models.</span></span><span class="sig-name descname"><span class="pre">ProgramStage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#esp.models.program_models.ProgramStage" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="../common.html#common.models.BaseModel" title="common.models.BaseModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></a></p>
 <p>ProgramStage represents configuration for a student-facing program stage, e.g. ‘Initiation’ or ‘Post-Lottery’</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.program_models.ProgramStage.program">
+<span class="sig-name descname"><span class="pre">program</span></span><a class="headerlink" href="#esp.models.program_models.ProgramStage.program" title="Permalink to this definition"></a></dt>
+<dd><p>program that this ProgramStage belongs to</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>program</strong> (<a class="reference internal" href="program-models.html#esp.models.program_models.Program" title="esp.models.program_models.Program"><em>Program</em></a>) – program that this ProgramStage belongs to</p></li>
-<li><p><strong>name</strong> (<em>models.CharField</em>) – name of the program stage</p></li>
-<li><p><strong>start_date</strong> (<em>models.DateTimeField</em>) – start date of this program stage</p></li>
-<li><p><strong>end_date</strong> (<em>models.DateTimeField</em>) – end date of this program stage</p></li>
-</ul>
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#esp.models.program_models.Program" title="esp.models.program_models.Program">Program</a></p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.program_models.ProgramStage.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#esp.models.program_models.ProgramStage.name" title="Permalink to this definition"></a></dt>
+<dd><p>name of the program stage</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>models.CharField</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.program_models.ProgramStage.start_date">
+<span class="sig-name descname"><span class="pre">start_date</span></span><a class="headerlink" href="#esp.models.program_models.ProgramStage.start_date" title="Permalink to this definition"></a></dt>
+<dd><p>start date of this program stage</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>models.DateTimeField</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.program_models.ProgramStage.end_date">
+<span class="sig-name descname"><span class="pre">end_date</span></span><a class="headerlink" href="#esp.models.program_models.ProgramStage.end_date" title="Permalink to this definition"></a></dt>
+<dd><p>end date of this program stage</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>models.DateTimeField</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py exception">
 <dt class="sig sig-object py" id="esp.models.program_models.ProgramStage.DoesNotExist">
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#esp.models.program_models.ProgramStage.DoesNotExist" title="Permalink to this definition"></a></dt>
@@ -6692,8 +7234,8 @@ object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="esp.models.program_models.ProgramStage.end_date">
-<span class="sig-name descname"><span class="pre">end_date</span></span><a class="headerlink" href="#esp.models.program_models.ProgramStage.end_date" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id52">
+<span class="sig-name descname"><span class="pre">end_date</span></span><a class="headerlink" href="#id52" title="Permalink to this definition"></a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
@@ -6759,8 +7301,8 @@ object the first time, the query is executed.</p>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="esp.models.program_models.ProgramStage.name">
-<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#esp.models.program_models.ProgramStage.name" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id53">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#id53" title="Permalink to this definition"></a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
@@ -6771,8 +7313,8 @@ object the first time, the query is executed.</p>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="esp.models.program_models.ProgramStage.program">
-<span class="sig-name descname"><span class="pre">program</span></span><a class="headerlink" href="#esp.models.program_models.ProgramStage.program" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id54">
+<span class="sig-name descname"><span class="pre">program</span></span><a class="headerlink" href="#id54" title="Permalink to this definition"></a></dt>
 <dd><p>Accessor to the related object on the forward side of a many-to-one or
 one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
 <p>In the example:</p>
@@ -6789,8 +7331,8 @@ one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="esp.models.program_models.ProgramStage.start_date">
-<span class="sig-name descname"><span class="pre">start_date</span></span><a class="headerlink" href="#esp.models.program_models.ProgramStage.start_date" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id55">
+<span class="sig-name descname"><span class="pre">start_date</span></span><a class="headerlink" href="#id55" title="Permalink to this definition"></a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
@@ -7202,15 +7744,39 @@ object the first time, the query is executed.</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">esp.models.program_models.</span></span><span class="sig-name descname"><span class="pre">TimeSlot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#esp.models.program_models.TimeSlot" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="../common.html#common.models.BaseModel" title="common.models.BaseModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></a></p>
 <p>A single time block/slot that a course can occupy.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.program_models.TimeSlot.program">
+<span class="sig-name descname"><span class="pre">program</span></span><a class="headerlink" href="#esp.models.program_models.TimeSlot.program" title="Permalink to this definition"></a></dt>
+<dd><p>program that this timeslot belongs to</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>program</strong> (<a class="reference internal" href="program-models.html#esp.models.program_models.Program" title="esp.models.program_models.Program"><em>Program</em></a>) – program that this timeslot belongs to</p></li>
-<li><p><strong>start_datetime</strong> (<em>models.DateTimeField</em>) – starting date/time of the timeslot</p></li>
-<li><p><strong>end_datetime</strong> (<em>models.DateTimeField</em>) – ending date/time of the timeslot</p></li>
-</ul>
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#esp.models.program_models.Program" title="esp.models.program_models.Program">Program</a></p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.program_models.TimeSlot.start_datetime">
+<span class="sig-name descname"><span class="pre">start_datetime</span></span><a class="headerlink" href="#esp.models.program_models.TimeSlot.start_datetime" title="Permalink to this definition"></a></dt>
+<dd><p>starting date/time of the timeslot</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>models.DateTimeField</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.program_models.TimeSlot.end_datetime">
+<span class="sig-name descname"><span class="pre">end_datetime</span></span><a class="headerlink" href="#esp.models.program_models.TimeSlot.end_datetime" title="Permalink to this definition"></a></dt>
+<dd><p>ending date/time of the timeslot</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>models.DateTimeField</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py exception">
 <dt class="sig sig-object py" id="esp.models.program_models.TimeSlot.DoesNotExist">
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#esp.models.program_models.TimeSlot.DoesNotExist" title="Permalink to this definition"></a></dt>
@@ -7244,8 +7810,8 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="esp.models.program_models.TimeSlot.end_datetime">
-<span class="sig-name descname"><span class="pre">end_datetime</span></span><a class="headerlink" href="#esp.models.program_models.TimeSlot.end_datetime" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id56">
+<span class="sig-name descname"><span class="pre">end_datetime</span></span><a class="headerlink" href="#id56" title="Permalink to this definition"></a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
@@ -7307,8 +7873,8 @@ object the first time, the query is executed.</p>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="esp.models.program_models.TimeSlot.program">
-<span class="sig-name descname"><span class="pre">program</span></span><a class="headerlink" href="#esp.models.program_models.TimeSlot.program" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id57">
+<span class="sig-name descname"><span class="pre">program</span></span><a class="headerlink" href="#id57" title="Permalink to this definition"></a></dt>
 <dd><p>Accessor to the related object on the forward side of a many-to-one or
 one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
 <p>In the example:</p>
@@ -7325,8 +7891,8 @@ one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="esp.models.program_models.TimeSlot.start_datetime">
-<span class="sig-name descname"><span class="pre">start_datetime</span></span><a class="headerlink" href="#esp.models.program_models.TimeSlot.start_datetime" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id58">
+<span class="sig-name descname"><span class="pre">start_datetime</span></span><a class="headerlink" href="#id58" title="Permalink to this definition"></a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>

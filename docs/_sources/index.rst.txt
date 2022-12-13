@@ -18,6 +18,7 @@ Indices and tables
     :caption: Contents:
 
     modules/getting-started.rst
+    modules/navigating-codebase.rst
     modules/deployment.rst
     modules/course-models.rst
     modules/program-models.rst
