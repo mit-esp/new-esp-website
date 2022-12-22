@@ -5,11 +5,12 @@ Getting started
 Setup
 =====
 
-Before setup, clone this repo, create a branch for yourself, and checkout into that branch:
+Before setup, clone this repo, create a branch for yourself, and checkout into that branch. This compartmentalizes your changes to the codebase.
 
 .. code-block::
 
-    git clone git@github.com:mit-esp/new-esp-website.git
+    git clone https://github.com/mit-esp/new-esp-website.git
+    cd new-esp-website
     git branch dev-[your name]
     git checkout dev-[your name]
 
@@ -18,7 +19,7 @@ File paths in these instructions are relative with respect to the repo's home di
 Docker Setup
 ------------
 
-Docker containers are a way to create/store environments to run programs consistently.
+Docker containers are a way to create/store environments to run programs consistently. The repo comes with a pre-made Docker container that we use to test the website locally.
 
 First, install Docker via whichever method your OS uses.
 
@@ -46,8 +47,9 @@ Then, go to ``localhost:8000`` in your browser to see the website.
 Additional local setup
 ----------------------
 
-I (songk) have a separate conda environment for this. I haven't experimented with other venvs.
+I (songk) have a separate conda environment for this. I haven't tried other venvs but they should work too.
 
+To get the dependencies needed for running the website, compiling documentation, etc. run ``pip install -r requirements.txt``
 
 Navigating the website
 ======================
@@ -68,3 +70,5 @@ The Docker image comes with a few dummy accounts to access different parts of th
 +--------------+----------+----------+
 |    Student   | student  | password |
 +--------------+----------+----------+
+
+As of right now, the teacher and student profiles associated with each account have to be re-initialized each time.

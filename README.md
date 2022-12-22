@@ -11,6 +11,7 @@ Before setup, clone this repo, create a branch for yourself, and checkout into t
 
 ```
 git clone git@github.com:mit-esp/new-esp-website.git
+cd new-esp-website
 git branch -n dev-[your name]
 git checkout dev-[your name]
 ```
