@@ -12,12 +12,12 @@ from common.constants import (REGISTRATION_USER_TYPE_CHOICES, GradeLevel,
 from common.forms import (CrispyFormMixin, HiddenOrderingInputFormset,
                           MultiFormMixin)
 from common.models import User
-from esp.constants import (CourseDifficulty, CourseCategoryCategory,
+from esp.constants import (CourseDifficulty,
                            StudentRegistrationStepType,
                            TeacherRegistrationStepType)
 from esp.models.course_scheduling_models import (ClassroomTimeSlot,
                                                  CourseSection)
-from esp.models.program_models import Course, CourseCategory, Program, ProgramStage
+from esp.models.program_models import Course, CourseCategory, CourseFlag, Program, ProgramStage
 from esp.models.program_registration_models import (Comment,
                                                     FinancialAidRequest,
                                                     ProgramRegistrationStep,
@@ -146,15 +146,15 @@ ProgramRegistrationStepFormset = inlineformset_factory(
 class TeacherCourseForm(CrispyFormMixin, ModelForm):
     submit_label = "Create Class"
 
-    categories = forms.ModelMultipleChoiceField(
-        queryset=CourseCategory.objects.filter(tag_category=CourseCategoryCategory.course_category),
-        help_text="Hold down “Control”, or “Command” on a Mac, to select more than one."
-    )
+    # category = forms.ModelChoiceField(
+    #     queryset=CourseCategory.objects.filter(current=True)
+    # )
 
     class Meta:
         model = Course
         fields = [
             "name",
+            "category",
             "description",
             "max_section_size",
             "max_sections",
@@ -168,18 +168,18 @@ class TeacherCourseForm(CrispyFormMixin, ModelForm):
             "teacher_notes",
             "planned_purchases"
         ]
-        widgets = {
-            'start_date': forms.DateInput(attrs={'type': 'date', 'class': 'datepicker'}),
-            'end_date': forms.DateInput(attrs={'type': 'date', 'class': 'datepicker'}),
-        }
+        # widgets = {
+        #     'start_date': forms.DateInput(attrs={'type': 'date', 'class': 'datepicker'}),
+        #     'end_date': forms.DateInput(attrs={'type': 'date', 'class': 'datepicker'}),
+        # }
 
     def __init__(self, *args, is_update=False, program=None, **kwargs):
         if is_update:
             self.submit_label = "Update class"
         super().__init__(*args, **kwargs)
-        if self.instance:
-            self.fields["categories"].initial = self.instance.tags.filter(tag_category=CourseCategoryCategory.course_category)
-            self.fields["additional_tags"].initial = self.instance.tags.exclude(tag_category=CourseCategoryCategory.course_category)
+        # if self.instance:
+        #     self.fields["category"].initial = self.instance.tags.filter(tag_category=CourseCategoryCategory.course_category)
+            # self.fields["additional_tags"].initial = self.instance.tags.exclude(tag_category=)
         if not self.fields["additional_tags"].queryset.exists():
             self.fields.pop("additional_tags")
         if not is_update:
@@ -192,17 +192,19 @@ class TeacherCourseForm(CrispyFormMixin, ModelForm):
         self.fields["max_grade_level"].choices = program_grade_levels
 
     def save(self, commit=True):
-        categories = self.cleaned_data.pop("categories")
-        additional_tags = self.cleaned_data.pop("additional_tags", [])
-        instance = super().save(commit)
-        instance.tags.add(*categories, *additional_tags)
+        # todo: figure this out
+        pass
+        # category = self.cleaned_data.pop("category")
+        # additional_tags = self.cleaned_data.pop("additional_tags", [])
+        # instance = super().save(commit)
+        # instance.tags.add(*category, *additional_tags)
 
 
 class AdminCourseForm(TeacherCourseForm):
     submit_label = "Update Class"
 
     additional_tags = forms.ModelMultipleChoiceField(
-        queryset=CourseCategory.objects.exclude(tag_category=CourseCategoryCategory.course_category),
+        queryset=CourseFlag.objects.all(),
         required=False,
     )
 

@@ -7,7 +7,16 @@ Documentation and setup instructions can be found at https://esp.mit.edu/espider
 
 ## Setup
 
-Before setup, clone this repo. File paths in these instructions are relative with respect to the repo's home directory.
+Before setup, clone this repo, create a branch for yourself, and checkout into that branch:
+
+```
+git clone git@github.com:mit-esp/new-esp-website.git
+cd new-esp-website
+git branch -n dev-[your name]
+git checkout dev-[your name]
+```
+
+File paths in these instructions are relative with respect to the repo's home directory.
 
 ### Docker Setup
 Docker containers are a way to create/store environments to run programs consistently.

@@ -2,27 +2,19 @@
 Deployment
 ##########
 
-These are instructions for deploying the website from GitHub to esp-dev.mit.edu.
+These are instructions for deploying the website from GitHub to esp-dev.mit.edu. They may need to be executed as sudo.
 
-SSH into the esp-dev.mit.edu server.
+SSH into the ``esp-dev.mit.edu`` server with username ``esp``, and go to the ``/esp`` folder.
 
 Install Postgres:
 
 .. code-block::
 
-    sudo yum install -y postgresql-devel
+    sudo apt install -y postgresql
 
-Configure environment variables in ``config/.env`` (backend environment variables file) e.g.
+Copy files from the ``code`` folder in the latest version of the repository to the ``/esp`` folder.
 
-.. code-block::
-
-    HOST=esp-dev.mit.edu
-    DEBUG=False
-    DEBUG_TOOLBAR=False
-    LOCALHOST=False
-    ...
-
-and ``.env`` (frontend environment variables file) e.g.
+Make sure the ``config/.env`` file matches ``config/.env.deployment``, and the ``.env`` (frontend environment variables file) contains
 
 .. code-block::
 
@@ -32,7 +24,6 @@ Deployment commands:
 
 .. code-block::
 
-    git pull
     pip install --upgrade pip
     pip install -r requirements.txt
     npm install
