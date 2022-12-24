@@ -28,7 +28,6 @@ class Migration(migrations.Migration):
                 ('editable_by_teachers', models.BooleanField()),
                 ('viewable_by_teachers', models.BooleanField()),
                 ('viewable_by_students', models.BooleanField()),
-                ('courses', models.ManyToManyField(blank=True, related_name='tags', to='esp.course')),
             ],
             options={
                 'abstract': False,
@@ -44,7 +43,6 @@ class Migration(migrations.Migration):
                 ('tag', models.CharField(max_length=256)),
                 ('display_name', models.CharField(blank=True, max_length=256, null=True)),
                 ('tag_category', models.CharField(choices=[('course_flag_category', 'Course Category'), ('other', 'Other')], default='other', max_length=128)),
-                ('courses', models.ManyToManyField(blank=True, related_name='flags', to='esp.course')),
             ],
             options={
                 'abstract': False,
