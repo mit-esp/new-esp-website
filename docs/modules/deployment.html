@@ -43,7 +43,12 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="getting-started.html">Getting started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="navigating-codebase.html">Navigating the codebase</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Deployment</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Deployment</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#pre-deployment">Pre-deployment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#deployment-commands">Deployment commands</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#after-deployment">After deployment</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="course-models.html">Course scheduling models</a></li>
 <li class="toctree-l1"><a class="reference internal" href="program-models.html">Program models</a></li>
 <li class="toctree-l1"><a class="reference internal" href="program-registration-models.html">Program registration models</a></li>
@@ -77,29 +82,25 @@
              
   <section id="deployment">
 <h1>Deployment<a class="headerlink" href="#deployment" title="Permalink to this heading"></a></h1>
-<p>These are instructions for deploying the website from GitHub to esp-dev.mit.edu.</p>
-<p>SSH into the esp-dev.mit.edu server.</p>
-<p>Install Postgres:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">yum</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> <span class="n">postgresql</span><span class="o">-</span><span class="n">devel</span>
+<p>These are instructions for deploying the website from GitHub to esp-dev.mit.edu. They may need to be executed as sudo.</p>
+<section id="pre-deployment">
+<h2>Pre-deployment<a class="headerlink" href="#pre-deployment" title="Permalink to this heading"></a></h2>
+<p>SSH into the <code class="docutils literal notranslate"><span class="pre">esp-dev.mit.edu</span></code> server with username <code class="docutils literal notranslate"><span class="pre">esp</span></code>, and go to the <code class="docutils literal notranslate"><span class="pre">/esp</span></code> folder.</p>
+<p>Dependencies (probably not necessary):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">apt</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> <span class="n">postgresql</span>
+<span class="n">pip</span> <span class="n">install</span> <span class="o">--</span><span class="n">upgrade</span> <span class="n">pip</span>
+<span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">r</span> <span class="n">requirements</span><span class="o">.</span><span class="n">txt</span>
 </pre></div>
 </div>
-<p>Configure environment variables in <code class="docutils literal notranslate"><span class="pre">config/.env</span></code> (backend environment variables file) e.g.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">HOST</span><span class="o">=</span><span class="n">esp</span><span class="o">-</span><span class="n">dev</span><span class="o">.</span><span class="n">mit</span><span class="o">.</span><span class="n">edu</span>
-<span class="n">DEBUG</span><span class="o">=</span><span class="kc">False</span>
-<span class="n">DEBUG_TOOLBAR</span><span class="o">=</span><span class="kc">False</span>
-<span class="n">LOCALHOST</span><span class="o">=</span><span class="kc">False</span>
-<span class="o">...</span>
-</pre></div>
-</div>
-<p>and <code class="docutils literal notranslate"><span class="pre">.env</span></code> (frontend environment variables file) e.g.</p>
+<p>Copy files from the <code class="docutils literal notranslate"><span class="pre">code</span></code> folder in the latest version of the repository to the <code class="docutils literal notranslate"><span class="pre">/esp</span></code> folder.</p>
+<p>Make sure the <code class="docutils literal notranslate"><span class="pre">config/.env</span></code> file matches <code class="docutils literal notranslate"><span class="pre">config/.env.deployment</span></code>, and the <code class="docutils literal notranslate"><span class="pre">.env</span></code> in the <code class="docutils literal notranslate"><span class="pre">/esp</span></code> folder (frontend environment variables file) contains</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">REACT_APP_API_BASE_URL</span><span class="o">=</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">esp</span><span class="o">-</span><span class="n">dev</span><span class="o">.</span><span class="n">mit</span><span class="o">.</span><span class="n">edu</span>
 </pre></div>
 </div>
-<p>Deployment commands:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">pull</span>
-<span class="n">pip</span> <span class="n">install</span> <span class="o">--</span><span class="n">upgrade</span> <span class="n">pip</span>
-<span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">r</span> <span class="n">requirements</span><span class="o">.</span><span class="n">txt</span>
-<span class="n">npm</span> <span class="n">install</span>
+</section>
+<section id="deployment-commands">
+<h2>Deployment commands<a class="headerlink" href="#deployment-commands" title="Permalink to this heading"></a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">npm</span> <span class="n">install</span>
 <span class="n">npm</span> <span class="n">run</span> <span class="n">build</span>
 <span class="n">python</span> <span class="n">manage</span><span class="o">.</span><span class="n">py</span> <span class="n">compilescss</span>
 <span class="n">python</span> <span class="n">manage</span><span class="o">.</span><span class="n">py</span> <span class="n">collectstatic</span> <span class="o">--</span><span class="n">noinput</span> <span class="o">--</span><span class="n">ignore</span> <span class="o">*.</span><span class="n">scss</span>
@@ -109,6 +110,13 @@
 <span class="n">sudo</span> <span class="n">systemctl</span> <span class="n">restart</span> <span class="n">gunicorn</span>
 </pre></div>
 </div>
+</section>
+<section id="after-deployment">
+<h2>After deployment<a class="headerlink" href="#after-deployment" title="Permalink to this heading"></a></h2>
+<p>Changes should be propagated more or less immediately.</p>
+<p>If a new model was created, it may be necessary to enable non-superusers to make changes to this model through the admin panel.</p>
+<p>One way to do this (for users in the “All permissions allowed” group): go to <code class="docutils literal notranslate"><span class="pre">Groups</span> <span class="pre">&gt;</span> <span class="pre">All</span> <span class="pre">Permissions</span> <span class="pre">Allowed</span></code> on the admin panel, and carry over permissions from the left column to the right.</p>
+</section>
 </section>
 
 

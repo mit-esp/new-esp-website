@@ -43,8 +43,12 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="getting-started.html">Getting started</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Navigating the codebase</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#django-panel">Django Panel</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#views">Views</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#models">Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#django-panel-admin-panel">Django Panel/Admin Panel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#users">Users</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#templates-and-views">Templates and views</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#dashboards">Dashboards</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#forms">Forms</a></li>
 </ul>
@@ -86,18 +90,162 @@
   <section id="navigating-the-codebase">
 <h1>Navigating the codebase<a class="headerlink" href="#navigating-the-codebase" title="Permalink to this heading"></a></h1>
 <p>This assumes basic knowledge of Python and preferably some Django.</p>
-<section id="django-panel">
-<h2>Django Panel<a class="headerlink" href="#django-panel" title="Permalink to this heading"></a></h2>
-<p>The Django panel is where direct changes to the data in our databases can be made. On the dev site, it’s located at <a class="reference external" href="https://esp-dev.mit.edu/django_admin/">https://esp-dev.mit.edu/django_admin/</a>.</p>
-<p>To make a model (object representing information about a course, program, user, etc.) visible on the panel, go to <code class="docutils literal notranslate"><span class="pre">code/esp/admin.py</span></code> and register it. For example:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">course_scheduling_models</span><span class="o">.</span><span class="n">ClassroomConstraint</span><span class="p">)</span>
+<section id="models">
+<h2>Models<a class="headerlink" href="#models" title="Permalink to this heading"></a></h2>
+<p>Models are objects representing information about a course, program, user, etc. They allow the underlying database to be manipulated through some UI.</p>
+<p><code class="docutils literal notranslate"><span class="pre">code/common/models.py</span></code> and <code class="docutils literal notranslate"><span class="pre">code/esp/models/</span></code> each contain several files with model definitions.</p>
+<p>After making changes to any of these files, run a migration to propagate these changes to the database. From <code class="docutils literal notranslate"><span class="pre">code/</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">manage</span><span class="o">.</span><span class="n">py</span> <span class="n">makemigrations</span>
+<span class="n">python</span> <span class="n">manage</span><span class="o">.</span><span class="n">py</span> <span class="n">migrate</span>
+</pre></div>
+</div>
+<p>To check which migrations have been applied, run <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">manage.py</span> <span class="pre">shell_plus</span></code>, then in the resulting prompt type</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.db.migrations.recorder</span> <span class="kn">import</span> <span class="n">MigrationRecorder</span>
+<span class="p">[(</span><span class="n">m</span><span class="o">.</span><span class="n">app</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">MigrationRecorder</span><span class="o">.</span><span class="n">Migration</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()]</span>
 </pre></div>
 </div>
 </section>
-<section id="views">
-<h2>Views<a class="headerlink" href="#views" title="Permalink to this heading"></a></h2>
+<section id="django-panel-admin-panel">
+<h2>Django Panel/Admin Panel<a class="headerlink" href="#django-panel-admin-panel" title="Permalink to this heading"></a></h2>
+<p>The Django panel is where direct changes to the data in our databases can be made. On the dev site, it’s located at <a class="reference external" href="https://esp-dev.mit.edu/django_admin/">https://esp-dev.mit.edu/django_admin/</a>.</p>
+<p>To make a model visible on the panel, go to <code class="docutils literal notranslate"><span class="pre">code/esp/admin.py</span></code> and register it. For example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">course_scheduling_models</span><span class="o">.</span><span class="n">ClassroomConstraint</span><span class="p">)</span>
+</pre></div>
+</div>
+<section id="users">
+<h3>Users<a class="headerlink" href="#users" title="Permalink to this heading"></a></h3>
+<p>Going to the Users section of the admin panel allows changes to users/user permissions to be made. Some notable user permissions include</p>
+<ul class="simple">
+<li><p>Superuser: This will allow the user to access/edit/delete all models and instances thereof.</p></li>
+<li><p>Staff status: This will allow the user to log in to the admin panel.</p></li>
+<li><p>Group “All permissions allowed”: Grants all perimssions defined by the group “All perimssions allowed”. This might be comparable to granting superuser status, but this hasn’t really been checked.</p></li>
+</ul>
+</section>
+</section>
+<section id="templates-and-views">
+<h2>Templates and views<a class="headerlink" href="#templates-and-views" title="Permalink to this heading"></a></h2>
+<p>Webpages on the frontend of the website are defined using a combination of templates and views.</p>
 <section id="dashboards">
 <h3>Dashboards<a class="headerlink" href="#dashboards" title="Permalink to this heading"></a></h3>
+<p>We’ll use the admin dashboard as our example here.</p>
+<p>Going to <code class="docutils literal notranslate"><span class="pre">code/esp/templates/admin/admin_dashboard.html</span></code>, we see this block of HTML code:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;content-wrapper&quot;</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;container-fluid&quot;</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;row&quot;</span><span class="o">&gt;</span>
+            <span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;col-lg-3 col-md-4 col-sm-6 col-12 mb-2 mt-4&quot;</span><span class="o">&gt;</span>
+                    <span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;row&quot;</span><span class="o">&gt;</span>
+                    <span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;col-lg-9 col-md-8 col-sm-8 col-8&quot;</span><span class="o">&gt;</span>
+                        <span class="o">&lt;</span><span class="n">h4</span><span class="o">&gt;</span><span class="n">Total</span> <span class="n">Users</span><span class="o">&lt;/</span><span class="n">h4</span><span class="o">&gt;</span>
+                        <span class="o">&lt;</span><span class="n">h2</span><span class="o">&gt;</span><span class="p">{{</span><span class="n">users_count</span><span class="p">}}</span><span class="o">&lt;/</span><span class="n">h2</span><span class="o">&gt;</span>
+                    <span class="o">&lt;/</span><span class="n">div</span><span class="o">&gt;</span>
+                    <span class="o">&lt;/</span><span class="n">div</span><span class="o">&gt;</span>
+            <span class="o">&lt;/</span><span class="n">div</span><span class="o">&gt;</span>
+            <span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;col-lg-3 col-md-4 col-sm-6 col-12 mb-2 mt-4&quot;</span><span class="o">&gt;</span>
+                    <span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;row&quot;</span><span class="o">&gt;</span>
+                    <span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;col-lg-9 col-md-8 col-sm-8 col-8&quot;</span><span class="o">&gt;</span>
+                        <span class="o">&lt;</span><span class="n">h4</span><span class="o">&gt;</span><span class="n">Total</span> <span class="n">Students</span><span class="o">&lt;/</span><span class="n">h4</span><span class="o">&gt;</span>
+                        <span class="o">&lt;</span><span class="n">h2</span><span class="o">&gt;</span><span class="p">{{</span><span class="n">students_count</span><span class="p">}}</span><span class="o">&lt;/</span><span class="n">h2</span><span class="o">&gt;</span>
+                    <span class="o">&lt;/</span><span class="n">div</span><span class="o">&gt;</span>
+                    <span class="o">&lt;/</span><span class="n">div</span><span class="o">&gt;</span>
+            <span class="o">&lt;/</span><span class="n">div</span><span class="o">&gt;</span>
+            <span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;col-lg-3 col-md-4 col-sm-6 col-12 mb-2 mt-4&quot;</span><span class="o">&gt;</span>
+                    <span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;row&quot;</span><span class="o">&gt;</span>
+                    <span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;col-lg-9 col-md-8 col-sm-8 col-8&quot;</span><span class="o">&gt;</span>
+                        <span class="o">&lt;</span><span class="n">h4</span><span class="o">&gt;</span><span class="n">Total</span> <span class="n">Teachers</span><span class="o">&lt;/</span><span class="n">h4</span><span class="o">&gt;</span>
+                        <span class="o">&lt;</span><span class="n">h2</span><span class="o">&gt;</span><span class="p">{{</span><span class="n">teachers_count</span><span class="p">}}</span><span class="o">&lt;/</span><span class="n">h2</span><span class="o">&gt;</span>
+                    <span class="o">&lt;/</span><span class="n">div</span><span class="o">&gt;</span>
+                    <span class="o">&lt;/</span><span class="n">div</span><span class="o">&gt;</span>
+            <span class="o">&lt;/</span><span class="n">div</span><span class="o">&gt;</span>
+            <span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;col-lg-3 col-md-4 col-sm-6 col-12 mb-2 mt-4&quot;</span><span class="o">&gt;</span>
+                    <span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;row&quot;</span><span class="o">&gt;</span>
+                    <span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;col-lg-9 col-md-8 col-sm-8 col-8&quot;</span><span class="o">&gt;</span>
+                        <span class="o">&lt;</span><span class="n">h4</span><span class="o">&gt;</span><span class="n">Active</span> <span class="n">Admins</span><span class="o">&lt;/</span><span class="n">h4</span><span class="o">&gt;</span>
+                        <span class="o">&lt;</span><span class="n">h2</span><span class="o">&gt;</span><span class="p">{{</span><span class="n">admins_count</span><span class="p">}}</span><span class="o">&lt;/</span><span class="n">h2</span><span class="o">&gt;</span>
+                    <span class="o">&lt;/</span><span class="n">div</span><span class="o">&gt;</span>
+                    <span class="o">&lt;/</span><span class="n">div</span><span class="o">&gt;</span>
+            <span class="o">&lt;/</span><span class="n">div</span><span class="o">&gt;</span>
+        <span class="o">&lt;/</span><span class="n">div</span><span class="o">&gt;</span>
+    <span class="o">&lt;/</span><span class="n">div</span><span class="o">&gt;</span>
+    <span class="o">&lt;/</span><span class="n">div</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>Each variable wrapped in double curly braces is an attribute of the <code class="docutils literal notranslate"><span class="pre">AdminDasboardView</span></code> view, defined in <code class="docutils literal notranslate"><span class="pre">code/esp/views/admin_views.py</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">AdminDashboardView</span><span class="p">(</span><span class="n">PermissionRequiredMixin</span><span class="p">,</span> <span class="n">TemplateView</span><span class="p">):</span>
+<span class="n">permission</span> <span class="o">=</span> <span class="n">PermissionType</span><span class="o">.</span><span class="n">admin_dashboard_view</span>
+<span class="n">template_name</span> <span class="o">=</span> <span class="s1">&#39;admin/admin_dashboard.html&#39;</span>
+
+<span class="k">def</span> <span class="nf">get_context_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="n">context</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_context_data</span><span class="p">()</span>
+    <span class="n">ts</span> <span class="o">=</span> <span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+    <span class="n">context</span><span class="p">[</span><span class="s2">&quot;users_count&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+    <span class="n">context</span><span class="p">[</span><span class="s2">&quot;students_count&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">user_type</span><span class="o">=</span><span class="n">UserType</span><span class="o">.</span><span class="n">student</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+    <span class="n">context</span><span class="p">[</span><span class="s2">&quot;teachers_count&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">user_type</span><span class="o">=</span><span class="n">UserType</span><span class="o">.</span><span class="n">teacher</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+    <span class="n">context</span><span class="p">[</span><span class="s2">&quot;admins_count&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">user_type</span><span class="o">=</span><span class="n">UserType</span><span class="o">.</span><span class="n">admin</span><span class="p">,</span> <span class="n">is_active</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+    <span class="n">context</span><span class="p">[</span><span class="s2">&quot;upcoming_programs&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Program</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">start_date__gte</span><span class="o">=</span><span class="n">ts</span><span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s1">&#39;start_date&#39;</span><span class="p">,</span> <span class="s1">&#39;end_date&#39;</span><span class="p">)[:</span><span class="mi">3</span><span class="p">]</span>
+    <span class="n">context</span><span class="p">[</span><span class="s2">&quot;active_programs&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">Program</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">start_date__lte</span><span class="o">=</span><span class="n">ts</span><span class="p">,</span> <span class="n">end_date__gte</span><span class="o">=</span><span class="n">ts</span><span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s1">&#39;-start_date&#39;</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">context</span>
+</pre></div>
+</div>
+<p>We also have the ability to embed components within our template; for example, the <code class="docutils literal notranslate"><span class="pre">program_card</span></code> component included here:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="o">%</span> <span class="k">if</span> <span class="n">active_programs</span> <span class="o">%</span><span class="p">}</span>
+<span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;my-3&quot;</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;row&quot;</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;col-lg-12&quot;</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">h3</span><span class="o">&gt;</span><span class="n">Active</span> <span class="n">Programs</span><span class="o">&lt;/</span><span class="n">h3</span><span class="o">&gt;</span>
+    <span class="p">{</span><span class="o">%</span> <span class="k">for</span> <span class="n">program</span> <span class="ow">in</span> <span class="n">active_programs</span> <span class="o">%</span><span class="p">}</span>
+    <span class="p">{</span><span class="o">%</span> <span class="n">include</span> <span class="s2">&quot;admin/components/program_card.html&quot;</span> <span class="o">%</span><span class="p">}</span>
+    <span class="p">{</span><span class="o">%</span> <span class="n">endfor</span> <span class="o">%</span><span class="p">}</span>
+    <span class="o">&lt;/</span><span class="n">div</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">div</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">div</span><span class="o">&gt;</span>
+<span class="p">{</span><span class="o">%</span> <span class="n">endif</span> <span class="o">%</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>looks like this in <code class="docutils literal notranslate"><span class="pre">code/esp/templates/admin/components/program_card.html</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;card card-body my-3&quot;</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;row&quot;</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;col-lg-6&quot;</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">h4</span><span class="o">&gt;</span><span class="n">Program</span> <span class="o">&lt;</span><span class="n">span</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;badge rounded-pill bg-secondary&quot;</span><span class="o">&gt;</span><span class="p">{{</span> <span class="n">program</span><span class="o">.</span><span class="n">name</span> <span class="p">}}</span><span class="o">&lt;/</span><span class="n">span</span><span class="o">&gt;&lt;/</span><span class="n">h4</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">p</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;my-1 fs-5&quot;</span><span class="o">&gt;&lt;</span><span class="n">strong</span><span class="o">&gt;</span><span class="n">From</span> <span class="p">{{</span><span class="n">program</span><span class="o">.</span><span class="n">start_date</span><span class="p">}}</span> <span class="n">to</span> <span class="p">{{</span><span class="n">program</span><span class="o">.</span><span class="n">end_date</span><span class="p">}}</span><span class="o">&lt;/</span><span class="n">strong</span><span class="o">&gt;&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">p</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;my-1 fs-6&quot;</span><span class="o">&gt;</span><span class="n">Program</span> <span class="n">Stages</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">ol</span><span class="o">&gt;</span>
+    <span class="p">{</span><span class="o">%</span> <span class="k">for</span> <span class="n">stage</span> <span class="ow">in</span> <span class="n">program</span><span class="o">.</span><span class="n">stages</span><span class="o">.</span><span class="n">all</span> <span class="o">%</span><span class="p">}</span>
+        <span class="o">&lt;</span><span class="n">li</span><span class="o">&gt;</span><span class="n">Stage</span> <span class="p">{{</span> <span class="n">stage</span><span class="o">.</span><span class="n">name</span> <span class="p">}}:</span> <span class="p">{{</span> <span class="n">stage</span><span class="o">.</span><span class="n">start_date</span><span class="o">|</span><span class="n">date</span><span class="p">:</span><span class="s2">&quot;m/d/Y&quot;</span> <span class="p">}}</span> <span class="o">-</span> <span class="p">{{</span> <span class="n">stage</span><span class="o">.</span><span class="n">end_date</span><span class="o">|</span><span class="n">date</span><span class="p">:</span><span class="s2">&quot;m/d/Y&quot;</span> <span class="p">}}</span> <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s2">&quot;{</span><span class="si">% u</span><span class="s2">rl &quot;</span><span class="n">update_program_stage</span><span class="s2">&quot; pk=stage.id %}&quot;</span><span class="o">&gt;&lt;</span><span class="n">span</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;bi-pencil&quot;</span><span class="o">&gt;&lt;/</span><span class="n">span</span><span class="o">&gt;&lt;/</span><span class="n">a</span><span class="o">&gt;&lt;/</span><span class="n">li</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">ul</span><span class="o">&gt;</span><span class="p">{</span><span class="o">%</span> <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="n">stage</span><span class="o">.</span><span class="n">steps</span><span class="o">.</span><span class="n">all</span> <span class="o">%</span><span class="p">}</span><span class="o">&lt;</span><span class="n">li</span><span class="o">&gt;</span><span class="p">{{</span> <span class="n">step</span><span class="o">.</span><span class="n">get_step_key_display</span> <span class="p">}}</span><span class="o">&lt;/</span><span class="n">li</span><span class="o">&gt;</span><span class="p">{</span><span class="o">%</span> <span class="n">endfor</span> <span class="o">%</span><span class="p">}</span><span class="o">&lt;/</span><span class="n">ul</span><span class="o">&gt;</span>
+    <span class="p">{</span><span class="o">%</span> <span class="n">empty</span> <span class="o">%</span><span class="p">}</span>
+        <span class="kc">None</span> <span class="n">Created</span>
+    <span class="p">{</span><span class="o">%</span> <span class="n">endfor</span> <span class="o">%</span><span class="p">}</span>
+    <span class="o">&lt;/</span><span class="n">ol</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">p</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;my-0&quot;</span><span class="o">&gt;&lt;</span><span class="n">strong</span><span class="o">&gt;</span><span class="n">Program</span> <span class="n">Last</span> <span class="n">Updated</span><span class="o">&lt;/</span><span class="n">strong</span><span class="o">&gt;</span><span class="p">:</span> <span class="p">{{</span> <span class="n">program</span><span class="o">.</span><span class="n">updated_on</span> <span class="p">}}</span> <span class="o">&lt;</span><span class="n">a</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;btn btn-outline-success my-2 mx-2&quot;</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;{</span><span class="si">% u</span><span class="s1">rl &quot;update_program&quot; program.id %}&#39;</span><span class="o">&gt;</span><span class="n">Update</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+
+    <span class="o">&lt;/</span><span class="n">div</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;col-lg-6&quot;</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;card&quot;</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;card-body&quot;</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">h5</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;card-title&quot;</span><span class="o">&gt;</span><span class="n">Admin</span> <span class="n">actions</span><span class="o">&lt;/</span><span class="n">h5</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">a</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;btn btn-outline-success mx-1 my-1&quot;</span> <span class="n">role</span><span class="o">=</span><span class="s2">&quot;button&quot;</span> <span class="n">href</span><span class="o">=</span><span class="s2">&quot;{</span><span class="si">% u</span><span class="s2">rl &#39;manage_students&#39; pk=program.id %}&quot;</span><span class="o">&gt;</span><span class="n">Manage</span> <span class="n">Students</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">a</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;btn btn-outline-success mx-1 my-1&quot;</span> <span class="n">role</span><span class="o">=</span><span class="s2">&quot;button&quot;</span> <span class="n">href</span><span class="o">=</span><span class="s2">&quot;{</span><span class="si">% u</span><span class="s2">rl &#39;manage_teachers&#39; pk=program.id %}&quot;</span><span class="o">&gt;</span><span class="n">Manage</span> <span class="n">Teachers</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">a</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;btn btn-outline-success mx-1 my-1&quot;</span> <span class="n">role</span><span class="o">=</span><span class="s2">&quot;button&quot;</span> <span class="n">href</span><span class="o">=</span><span class="s2">&quot;{</span><span class="si">% u</span><span class="s2">rl &#39;courses&#39; pk=program.id %}&quot;</span><span class="o">&gt;</span><span class="n">Manage</span> <span class="n">Courses</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">a</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;btn btn-outline-success mx-1 my-1&quot;</span> <span class="n">role</span><span class="o">=</span><span class="s2">&quot;button&quot;</span> <span class="n">href</span><span class="o">=</span><span class="s2">&quot;{</span><span class="si">% u</span><span class="s2">rl &#39;manage_classroom_availability&#39; pk=program.id %}&quot;</span><span class="o">&gt;</span><span class="n">Manage</span> <span class="n">Classroom</span> <span class="n">Availability</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">a</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;btn btn-outline-success mx-1 my-1&quot;</span> <span class="n">role</span><span class="o">=</span><span class="s2">&quot;button&quot;</span> <span class="n">href</span><span class="o">=</span><span class="s2">&quot;{</span><span class="si">% u</span><span class="s2">rl &#39;scheduler&#39; %}?program_id={{program.id}} &quot;</span><span class="o">&gt;</span><span class="n">The</span> <span class="n">Scheduler</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">a</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;btn btn-outline-success mx-1 my-1&quot;</span> <span class="n">role</span><span class="o">=</span><span class="s2">&quot;button&quot;</span> <span class="n">href</span><span class="o">=</span><span class="s2">&quot;{</span><span class="si">% u</span><span class="s2">rl &#39;program_lottery&#39; pk=program.id %}&quot;</span><span class="o">&gt;</span><span class="n">Run</span> <span class="n">Lottery</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">a</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;btn btn-outline-success mx-1 my-1&quot;</span> <span class="n">role</span><span class="o">=</span><span class="s2">&quot;button&quot;</span> <span class="n">href</span><span class="o">=</span><span class="s2">&quot;{</span><span class="si">% u</span><span class="s2">rl &#39;approve_financial_aid&#39; pk=program.id %}&quot;</span><span class="o">&gt;</span><span class="n">Approve</span> <span class="n">Financial</span> <span class="n">Aid</span> <span class="n">Requests</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">a</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;btn btn-outline-success mx-1 my-1&quot;</span> <span class="n">role</span><span class="o">=</span><span class="s2">&quot;button&quot;</span> <span class="n">href</span><span class="o">=</span><span class="s2">&quot;{</span><span class="si">% u</span><span class="s2">rl &#39;print_student_schedules&#39; pk=program.id %}&quot;</span> <span class="n">target</span><span class="o">=</span><span class="s2">&quot;_blank&quot;</span><span class="o">&gt;</span><span class="n">Print</span> <span class="n">Student</span> <span class="n">Schedules</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span>
+        <span class="o">&lt;/</span><span class="n">div</span><span class="o">&gt;</span>
+    <span class="o">&lt;/</span><span class="n">div</span><span class="o">&gt;</span>
+    <span class="o">&lt;/</span><span class="n">div</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">div</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">div</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>We can also refer to particular pages by name instead of url, passing in formatting arguments as needed. These names are defined in <code class="docutils literal notranslate"><span class="pre">code/esp/urls.py</span></code>, which associates webpage paths with views and unique names/labels. For example, the above code for <code class="docutils literal notranslate"><span class="pre">program_card</span></code> refers to the url <code class="docutils literal notranslate"><span class="pre">'manage_students'</span></code>, which is defined as</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">path</span><span class="p">(</span><span class="s1">&#39;admin/programs/&lt;uuid:pk&gt;/manage/students/&#39;</span><span class="p">,</span> <span class="n">AdminManageStudentsView</span><span class="o">.</span><span class="n">as_view</span><span class="p">(),</span>
+     <span class="n">name</span><span class="o">=</span><span class="s2">&quot;manage_students&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
 </section>
 <section id="forms">
 <h3>Forms<a class="headerlink" href="#forms" title="Permalink to this heading"></a></h3>
@@ -139,7 +287,7 @@
         <span class="k">return</span> <span class="n">reverse_lazy</span><span class="p">(</span><span class="s1">&#39;create_program_stage&#39;</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;pk&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">id</span><span class="p">})</span>
 </pre></div>
 </div>
-<p>The <code class="docutils literal notranslate"><span class="pre">create_program_stage</span></code> label in this code comes from <code class="docutils literal notranslate"><span class="pre">code/esp/urls.py</span></code>, which associates webpage paths with views and unique names/labels.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">create_program_stage</span></code> label in this code comes from <code class="docutils literal notranslate"><span class="pre">code/esp/urls.py</span></code>.</p>
 <p>Finally, the HTML that displays this form is defined as a template in <code class="docutils literal notranslate"><span class="pre">code/esp/templates/admin/program_form.html</span></code>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="o">%</span> <span class="n">extends</span> <span class="s2">&quot;base_templates/base.html&quot;</span> <span class="o">%</span><span class="p">}</span>
 <span class="p">{</span><span class="o">%</span> <span class="n">load</span> <span class="n">crispy_forms_tags</span> <span class="o">%</span><span class="p">}</span>

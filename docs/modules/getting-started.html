@@ -90,10 +90,17 @@
 <h1>Getting started<a class="headerlink" href="#getting-started" title="Permalink to this heading"></a></h1>
 <section id="setup">
 <h2>Setup<a class="headerlink" href="#setup" title="Permalink to this heading"></a></h2>
-<p>Before setup, clone this repo. File paths in these instructions are relative with respect to the repo’s home directory.</p>
+<p>Before setup, clone this repo, create a branch for yourself, and checkout into that branch. This compartmentalizes your changes to the codebase.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">mit</span><span class="o">-</span><span class="n">esp</span><span class="o">/</span><span class="n">new</span><span class="o">-</span><span class="n">esp</span><span class="o">-</span><span class="n">website</span><span class="o">.</span><span class="n">git</span>
+<span class="n">cd</span> <span class="n">new</span><span class="o">-</span><span class="n">esp</span><span class="o">-</span><span class="n">website</span>
+<span class="n">git</span> <span class="n">branch</span> <span class="n">dev</span><span class="o">-</span><span class="p">[</span><span class="n">your</span> <span class="n">name</span><span class="p">]</span>
+<span class="n">git</span> <span class="n">checkout</span> <span class="n">dev</span><span class="o">-</span><span class="p">[</span><span class="n">your</span> <span class="n">name</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>File paths in these instructions are relative with respect to the repo’s home directory.</p>
 <section id="docker-setup">
 <h3>Docker Setup<a class="headerlink" href="#docker-setup" title="Permalink to this heading"></a></h3>
-<p>Docker containers are a way to create/store environments to run programs consistently.</p>
+<p>Docker containers are a way to create/store environments to run programs consistently. The repo comes with a pre-made Docker container that we use to test the website locally.</p>
 <p>First, install Docker via whichever method your OS uses.</p>
 <p>Once Docker is installed:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create the environment file, fill in values later</span>
@@ -113,7 +120,8 @@
 </section>
 <section id="additional-local-setup">
 <h3>Additional local setup<a class="headerlink" href="#additional-local-setup" title="Permalink to this heading"></a></h3>
-<p>I (songk) have a separate conda environment for this. I haven’t experimented with other venvs.</p>
+<p>I (songk) have a separate conda environment for this. I haven’t tried other venvs but they should work too.</p>
+<p>To get the dependencies needed for running the website, compiling documentation, etc. run <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">-r</span> <span class="pre">requirements.txt</span></code></p>
 </section>
 </section>
 <section id="navigating-the-website">
@@ -149,6 +157,7 @@
 </tr>
 </tbody>
 </table>
+<p>As of right now, the teacher and student profiles associated with each account have to be re-initialized each time.</p>
 </section>
 </section>
 </section>

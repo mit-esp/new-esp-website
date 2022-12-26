@@ -1917,12 +1917,12 @@ This should be viewable by everyone and editable by teachers.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="esp.models.program_models.CourseCategory.tag_category">
-<span class="sig-name descname"><span class="pre">tag_category</span></span><a class="headerlink" href="#esp.models.program_models.CourseCategory.tag_category" title="Permalink to this definition"></a></dt>
-<dd><p>TODO remove</p>
+<dt class="sig sig-object py" id="esp.models.program_models.CourseCategory.current">
+<span class="sig-name descname"><span class="pre">current</span></span><a class="headerlink" href="#esp.models.program_models.CourseCategory.current" title="Permalink to this definition"></a></dt>
+<dd><p>whether this course category is currently in use</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="../esp.html#esp.constants.CourseCategoryCategory" title="esp.constants.CourseCategoryCategory">CourseCategoryCategory</a></p>
+<dd class="field-odd"><p>BooleanField</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1956,7 +1956,14 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="id25">
-<span class="sig-name descname"><span class="pre">display_name</span></span><a class="headerlink" href="#id25" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">current</span></span><a class="headerlink" href="#id25" title="Permalink to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id26">
+<span class="sig-name descname"><span class="pre">display_name</span></span><a class="headerlink" href="#id26" title="Permalink to this definition"></a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
@@ -1981,11 +1988,6 @@ object the first time, the query is executed.</p>
 <span class="sig-name descname"><span class="pre">get_previous_by_updated_on</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">updated_on&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#esp.models.program_models.CourseCategory.get_previous_by_updated_on" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="esp.models.program_models.CourseCategory.get_tag_category_display">
-<span class="sig-name descname"><span class="pre">get_tag_category_display</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.CharField:</span> <span class="pre">tag_category&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#esp.models.program_models.CourseCategory.get_tag_category_display" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
 <dl class="py attribute">
 <dt class="sig sig-object py" id="esp.models.program_models.CourseCategory.history">
 <span class="sig-name descname"><span class="pre">history</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;simple_history.manager.HistoryManager</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#esp.models.program_models.CourseCategory.history" title="Permalink to this definition"></a></dt>
@@ -1997,15 +1999,8 @@ object the first time, the query is executed.</p>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="id26">
-<span class="sig-name descname"><span class="pre">symbol</span></span><a class="headerlink" href="#id26" title="Permalink to this definition"></a></dt>
-<dd><p>A wrapper for a deferred-loading field. When the value is read from this
-object the first time, the query is executed.</p>
-</dd></dl>
-
-<dl class="py attribute">
 <dt class="sig sig-object py" id="id27">
-<span class="sig-name descname"><span class="pre">tag_category</span></span><a class="headerlink" href="#id27" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">symbol</span></span><a class="headerlink" href="#id27" title="Permalink to this definition"></a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
@@ -3014,7 +3009,7 @@ object the first time, the query is executed.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="esp.models.program_models.HistoricalCourseCategory">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">esp.models.program_models.</span></span><span class="sig-name descname"><span class="pre">HistoricalCourseCategory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">created_on</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">updated_on</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_deleted</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">display_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">symbol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag_category</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">history_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">history_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">history_change_reason</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">history_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">history_user</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#esp.models.program_models.HistoricalCourseCategory" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">esp.models.program_models.</span></span><span class="sig-name descname"><span class="pre">HistoricalCourseCategory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">created_on</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">updated_on</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_deleted</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">display_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">symbol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">history_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">history_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">history_change_reason</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">history_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">history_user</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#esp.models.program_models.HistoricalCourseCategory" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">HistoricalChanges</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></p>
 <dl class="py exception">
 <dt class="sig sig-object py" id="esp.models.program_models.HistoricalCourseCategory.DoesNotExist">
@@ -3031,6 +3026,13 @@ object the first time, the query is executed.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="esp.models.program_models.HistoricalCourseCategory.created_on">
 <span class="sig-name descname"><span class="pre">created_on</span></span><a class="headerlink" href="#esp.models.program_models.HistoricalCourseCategory.created_on" title="Permalink to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="esp.models.program_models.HistoricalCourseCategory.current">
+<span class="sig-name descname"><span class="pre">current</span></span><a class="headerlink" href="#esp.models.program_models.HistoricalCourseCategory.current" title="Permalink to this definition"></a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
@@ -3082,11 +3084,6 @@ historical objects</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="esp.models.program_models.HistoricalCourseCategory.get_previous_by_updated_on">
 <span class="sig-name descname"><span class="pre">get_previous_by_updated_on</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">updated_on&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#esp.models.program_models.HistoricalCourseCategory.get_previous_by_updated_on" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="esp.models.program_models.HistoricalCourseCategory.get_tag_category_display">
-<span class="sig-name descname"><span class="pre">get_tag_category_display</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.CharField:</span> <span class="pre">tag_category&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#esp.models.program_models.HistoricalCourseCategory.get_tag_category_display" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -3191,13 +3188,6 @@ object the first time, the query is executed.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="esp.models.program_models.HistoricalCourseCategory.symbol">
 <span class="sig-name descname"><span class="pre">symbol</span></span><a class="headerlink" href="#esp.models.program_models.HistoricalCourseCategory.symbol" title="Permalink to this definition"></a></dt>
-<dd><p>A wrapper for a deferred-loading field. When the value is read from this
-object the first time, the query is executed.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="esp.models.program_models.HistoricalCourseCategory.tag_category">
-<span class="sig-name descname"><span class="pre">tag_category</span></span><a class="headerlink" href="#esp.models.program_models.HistoricalCourseCategory.tag_category" title="Permalink to this definition"></a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
