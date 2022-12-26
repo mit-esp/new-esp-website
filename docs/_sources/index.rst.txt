@@ -24,4 +24,5 @@ Indices and tables
     modules/program-models.rst
     modules/program-registration-models.rst
     modules/views.rst
+    modules/glossary.rst
     modules/accessibility.rst

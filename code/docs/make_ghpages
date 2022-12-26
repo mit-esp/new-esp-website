@@ -1,3 +1,4 @@
+rm -rf _build/html
 make html
 rm -rf ../../docs
 cp -r _build/html ../../docs

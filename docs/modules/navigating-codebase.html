@@ -43,6 +43,7 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="getting-started.html">Getting started</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Navigating the codebase</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#map-of-folders-in-repo">Map of folders in repo</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#models">Models</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#django-panel-admin-panel">Django Panel/Admin Panel</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#users">Users</a></li>
@@ -60,6 +61,7 @@
 <li class="toctree-l1"><a class="reference internal" href="program-models.html">Program models</a></li>
 <li class="toctree-l1"><a class="reference internal" href="program-registration-models.html">Program registration models</a></li>
 <li class="toctree-l1"><a class="reference internal" href="views.html">Views</a></li>
+<li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
 <li class="toctree-l1"><a class="reference internal" href="accessibility.html">Accessibility (a11y)</a></li>
 </ul>
 
@@ -90,6 +92,45 @@
   <section id="navigating-the-codebase">
 <h1>Navigating the codebase<a class="headerlink" href="#navigating-the-codebase" title="Permalink to this heading"></a></h1>
 <p>This assumes basic knowledge of Python and preferably some Django.</p>
+<section id="map-of-folders-in-repo">
+<h2>Map of folders in repo<a class="headerlink" href="#map-of-folders-in-repo" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">code/common</span></code>: Generally, less ESP-specific content. Constants, reference lists, base functions, things that we use throughout the rest of the code base (also, creating users? <code class="docutils literal notranslate"><span class="pre">managers.py</span></code>)</dt><dd><ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">./admin.py</span></code>: Registering a model here adds it to the django dashboard under the “Common” heading.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">./templates</span></code>: Webpage templates (frontend-related)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">code/docs</span></code>: Sphinx documentation builder. <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">html</span></code> builds files in a _build folder; this is what’s in esp.mit.edu/espider-docs</p></li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">code/esp</span></code>: ESP-specific python code; e.g. lottery, program models, forms, …</dt><dd><ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">./admin.py</span></code>: Registering a model here adds it to the django dashboard under the “ESP” heading.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">./factories</span></code>: Based on the factory_boy module; works with <code class="docutils literal notranslate"><span class="pre">./models</span></code> to create instances of objects like classrooms, programs, etc. Not entirely sure how this works tbh</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">./integrations</span></code>: External modules, e.g. cybersource</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">./legacy</span></code>: Currently, just latex generating code</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">./migrations</span></code>: Whenever you make changes to the models, you need to run a migration. they are stored here</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">./models</span></code>: Defines the objects/fields that appear in the django admin panel when you want to add a new course/program/classroom.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">./templates</span></code>: Webpage templates (frontend-related)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">./templatetags</span></code>: ?</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">./views</span></code>: Classes/functions that might be needed at varying places on the frontend of the website, or the registration process. These are directly related to content shown user-side.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">code/scripts</span></code>: Files solely needed for development purposes, e.g. generating a bunch of dummy objects</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">code/src</span></code>: React code for the scheduler</p></li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">code/static</span></code>: Static content for the front end</dt><dd><ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">./images</span></code>: Exactly what it sounds like.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">./styles</span></code>: CSS, SCSS files</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</section>
 <section id="models">
 <h2>Models<a class="headerlink" href="#models" title="Permalink to this heading"></a></h2>
 <p>Models are objects representing information about a course, program, user, etc. They allow the underlying database to be manipulated through some UI.</p>

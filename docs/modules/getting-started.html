@@ -59,6 +59,7 @@
 <li class="toctree-l1"><a class="reference internal" href="program-models.html">Program models</a></li>
 <li class="toctree-l1"><a class="reference internal" href="program-registration-models.html">Program registration models</a></li>
 <li class="toctree-l1"><a class="reference internal" href="views.html">Views</a></li>
+<li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
 <li class="toctree-l1"><a class="reference internal" href="accessibility.html">Accessibility (a11y)</a></li>
 </ul>
 
@@ -101,7 +102,7 @@
 <section id="docker-setup">
 <h3>Docker Setup<a class="headerlink" href="#docker-setup" title="Permalink to this heading"></a></h3>
 <p>Docker containers are a way to create/store environments to run programs consistently. The repo comes with a pre-made Docker container that we use to test the website locally.</p>
-<p>First, install Docker via whichever method your OS uses.</p>
+<p>First, <cite>install Docker &lt;https://www.docker.com/&gt;</cite> via whichever method your OS uses.</p>
 <p>Once Docker is installed:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create the environment file, fill in values later</span>
 <span class="n">cp</span> <span class="n">code</span><span class="o">/</span><span class="n">config</span><span class="o">/.</span><span class="n">env</span><span class="o">.</span><span class="n">example</span> <span class="n">code</span><span class="o">/</span><span class="n">config</span><span class="o">/.</span><span class="n">env</span>
@@ -120,8 +121,13 @@
 </section>
 <section id="additional-local-setup">
 <h3>Additional local setup<a class="headerlink" href="#additional-local-setup" title="Permalink to this heading"></a></h3>
-<p>I (songk) have a separate conda environment for this. I haven’t tried other venvs but they should work too.</p>
-<p>To get the dependencies needed for running the website, compiling documentation, etc. run <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">-r</span> <span class="pre">requirements.txt</span></code></p>
+<p>songk has a separate conda environment for this. I haven’t tried other venvs but they should work too. &lt;!— TODO: what are venvs how do?? —&gt;</p>
+<p>You might need to install some other software before all the pip packages can install. Here’s an initial list of what to install (should be tested on a blank environment):</p>
+<ul class="simple">
+<li><p><cite>Microsoft C++ Build Tools &lt;https://visualstudio.microsoft.com/visual-cpp-build-tools/&gt;</cite> (Install “Desktop development with C++” and check the optional install for “C++ x64/x86 build tools”.)</p></li>
+<li><p><cite>PostgreSQL &lt;https://www.postgresql.org/download/&gt;</cite> (Use default options, and don’t install the optional stuff at the end.)</p></li>
+</ul>
+<p>To get the dependencies needed for running the website, compiling documentation, etc. run <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">-r</span> <span class="pre">requirements.txt</span></code>. If you run into issues with versions, ask an ESPider director to recompile and update the requirements.txt file.</p>
 </section>
 </section>
 <section id="navigating-the-website">

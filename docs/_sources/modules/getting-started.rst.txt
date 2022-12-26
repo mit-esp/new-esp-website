@@ -21,7 +21,7 @@ Docker Setup
 
 Docker containers are a way to create/store environments to run programs consistently. The repo comes with a pre-made Docker container that we use to test the website locally.
 
-First, install Docker via whichever method your OS uses.
+First, `install Docker <https://www.docker.com/>` via whichever method your OS uses.
 
 Once Docker is installed:
 
@@ -47,9 +47,15 @@ Then, go to ``localhost:8000`` in your browser to see the website.
 Additional local setup
 ----------------------
 
-I (songk) have a separate conda environment for this. I haven't tried other venvs but they should work too.
+songk has a separate conda environment for this. I haven't tried other venvs but they should work too. <!--- TODO: what are venvs how do?? --->
 
-To get the dependencies needed for running the website, compiling documentation, etc. run ``pip install -r requirements.txt``
+You might need to install some other software before all the pip packages can install. Here's an initial list of what to install (should be tested on a blank environment):
+
+* `Microsoft C++ Build Tools <https://visualstudio.microsoft.com/visual-cpp-build-tools/>` (Install "Desktop development with C++" and check the optional install for "C++ x64/x86 build tools".)
+* `PostgreSQL <https://www.postgresql.org/download/>` (Use default options, and don't install the optional stuff at the end.)
+
+To get the dependencies needed for running the website, compiling documentation, etc. run ``pip install -r requirements.txt``. If you run into issues with versions, ask an ESPider director to recompile and update the requirements.txt file. 
+
 
 Navigating the website
 ======================

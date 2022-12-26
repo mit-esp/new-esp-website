@@ -4,6 +4,29 @@ Navigating the codebase
 
 This assumes basic knowledge of Python and preferably some Django.
 
+Map of folders in repo
+======================
+
+- ``code/common``: Generally, less ESP-specific content. Constants, reference lists, base functions, things that we use throughout the rest of the code base (also, creating users? ``managers.py``)
+    - ``./admin.py``: Registering a model here adds it to the django dashboard under the "Common" heading.
+    - ``./templates``: Webpage templates (frontend-related)
+- ``code/docs``: Sphinx documentation builder. ``make html`` builds files in a _build folder; this is what's in esp.mit.edu/espider-docs
+- ``code/esp``: ESP-specific python code; e.g. lottery, program models, forms, …
+    - ``./admin.py``: Registering a model here adds it to the django dashboard under the "ESP" heading.
+    - ``./factories``: Based on the factory_boy module; works with ``./models`` to create instances of objects like classrooms, programs, etc. Not entirely sure how this works tbh
+    - ``./integrations``: External modules, e.g. cybersource
+    - ``./legacy``: Currently, just latex generating code
+    - ``./migrations``: Whenever you make changes to the models, you need to run a migration. they are stored here
+    - ``./models``: Defines the objects/fields that appear in the django admin panel when you want to add a new course/program/classroom.
+    - ``./templates``: Webpage templates (frontend-related)
+    - ``./templatetags``: ?
+    - ``./views``: Classes/functions that might be needed at varying places on the frontend of the website, or the registration process. These are directly related to content shown user-side.
+- ``code/scripts``: Files solely needed for development purposes, e.g. generating a bunch of dummy objects
+- ``code/src``: React code for the scheduler
+- ``code/static``: Static content for the front end
+    - ``./images``: Exactly what it sounds like.
+    - ``./styles``: CSS, SCSS files
+
 Models
 ======
 
@@ -41,9 +64,9 @@ Users
 
 Going to the Users section of the admin panel allows changes to users/user permissions to be made. Some notable user permissions include
 
-* Superuser: This will allow the user to access/edit/delete all models and instances thereof.
-* Staff status: This will allow the user to log in to the admin panel.
-* Group "All permissions allowed": Grants all perimssions defined by the group "All perimssions allowed". This might be comparable to granting superuser status, but this hasn't really been checked.
+- Superuser: This will allow the user to access/edit/delete all models and instances thereof.
+- Staff status: This will allow the user to log in to the admin panel.
+- Group "All permissions allowed": Grants all perimssions defined by the group "All perimssions allowed". This might be comparable to granting superuser status, but this hasn't really been checked.
 
 Templates and views
 =====
