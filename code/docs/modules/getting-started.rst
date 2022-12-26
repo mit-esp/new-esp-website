@@ -21,7 +21,7 @@ Docker Setup
 
 Docker containers are a way to create/store environments to run programs consistently. The repo comes with a pre-made Docker container that we use to test the website locally.
 
-First, install Docker via whichever method your OS uses.
+First, `install Docker <https://www.docker.com/>` via whichever method your OS uses.
 
 Once Docker is installed:
 
