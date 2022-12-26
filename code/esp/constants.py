@@ -70,11 +70,6 @@ class ProgramTagCategory(TextChoices):
     other = "other"
 
 
-class CourseCategoryCategory(TextChoices):
-    course_category = "course_category"
-    other = "other"
-
-
 class CourseFlagCategory(TextChoices):
     # not sure if it will be better to list these out here, or to be able to make new ones on admin panel
     reviewed_by_admin = "reviewed_by_admin"

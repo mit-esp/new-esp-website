@@ -15,7 +15,6 @@ from esp.constants import (
     ClassroomTagCategory,
     CourseDifficulty,
     CourseStatus,
-    CourseCategoryCategory,
     CourseFlagCategory,
     FormIntegration,
     ProgramTagCategory,
@@ -52,17 +51,12 @@ class CourseCategory(BaseModel):
     Attributes:
         display_name (CharField): name of category
         symbol (CharField): single-letter abbreviation (e.g. math = M)
-        tag_category (CourseCategoryCategory): TODO remove
-
+        current (BooleanField): whether this course category is currently in use
     """
 
     display_name = models.CharField(max_length=256, null=True, blank=True)
-    symbol = models.CharField(max_length=256)
-    tag_category = models.CharField(
-        choices=CourseCategoryCategory.choices,
-        default=CourseCategoryCategory.other,
-        max_length=128,
-    )
+    symbol = models.CharField(max_length=256, null=True)
+    current = models.BooleanField(default=True)
 
     def __str__(self):
         return self.symbol
@@ -198,7 +192,7 @@ class Course(BaseModel):
     # start_date = models.DateTimeField(null=True, blank=True)
     # end_date = models.DateTimeField(null=True, blank=True)
     category = models.ForeignKey(
-        CourseCategory, related_name="category", on_delete=models.PROTECT
+        CourseCategory, related_name="category", on_delete=models.PROTECT, null=True
     )
     description = models.TextField(
         help_text="A description of the class that will be shown to students."
