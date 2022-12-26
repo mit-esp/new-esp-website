@@ -7,18 +7,43 @@ This assumes basic knowledge of Python and preferably some Django.
 Models
 ======
 
-``code/esp/models`` contains several files with model definitions.
+Models are objects representing information about a course, program, user, etc. They allow the underlying database to be manipulated through some UI.
 
-Django Panel
+``code/common/models.py`` and ``code/esp/models/`` each contain several files with model definitions.
+
+After making changes to any of these files, run a migration to propagate these changes to the database. From ``code/``:
+
+.. code-block::
+
+    python manage.py makemigrations
+    python manage.py migrate
+
+To check which migrations have been applied, run ``python manage.py shell_plus``, then in the resulting prompt type
+
+.. code-block:: python
+
+    from django.db.migrations.recorder import MigrationRecorder
+    [(m.app, m.name) for m in MigrationRecorder.Migration.objects.all()]
+
+Django Panel/Admin Panel
 ============
 
 The Django panel is where direct changes to the data in our databases can be made. On the dev site, it's located at https://esp-dev.mit.edu/django_admin/.
 
-To make a model (object representing information about a course, program, user, etc.) visible on the panel, go to ``code/esp/admin.py`` and register it. For example:
+To make a model visible on the panel, go to ``code/esp/admin.py`` and register it. For example:
 
 .. code-block:: python
 
     admin.site.register(course_scheduling_models.ClassroomConstraint)
+
+Users
+-----
+
+Going to the Users section of the admin panel allows changes to users/user permissions to be made. Some notable user permissions include
+
+* Superuser: This will allow the user to access/edit/delete all models and instances thereof.
+* Staff status: This will allow the user to log in to the admin panel.
+* Group "All permissions allowed": Grants all perimssions defined by the group "All perimssions allowed". This might be comparable to granting superuser status, but this hasn't really been checked.
 
 Templates and views
 =====
