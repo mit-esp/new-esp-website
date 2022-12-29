@@ -57,6 +57,7 @@ THIRD_PARTY_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django_browser_reload",
     "django_extensions",
     "debug_toolbar",
     "crispy_forms",
@@ -83,6 +84,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "simple_history.middleware.HistoryRequestMiddleware",
+    "django_browser_reload.middleware.BrowserReloadMiddleware",
 ]
 
 

@@ -9,6 +9,7 @@ django-cors-headers
 django-crispy-forms
 django-multiform-views
 django-rest-framework
+django-browser-reload
 django-sass-processor
 django-ses
 django-storages
