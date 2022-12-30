@@ -25,7 +25,7 @@ from config.settings import DEFAULT_FROM_EMAIL
 from esp.constants import (ClassroomTagCategory, CourseStatus, PaymentMethod,
                            StudentRegistrationStepType)
 from esp.forms import (AdminCourseForm, CommentForm, ProgramForm,
-                       ProgramRegistrationStepFormset, ProgramStageForm,
+                       StudentProgramRegistrationStepFormset, ProgramStageForm,
                        QuerySendEmailForm, StudentSendEmailForm,
                        TeacherSendEmailForm)
 from esp.legacy.latex import render_to_latex
@@ -389,7 +389,7 @@ class ProgramStageFormsetMixin:
     def get_context_data(self, **kwargs):
         self.object = self.get_object()
         context = super().get_context_data()
-        context["step_formset"] = ProgramRegistrationStepFormset(**self.get_formset_kwargs())
+        context["step_formset"] = StudentProgramRegistrationStepFormset(**self.get_formset_kwargs())
         context["step_formset_helper"] = CrispyFormsetHelper()
         return context
 
@@ -401,7 +401,7 @@ class ProgramStageFormsetMixin:
     def post(self, request, *args, **kwargs):
         redirect_link = super().post(request, *args, **kwargs)
         if self.program_stage:
-            step_formset = ProgramRegistrationStepFormset(request.POST, instance=self.program_stage)
+            step_formset = StudentProgramRegistrationStepFormset(request.POST, instance=self.program_stage)
             if step_formset.is_valid():
                 step_formset.save()
         return redirect_link

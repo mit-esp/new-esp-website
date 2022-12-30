@@ -26,7 +26,7 @@ from esp.models.program_registration_models import (ClassRegistration,
                                                     CompletedRegistrationStep,
                                                     CompletedStudentForm,
                                                     ProgramRegistration,
-                                                    ProgramRegistrationStep,
+                                                    StudentProgramRegistrationStep,
                                                     PurchaseLineItem,
                                                     StudentAvailability,
                                                     UserPayment)
@@ -115,7 +115,7 @@ class RegistrationStepBaseView(StudentRegistrationPermissionMixin, TemplateView)
     def permission_enabled_for_view(self):
         self.object = self.get_object()
         self.registration_step = get_object_or_404(
-            ProgramRegistrationStep, id=self.kwargs["step_id"], step_key=self.registration_step_key
+            StudentProgramRegistrationStep, id=self.kwargs["step_id"], step_key=self.registration_step_key
         )
         if self.request.user.has_permission(PermissionType.admin_dashboard_actions):
             return True
@@ -332,7 +332,7 @@ class PreferenceEntryRoundView(PermissionRequiredMixin, DetailView):
             registration_filters["user_id"] = self.request.user.id
         self.registration = get_object_or_404(ProgramRegistration, **registration_filters)
         registration_step = get_object_or_404(
-            ProgramRegistrationStep, id=self.kwargs["step_id"], step_key=StudentRegistrationStepType.lottery_preferences
+            StudentProgramRegistrationStep, id=self.kwargs["step_id"], step_key=StudentRegistrationStepType.lottery_preferences
         )
         if self.request.user.has_permission(PermissionType.admin_dashboard_actions):
             return True
@@ -589,7 +589,7 @@ class RegistrationStepCompleteView(StudentRegistrationPermissionMixin, View):
 
     def get(self, request, *args, **kwargs):
         registration = self.get_object()
-        step = get_object_or_404(ProgramRegistrationStep, id=self.kwargs.get("step_id"))
+        step = get_object_or_404(StudentProgramRegistrationStep, id=self.kwargs.get("step_id"))
         CompletedRegistrationStep.objects.update_or_create(
             registration=registration, step=step, defaults={"completed_on": timezone.now()}
         )

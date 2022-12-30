@@ -15,7 +15,7 @@ admin.site.register(program_models.CourseFlag)
 admin.site.register(program_models.PreferenceEntryCategory)
 admin.site.register(program_models.PurchaseableItem)
 admin.site.register(program_registration_models.ProgramRegistration)
-admin.site.register(program_models.ProgramRegistrationStep)
+admin.site.register(program_models.StudentProgramRegistrationStep)
 admin.site.register(program_models.ProgramTag)
 admin.site.register(program_models.TeacherProgramRegistrationStep)
 admin.site.register(program_models.TimeSlot)
@@ -26,15 +26,15 @@ admin.site.register(program_registration_models.StudentProfile)
 admin.site.register(program_registration_models.TeacherProfile)
 
 
-class ProgramRegistrationStepInline(admin.StackedInline):
+class StudentProgramRegistrationStepInline(admin.StackedInline):
     extra = 0
-    model = program_models.ProgramRegistrationStep
+    model = program_models.StudentProgramRegistrationStep
 
 
 @admin.register(program_models.ProgramStage)
 class ProgramStageAdmin(admin.ModelAdmin):
     inlines = [
-        ProgramRegistrationStepInline
+        StudentProgramRegistrationStepInline
     ]
 
 
