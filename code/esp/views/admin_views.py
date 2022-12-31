@@ -25,7 +25,7 @@ from config.settings import DEFAULT_FROM_EMAIL
 from esp.constants import (ClassroomTagCategory, CourseStatus, PaymentMethod,
                            StudentRegistrationStepType)
 from esp.forms import (AdminCourseForm, CommentForm, ProgramForm,
-                       ProgramRegistrationStepFormset, ProgramStageForm,
+                       StudentProgramRegistrationStepFormset, ProgramStageForm,
                        QuerySendEmailForm, StudentSendEmailForm,
                        TeacherSendEmailForm)
 from esp.legacy.latex import render_to_latex
@@ -37,8 +37,8 @@ from esp.models.program_models import (Classroom, Course, Program,
                                        TimeSlot)
 from esp.models.program_registration_models import (ClassRegistration,
                                                     FinancialAidRequest,
-                                                    ProgramRegistration,
                                                     PurchaseLineItem,
+                                                    StudentRegistration,
                                                     TeacherRegistration,
                                                     UserPayment)
 from esp.serializers import CommentSerializer, UserSerializer
@@ -121,7 +121,7 @@ class AdminManageStudentsView(PermissionRequiredMixin, SingleObjectMixin, Templa
                 context['purchased'] = student.purchases.filter(item__program=program, purchase_confirmed_on__isnull=False).select_related(
                     'item', 'payment'
                 )
-                program_registration = get_object_or_404(ProgramRegistration, program=program, user__id=student_id)
+                program_registration = get_object_or_404(StudentRegistration, program=program, user__id=student_id)
                 context['program_registration'] = program_registration
                 stage = program_registration.get_program_stage()
                 context["program_stage_steps"] = stage.steps.all() if stage else []
@@ -146,7 +146,7 @@ class AdminCommentView(PermissionRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         student_id = self.kwargs.get('student_id')
         program_id = self.kwargs.get('pk')
-        program_registration = get_object_or_404(ProgramRegistration, program_id=program_id,
+        program_registration = get_object_or_404(StudentRegistration, program_id=program_id,
                                                  user_id=student_id)
         _student = get_object_or_404(User, id=student_id)
         data = {"author": request.user.id,
@@ -169,7 +169,7 @@ class StudentCheckinView(PermissionRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         student_id = self.kwargs.get('student_id')
         program_id = self.kwargs.get('pk')
-        program_registration = get_object_or_404(ProgramRegistration, program_id=program_id,
+        program_registration = get_object_or_404(StudentRegistration, program_id=program_id,
                                                  user_id=student_id)
         student = get_object_or_404(User, id=student_id)
         if program_registration.checked_in is False:
@@ -189,7 +189,7 @@ class StudentCheckinView(PermissionRequiredMixin, View):
 
 class StudentCashPaymentView(PermissionRequiredMixin, SingleObjectMixin, View):
     permission = PermissionType.admin_dashboard_actions
-    model = ProgramRegistration
+    model = StudentRegistration
     pk_url_kwarg = "student_id"
 
     def post(self, request, *args, **kwargs):
@@ -389,7 +389,7 @@ class ProgramStageFormsetMixin:
     def get_context_data(self, **kwargs):
         self.object = self.get_object()
         context = super().get_context_data()
-        context["step_formset"] = ProgramRegistrationStepFormset(**self.get_formset_kwargs())
+        context["step_formset"] = StudentProgramRegistrationStepFormset(**self.get_formset_kwargs())
         context["step_formset_helper"] = CrispyFormsetHelper()
         return context
 
@@ -401,7 +401,7 @@ class ProgramStageFormsetMixin:
     def post(self, request, *args, **kwargs):
         redirect_link = super().post(request, *args, **kwargs)
         if self.program_stage:
-            step_formset = ProgramRegistrationStepFormset(request.POST, instance=self.program_stage)
+            step_formset = StudentProgramRegistrationStepFormset(request.POST, instance=self.program_stage)
             if step_formset.is_valid():
                 step_formset.save()
         return redirect_link

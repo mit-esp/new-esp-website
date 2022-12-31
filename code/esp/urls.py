@@ -28,8 +28,8 @@ from esp.views.student_registration_views import (
     ConfirmRegistrationSubmissionView, DeleteCourseRegistrationView,
     EditAssignedCoursesView, InitiatePreferenceEntryView, MakePaymentView,
     PayProgramFeesView, PreferenceEntryRoundView,
-    ProgramRegistrationCreateView, ProgramRegistrationStageView,
-    RegistrationStepCompleteView, RequestFinancialAidView,
+    StudentProgramRegistrationCreateView, StudentProgramRegistrationStageView,
+    StudentRegistrationStepCompleteView, RequestFinancialAidView,
     StudentAvailabilityView, SubmitWaiversView, VerifyStudentProfileView)
 from esp.views.teacher_registration_views import (
     AddCoTeacherView, TeacherEditCourseView, TeacherProgramDashboardView,
@@ -119,9 +119,9 @@ urlpatterns = [
     path("programs/courses/<uuid:pk>/coteacher/", AddCoTeacherView.as_view(), name="add_coteacher"),
 
     # Student program registration views
-    path("programs/<uuid:pk>/register/", ProgramRegistrationCreateView.as_view(), name="create_program_registration"),
+    path("programs/<uuid:pk>/register/", StudentProgramRegistrationCreateView.as_view(), name="create_program_registration"),
     path(
-        'programs/registration/<uuid:registration_id>/', ProgramRegistrationStageView.as_view(),
+        'programs/registration/<uuid:registration_id>/', StudentProgramRegistrationStageView.as_view(),
         name="current_registration_stage"
     ),
     path(
@@ -184,7 +184,7 @@ urlpatterns = [
          MakePaymentView.as_view(), name="make_payment"),
     path(
         'programs/registration/<uuid:registration_id>/step/<uuid:step_id>/complete/',
-        RegistrationStepCompleteView.as_view(), name="complete_registration_step",
+        StudentRegistrationStepCompleteView.as_view(), name="complete_registration_step",
     ),
 
     # Scheduler

@@ -27,6 +27,7 @@ urlpatterns = [
     path('django_admin/', admin.site.urls, name="django_admin"),
     path("health_check/", lambda request: HttpResponse("ok")),
     path("ses/event-webhook/", SESEventWebhookView.as_view(), name="handle-event-webhook"),
+    path("__reload__/", include("django_browser_reload.urls")),
     # Warning: must come last!
     path('<path:path>/', SiteRedirectView.as_view(), name="site_redirect"),
 ]

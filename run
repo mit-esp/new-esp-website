@@ -1,1 +1,2 @@
+sudo docker build . -t espdev
 sudo docker run -itp 8000:8000 espdev

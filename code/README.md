@@ -112,7 +112,7 @@ sudo systemctl restart gunicorn
 Here are the steps one should take in order to run an ESP program on this system.
 1. As an Admin user, create a Program object. Tag with ProgramTags as desired.
 2. As an Admin user, add ProgramStages with the dates that each stage should start and end (e.g. "pre-lottery stage", "post-lottery stage")
-3. As an Admin user, add ProgramRegistrationSteps to each stage (In Django Admin Panel, go to Programs to create objects). Be very careful with this step, as while the system allows the free rein of customized ordering, certain steps are expected be coherently ordered.
+3. As an Admin user, add StudentProgramRegistrationSteps to each stage (In Django Admin Panel, go to Programs to create objects). Be very careful with this step, as while the system allows the free rein of customized ordering, certain steps are expected be coherently ordered.
 4. As an Admin user, add TeacherRegistrationSteps (teacher registration steps) (in Django Admin Panel).
 5. As an Admin user, add ExternalProgramForms (in Django Admin Panel)
 6. As an Admin user, add PurchaseableItems (In Django Admin Panel)

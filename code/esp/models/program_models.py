@@ -5,6 +5,7 @@ TODO separate these models into different categories? e.g. program-relevant, cou
 
 from collections import defaultdict
 
+from django.core.validators import RegexValidator
 from django.db import models
 from django.db.models import Max, Min
 from django.utils import timezone
@@ -32,7 +33,7 @@ class ProgramConfiguration(BaseModel):
         saved_as_preset (models.BooleanField): True if this program configuration is saved as a preset, False otherwise
         name (models.CharField): name of program configuration
         description (models.TextField): description
-        PreferenceEntryRounds (PreferenceEntryRound): 
+        PreferenceEntryRounds (PreferenceEntryRound):
     """
 
     saved_as_preset = models.BooleanField(default=False)
@@ -47,30 +48,31 @@ class CourseCategory(BaseModel):
     """
     Generally speaking, the category of class (art, science, math, CS, ...).
     This should be viewable by everyone and editable by teachers.
-
-    Attributes:
-        display_name (CharField): name of category
-        symbol (CharField): single-letter abbreviation (e.g. math = M)
-        current (BooleanField): whether this course category is currently in use
     """
 
-    display_name = models.CharField(max_length=256, null=True, blank=True)
-    symbol = models.CharField(max_length=256, null=True)
-    current = models.BooleanField(default=True)
+    display_name = models.CharField(
+        max_length=256, null=True, blank=True
+    )  #: name of category
+    symbol = models.CharField(
+        max_length=1,
+        null=True,
+        validators=[RegexValidator(r"^[A-Za-z]{1}", "Must be a single letter.")],
+    )  #: single-letter abbreviation (e.g. math = M)
+    current = models.BooleanField(
+        default=True
+    )  #: whether this course category is currently in use
 
     def __str__(self):
         return self.symbol
+
+    class Meta(BaseModel.Meta):
+        verbose_name_plural = "Course categories"
 
 
 class CourseFlag(BaseModel):
     """
     Flags that ESP admins use to indicate information about a course
     (e.g. review stage, needs director review, specific classroom requests)
-
-    Attributes:
-        tag (models.CharField)
-        display_name (models.CharField): name of flag
-        tag_category (models.CharField)
     """
 
     tag = models.CharField(max_length=256)
@@ -87,20 +89,8 @@ class CourseFlag(BaseModel):
 
 class Program(BaseModel):
     """An ESP program instance, e.g. Splash 2021
-    
-    Attributes:
-        name (models.CharField): name of the program
-        program_type (ProgramType): type of program (e.g. Splash, Spark, ...)
-        min_grade_level (GradeLevel): lowest allowed student grade level
-        max_grade_level (GradeLevel): highest allowed student grade level
-        description (models.TextField): brief description of the program
-        notes (models.TextField): for admin use
-        start_date (models.DateTimeField): start date of program
-        end_date (models.DateTimeField): end date of program
-        number_of_weeks (models.IntegerField): number of weeks
-        time_block_minutes (models.IntegerField): duration of each course block
-        program_configuration (ProgramConfiguration): 
 
+    Attributes:
         program_stages (ProgramStage): set of ProgramStages
         teacher_program_registration_steps (TeacherProgramRegistrationStep): set of TeacherProgramRegistrationSteps
         time_slots (TimeSlot): set of all allowed TimeSlots for this program
@@ -114,7 +104,7 @@ class Program(BaseModel):
     name = models.CharField(max_length=512)
     program_type = models.CharField(
         choices=ProgramType.choices, max_length=128, null=True, blank=True
-    )
+    )  #: type of program (e.g. Splash, Spark, ...)
     min_grade_level = models.IntegerField(choices=GradeLevel.choices, default=7)
     max_grade_level = models.IntegerField(choices=GradeLevel.choices, default=12)
     description = models.TextField(null=True)
@@ -123,7 +113,9 @@ class Program(BaseModel):
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
     number_of_weeks = models.IntegerField()
-    time_block_minutes = models.IntegerField(default=30)
+    time_block_minutes = models.IntegerField(
+        default=30
+    )  #: duration of each course time block
 
     archive_on = models.DateTimeField(null=True)
 
@@ -161,86 +153,73 @@ class Course(BaseModel):
     """
     Course represents an ESP class in a specific program (named to avoid reserved word 'class' conflicts).
     It is still referred to as 'class' in urls and on the frontend to match existing terminology.
-
-    Attributes:
-        program (Program): program in which this course is offered
-        name (models.CharField): course title
-        display_id (models.BigIntegerField): unique ID for this course; should be automatically generated?
-        category (CourseCategory): subject area of this course (e.g. CS, science, arts, ...)
-        description (models.TextField): publicly visible course description
-        max_section_size (models.IntegerField): capacity for one section of this course
-        max_sections (models.IntegerField): maximum number of sections for this course that could be taught
-        time_slots_per_session (models.IntegerField): number of time slots one section takes (i.e. how long)
-        number_of_weeks (models.IntegerField): number of weeks this class will last. This may be relevant to HSSPs (as of 11/2022)
-        sessions_per_week (models.IntegerField): number of times a section of this course meets per week
-        prerequisites (models.TextField): prerequisites for taking this course, if any
-        min_grade_level (GradeLevel): lowest eligible grade level for this course
-        max_grade_level (GradeLevel): highest eligible grade level for this course
-        difficulty (CourseDifficulty): difficulty rating of this course (1-4)
-        status (CourseStatus): registration status of this course (e.g. accepted, not reviewed)
-        teacher_notes (models.TextField): notes from teachers to admins
-        admin_notes (models.TextField): notes made by admins
-        flags (CourseFlag): admin flags for this course
-        planned_purchases (models.TextField): planned purchases (e.g. class supplies) for this course
     """
 
     program = models.ForeignKey(
         Program, related_name="courses", on_delete=models.PROTECT
-    )
-    name = models.CharField(max_length=2048, verbose_name="Class title")
-    display_id = models.BigIntegerField(null=True, blank=True)
+    )  #: program in which this course is offered
+    name = models.CharField(
+        max_length=2048, verbose_name="Class title"
+    )  #: course title
+    display_id = models.BigIntegerField(
+        null=True, blank=True
+    )  #: unique ID for this course; should be automatically generated
     # start_date = models.DateTimeField(null=True, blank=True)
     # end_date = models.DateTimeField(null=True, blank=True)
     category = models.ForeignKey(
         CourseCategory, related_name="category", on_delete=models.PROTECT, null=True
-    )
+    )  #: subject area of this course (e.g. CS, science, arts, ...)
     description = models.TextField(
         help_text="A description of the class that will be shown to students."
-    )
+    )  #: publicly visible course description
 
     max_section_size = models.IntegerField(
         verbose_name="How many students can a single section include?"
-    )
+    )  #: capacity for one section of this course
     max_sections = models.IntegerField(
         default=1, verbose_name="How many enrollment sections are you willing to teach?"
-    )
+    )  #: maximum number of sections for this course that could be taught
     time_slots_per_session = models.IntegerField(
         default=2,
         verbose_name="How many time slots is each session of the class?",
-    )
+    )  #: number of time slots one section takes (i.e. how long)
     number_of_weeks = models.IntegerField(
         default=1, verbose_name="How many weeks will this class last?"
-    )
+    )  #: number of weeks this class will last. This may be relevant to HSSPs (as of 11/2022)
     sessions_per_week = models.IntegerField(
         default=1,
         verbose_name="How often will this class meet per week?",
         help_text="If you would like to meet multiple times per week, please describe why in the comments.",
-    )
+    )  #: number of times a section of this course meets per week
 
     prerequisites = models.TextField(
         default="None",
         blank=True,
         help_text="Describe the recommended prerequisites for this class.",
-    )
+    )  #: prerequisites for taking this course, if any
     min_grade_level = models.IntegerField(
         choices=GradeLevel.choices, default=GradeLevel.seventh
-    )
+    )  #: lowest eligible grade level for this course
     max_grade_level = models.IntegerField(
         choices=GradeLevel.choices, default=GradeLevel.twelfth
-    )
+    )  #: highest eligible grade level for this course
     difficulty = models.IntegerField(
         choices=CourseDifficulty.choices, default=CourseDifficulty.easy
-    )
+    )  #: difficulty rating of this course (1-4)
 
     status = models.CharField(
         choices=CourseStatus.choices, max_length=32, default=CourseStatus.unreviewed
-    )
+    )  #: registration status of this course (e.g. accepted, unreviewed)
     teacher_notes = models.TextField(
         null=True, blank=True, help_text="Notes for admin review - leave blank if none"
-    )
-    admin_notes = models.TextField(null=True, blank=True)
-    flags = models.ManyToManyField(CourseFlag, related_name="flags", blank=True)
-    planned_purchases = models.TextField(null=True, blank=True)
+    )  #: notes from teachers to admins
+    admin_notes = models.TextField(null=True, blank=True)  #: notes made by admins
+    flags = models.ManyToManyField(
+        CourseFlag, related_name="flags", blank=True
+    )  #: admin flags for this course
+    planned_purchases = models.TextField(
+        null=True, blank=True
+    )  #: planned purchases (e.g. class supplies) for this course
 
     class Meta:
         unique_together = [("program_id", "display_id")]
@@ -253,6 +232,7 @@ class Course(BaseModel):
         return f"{program_abbreviation}{self.display_id}: {self.name}"
 
     def get_next_display_id(self):
+        """Generates this course's display ID, which is of the form YYYXXX in the year 2YYY."""
         base_display_id = (self.program.start_date.year % 1000) * 1000
         if not self.__class__.objects.filter(program_id=self.program_id).exists():
             return base_display_id
@@ -270,6 +250,7 @@ class Course(BaseModel):
         )
 
     def is_editable(self):
+        """Returns True if this course is editable by the teachers, and False otherwise."""
         # Modify to determine teacher course editing permissions
         return self.status == CourseStatus.unreviewed
 
@@ -285,26 +266,22 @@ class Course(BaseModel):
 class TimeSlot(BaseModel):
     """
     A single time block/slot that a course can occupy.
-
-    Attributes:
-        program (Program): program that this timeslot belongs to
-        start_datetime (models.DateTimeField): starting date/time of the timeslot
-        end_datetime (models.DateTimeField): ending date/time of the timeslot
     """
+
     program = models.ForeignKey(
         Program, related_name="time_slots", on_delete=models.PROTECT
-    )
-    start_datetime = models.DateTimeField()
-    end_datetime = models.DateTimeField()
+    )  #: program that this timeslot belongs to
+    start_datetime = models.DateTimeField()  #: starting date/time of the timeslot
+    end_datetime = models.DateTimeField()  #: ending date/time of the timeslot
 
     def __str__(self):
-        """For use in the Django Admin Interface"""
+        """Representative string; for use in the Django Admin Interface"""
         start = self.start_datetime.strftime("%I:%M%p").lstrip("0")
         end = self.end_datetime.strftime("%I:%M%p").lstrip("0")
         return f"{self.program.name}: {start} - {end} ({Weekday(self.start_datetime.weekday()).label})"
 
     def get_display_name(self):
-        """For use in a user facing context anywhere else in the codebase"""
+        """Representative string; for use in a user facing context anywhere else in the codebase"""
         start = self.start_datetime.strftime("%I:%M%p").lstrip("0")
         end = self.end_datetime.strftime("%I:%M%p").lstrip("0")
         return f"{start} - {end} ({Weekday(self.start_datetime.weekday()).label})"
@@ -335,14 +312,10 @@ class TimeSlot(BaseModel):
 class Classroom(BaseModel):
     """
     Information about a particular MIT classroom.
-
-    Attributes:
-        name (models.CharField): name of the classroom
-        description (models.TextField): freeform description of classroom
-        max_occupants (models.IntegerField): classroom capacity
     """
+
     # TODO: add types of classrooms
-    name = models.CharField(max_length=512)
+    name = models.CharField(max_length=512)  #: name of the classroom
     description = models.TextField(null=True, blank=True)
     max_occupants = models.IntegerField()
 
@@ -353,12 +326,9 @@ class Classroom(BaseModel):
 class ClassroomTag(BaseModel):
     """
     Tags that ESP admins use to indicate information about a classroom
-
-    Attributes:
-        classrooms (Classroom): TODO remove
-        tag (models.CharField): name of tag
-        tag_category (models.CharField)
     """
+
+    # TODO remove classrooms and replace with a ForeignField within Classroom
     classrooms = models.ManyToManyField(Classroom, related_name="tags", blank=True)
     tag = models.CharField(max_length=256, unique=True)
     tag_category = models.CharField(
@@ -379,17 +349,11 @@ class ClassroomTag(BaseModel):
 class ProgramStage(BaseModel):
     """
     ProgramStage represents configuration for a student-facing program stage, e.g. 'Initiation' or 'Post-Lottery'
-
-    Attributes:
-        program (Program): program that this ProgramStage belongs to
-        name (models.CharField): name of the program stage
-        start_date (models.DateTimeField): start date of this program stage
-        end_date (models.DateTimeField): end date of this program stage
     """
 
     program = models.ForeignKey(
         Program, related_name="stages", on_delete=models.PROTECT
-    )
+    )  #: program that this ProgramStage belongs to
     name = models.CharField(max_length=256)
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
@@ -406,32 +370,25 @@ class ProgramStage(BaseModel):
             return None
 
     def is_active(self):
+        """Returns True if this program stage is currently active, and False otherwise."""
         return self.start_date < timezone.now() < self.end_date
 
     def __str__(self):
         return f"{self.program}: {self.name}"
 
 
-class ProgramRegistrationStep(BaseModel):
+class StudentProgramRegistrationStep(BaseModel):
     """
-    ProgramRegistrationStep represents config for a single student interaction step within a program stage.
-    
-    Attributes:
-        program_stage (ProgramStage): program stage that this step is part of
-        display_name (models.CharField): name of this step
-        step_key (StudentRegistrationStepType): type of registration step (e.g. verify profile, lottery preferences)
-        required_for_stage_completion (models.BooleanField): True if this step is required, False otherwise
-        display_after_completion (models.BooleanField): True if this step is visible after completion, False otherwise
-        allow_changes_after_completion (models.BooleanField): True if this step is modifiable after completion, False otherwise
+    StudentProgramRegistrationStep represents config for a single student interaction step within a program stage.
     """
 
     program_stage = models.ForeignKey(
         ProgramStage, related_name="steps", on_delete=models.PROTECT
-    )
+    )  #: program stage that this step is part of
     display_name = models.CharField(max_length=512, null=True, blank=True)
     step_key = models.CharField(
         choices=StudentRegistrationStepType.choices, max_length=256
-    )
+    )  #: type of registration step (e.g. verify profile, lottery preferences)
     required_for_stage_completion = models.BooleanField(default=True)
     display_after_completion = models.BooleanField(default=True)
     allow_changes_after_completion = models.BooleanField(default=True)
@@ -455,10 +412,10 @@ class TeacherProgramRegistrationStep(BaseModel):
 
     program = models.ForeignKey(
         Program, related_name="teacher_registration_steps", on_delete=models.PROTECT
-    )
+    )  #: program to which this registration step belongs
     step_key = models.CharField(
         choices=TeacherRegistrationStepType.choices, max_length=128
-    )
+    )  #: the type of program registration step
     display_name = models.CharField(max_length=512, null=True, blank=True)
     access_start_date = models.DateTimeField()
     access_end_date = models.DateTimeField()
@@ -528,11 +485,17 @@ class PreferenceEntryCategory(BaseModel):
 
 
 class ExternalProgramForm(BaseModel):
+    """
+    Forms (like waivers, medical forms) needed for programs that are hosted outside of the ESP website.
+    """
+
     program = models.ForeignKey(
         Program, related_name="external_forms", on_delete=models.PROTECT
     )
     user_type = models.CharField(max_length=64, choices=UserType.choices)
-    integration = models.CharField(max_length=64, choices=FormIntegration.choices)
+    integration = models.CharField(
+        max_length=64, choices=FormIntegration.choices
+    )  #: platform this form is hosted on
     integration_id = models.CharField(max_length=256, null=True, blank=True)
     url = models.URLField()
     display_name = models.CharField(max_length=256)
