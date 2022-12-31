@@ -20,8 +20,8 @@ from esp.models.course_scheduling_models import (ClassroomTimeSlot,
 from esp.models.program_models import Course, CourseCategory, CourseFlag, Program, ProgramStage
 from esp.models.program_registration_models import (Comment,
                                                     FinancialAidRequest,
-                                                    StudentProgramRegistrationStep,
                                                     StudentProfile,
+                                                    StudentProgramRegistrationStep,
                                                     TeacherProfile,
                                                     TeacherRegistration)
 from esp.serializers import AssignClassroomTimeSlotSerializer

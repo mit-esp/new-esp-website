@@ -14,8 +14,8 @@ from esp.models.program_models import (
     ExternalProgramForm,
     PreferenceEntryCategory,
     Program,
-    StudentProgramRegistrationStep,
     PurchaseableItem,
+    StudentProgramRegistrationStep,
     TeacherProgramRegistrationStep,
     TimeSlot,
 )
@@ -27,9 +27,7 @@ from esp.validators import validate_graduation_year
 
 
 class StudentProfile(BaseModel):
-    """
-    A student instance that is attached to a user's account. A single user can have more than one type of profile (e.g. Student, Teacher, ...).
-    """
+    """A student instance that is attached to a user's account. A single user can have more than one type of profile (e.g. Student, Teacher, ...)."""
 
     user = models.OneToOneField(
         User, on_delete=models.PROTECT, related_name="student_profile"
@@ -92,9 +90,13 @@ class StudentProfile(BaseModel):
             return "Graduated"
         return GradeLevel(grade_level).label
 
+    def __str__(self):
+        """Representative string; for use in the Django Admin Interface"""
+        return f"StudentProfile - {self.user.username}"
 
-class ProgramRegistration(BaseModel):
-    """ProgramRegistration represents a user's registration for a program. Each user-program pair gets its own ProgramRegistration instance."""
+
+class StudentRegistration(BaseModel):
+    """StudentRegistration represents a student's registration for a program. Each student-program pair gets its own StudentRegistration instance."""
 
     program = models.ForeignKey(
         Program, related_name="registrations", on_delete=models.PROTECT
@@ -210,21 +212,25 @@ class ProgramRegistration(BaseModel):
         return f"{self.program} registration for {self.user}"
 
 
-class CompletedRegistrationStep(BaseModel):
+class CompletedStudentRegistrationStep(BaseModel):
     """Represents a completed registration step."""
+
     registration = models.ForeignKey(
-        ProgramRegistration, related_name="completed_steps", on_delete=models.PROTECT
+        StudentRegistration, related_name="completed_steps", on_delete=models.PROTECT
     )  #: User/program during which this registration step was completed
     step = models.ForeignKey(
-        StudentProgramRegistrationStep, related_name="registrations", on_delete=models.PROTECT
+        StudentProgramRegistrationStep,
+        related_name="registrations",
+        on_delete=models.PROTECT,
     )  #: The step that was completed
     completed_on = models.DateTimeField()
 
 
 class StudentAvailability(BaseModel):
     """A time slot during which a particular student is available for a particular program."""
+
     registration = models.ForeignKey(
-        ProgramRegistration, related_name="availabilities", on_delete=models.PROTECT
+        StudentRegistration, related_name="availabilities", on_delete=models.PROTECT
     )
     time_slot = models.ForeignKey(
         TimeSlot, related_name="student_availabilities", on_delete=models.PROTECT
@@ -235,7 +241,7 @@ class ClassPreference(BaseModel):
     """ClassPreference represents a preference entry category that a user has applied to a class section."""
 
     registration = models.ForeignKey(
-        ProgramRegistration, related_name="preferences", on_delete=models.PROTECT
+        StudentRegistration, related_name="preferences", on_delete=models.PROTECT
     )
     course_section = models.ForeignKey(
         CourseSection, related_name="preferences", on_delete=models.PROTECT
@@ -254,7 +260,7 @@ class ClassRegistration(BaseModel):
         CourseSection, related_name="registrations", on_delete=models.PROTECT
     )
     program_registration = models.ForeignKey(
-        ProgramRegistration,
+        StudentRegistration,
         related_name="class_registrations",
         on_delete=models.PROTECT,
     )
@@ -272,7 +278,7 @@ class UserPayment(BaseModel):
 
 class FinancialAidRequest(BaseModel):
     program_registration = models.ForeignKey(
-        ProgramRegistration,
+        StudentRegistration,
         related_name="financial_aid_requests",
         on_delete=models.PROTECT,
     )
@@ -325,7 +331,7 @@ class CompletedForm(BaseModel):
 
 class CompletedStudentForm(CompletedForm):
     program_registration = models.ForeignKey(
-        ProgramRegistration,
+        StudentRegistration,
         on_delete=models.PROTECT,
         related_name="completed_forms_extra",
     )
@@ -333,7 +339,7 @@ class CompletedStudentForm(CompletedForm):
 
 class Comment(BaseModel):
     registration = models.ForeignKey(
-        ProgramRegistration, related_name="comments", on_delete=models.PROTECT
+        StudentRegistration, related_name="comments", on_delete=models.PROTECT
     )
     author = models.ForeignKey(User, on_delete=models.PROTECT)
     comment = models.TextField()
@@ -345,6 +351,7 @@ class Comment(BaseModel):
 
 
 class TeacherProfile(BaseModel):
+    """A teacher instance that is attached to a user's account. A single user can have more than one type of profile (e.g. Student, Teacher, ...)."""
     user = models.OneToOneField(
         User, related_name="teacher_profile", on_delete=models.PROTECT
     )
@@ -375,8 +382,13 @@ class TeacherProfile(BaseModel):
     bio = models.TextField(blank=True, null=True)
     shirt_size = models.CharField(max_length=3, choices=ShirtSize.choices)
 
+    def __str__(self):
+        """Representative string; for use in the Django Admin Interface"""
+        return f"TeacherProfile - {self.user.username}"
+
 
 class TeacherRegistration(BaseModel):
+    """TeacherRegistration represents a teacher's registration for a program. Each teacher-program pair gets its own TeacherRegistration instance."""
     program = models.ForeignKey(
         Program, related_name="teacher_registrations", on_delete=models.PROTECT
     )

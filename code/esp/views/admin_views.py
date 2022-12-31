@@ -37,8 +37,8 @@ from esp.models.program_models import (Classroom, Course, Program,
                                        TimeSlot)
 from esp.models.program_registration_models import (ClassRegistration,
                                                     FinancialAidRequest,
-                                                    ProgramRegistration,
                                                     PurchaseLineItem,
+                                                    StudentRegistration,
                                                     TeacherRegistration,
                                                     UserPayment)
 from esp.serializers import CommentSerializer, UserSerializer
@@ -121,7 +121,7 @@ class AdminManageStudentsView(PermissionRequiredMixin, SingleObjectMixin, Templa
                 context['purchased'] = student.purchases.filter(item__program=program, purchase_confirmed_on__isnull=False).select_related(
                     'item', 'payment'
                 )
-                program_registration = get_object_or_404(ProgramRegistration, program=program, user__id=student_id)
+                program_registration = get_object_or_404(StudentRegistration, program=program, user__id=student_id)
                 context['program_registration'] = program_registration
                 stage = program_registration.get_program_stage()
                 context["program_stage_steps"] = stage.steps.all() if stage else []
@@ -146,7 +146,7 @@ class AdminCommentView(PermissionRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         student_id = self.kwargs.get('student_id')
         program_id = self.kwargs.get('pk')
-        program_registration = get_object_or_404(ProgramRegistration, program_id=program_id,
+        program_registration = get_object_or_404(StudentRegistration, program_id=program_id,
                                                  user_id=student_id)
         _student = get_object_or_404(User, id=student_id)
         data = {"author": request.user.id,
@@ -169,7 +169,7 @@ class StudentCheckinView(PermissionRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         student_id = self.kwargs.get('student_id')
         program_id = self.kwargs.get('pk')
-        program_registration = get_object_or_404(ProgramRegistration, program_id=program_id,
+        program_registration = get_object_or_404(StudentRegistration, program_id=program_id,
                                                  user_id=student_id)
         student = get_object_or_404(User, id=student_id)
         if program_registration.checked_in is False:
@@ -189,7 +189,7 @@ class StudentCheckinView(PermissionRequiredMixin, View):
 
 class StudentCashPaymentView(PermissionRequiredMixin, SingleObjectMixin, View):
     permission = PermissionType.admin_dashboard_actions
-    model = ProgramRegistration
+    model = StudentRegistration
     pk_url_kwarg = "student_id"
 
     def post(self, request, *args, **kwargs):
