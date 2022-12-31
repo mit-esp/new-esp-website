@@ -20,8 +20,8 @@ from esp.models.course_scheduling_models import (ClassroomTimeSlot,
 from esp.models.program_models import Course, CourseCategory, CourseFlag, Program, ProgramStage
 from esp.models.program_registration_models import (Comment,
                                                     FinancialAidRequest,
-                                                    ProgramRegistrationStep,
                                                     StudentProfile,
+                                                    StudentProgramRegistrationStep,
                                                     TeacherProfile,
                                                     TeacherRegistration)
 from esp.serializers import AssignClassroomTimeSlotSerializer
@@ -135,8 +135,8 @@ class ProgramStageForm(ModelForm):
         }
 
 
-ProgramRegistrationStepFormset = inlineformset_factory(
-    ProgramStage, ProgramRegistrationStep, can_order=True, formset=HiddenOrderingInputFormset,
+StudentProgramRegistrationStepFormset = inlineformset_factory(
+    ProgramStage, StudentProgramRegistrationStep, can_order=True, formset=HiddenOrderingInputFormset,
     fields=("step_key", "display_name", "description"),
     labels=({"step_key": "Step Type", "display_name": "Alternate display name"}),
     widgets=({"description": forms.Textarea(attrs={"rows": 1})})
