@@ -16,7 +16,6 @@ from esp.constants import (
     ClassroomTagCategory,
     CourseDifficulty,
     CourseStatus,
-    CourseFlagCategory,
     FormIntegration,
     ProgramTagCategory,
     ProgramType,
@@ -26,15 +25,7 @@ from esp.constants import (
 
 
 class ProgramConfiguration(BaseModel):
-    """
-    ProgramConfiguration represents a set of configuration for programs, e.g. stages and registration steps.
-
-    Attributes:
-        saved_as_preset (models.BooleanField): True if this program configuration is saved as a preset, False otherwise
-        name (models.CharField): name of program configuration
-        description (models.TextField): description
-        PreferenceEntryRounds (PreferenceEntryRound):
-    """
+    """ProgramConfiguration represents a set of configuration for programs, e.g. stages and registration steps."""
 
     saved_as_preset = models.BooleanField(default=False)
     name = models.CharField(max_length=512, null=True, blank=True)
@@ -75,28 +66,16 @@ class CourseFlag(BaseModel):
     (e.g. review stage, needs director review, specific classroom requests)
     """
 
-    tag = models.CharField(max_length=256)
     display_name = models.CharField(max_length=256, null=True, blank=True)
-    tag_category = models.CharField(
-        choices=CourseFlagCategory.choices,
-        default=CourseFlagCategory.other,
-        max_length=128,
-    )
+    show_in_dashboard = models.BooleanField(default=True)
+    show_in_scheduler = models.BooleanField(default=True)
 
     def __str__(self):
-        return self.tag
+        return self.display_name
 
 
 class Program(BaseModel):
-    """An ESP program instance, e.g. Splash 2021
-
-    Attributes:
-        program_stages (ProgramStage): set of ProgramStages
-        teacher_program_registration_steps (TeacherProgramRegistrationStep): set of TeacherProgramRegistrationSteps
-        time_slots (TimeSlot): set of all allowed TimeSlots for this program
-        external_program_forms (ExternalProgramForm): set of ExternalProgramForms
-
-    """
+    """An ESP program instance, e.g. Splash 2021"""
 
     program_configuration = models.ForeignKey(
         ProgramConfiguration, on_delete=models.PROTECT, related_name="+", null=True
