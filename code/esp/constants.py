@@ -70,28 +70,6 @@ class ProgramTagCategory(TextChoices):
     other = "other"
 
 
-class CourseFlagCategory(TextChoices):
-    # not sure if it will be better to list these out here, or to be able to make new ones on admin panel
-    reviewed_by_admin = "reviewed_by_admin"
-    reviewed_by_admin_2 = "reviewed_by_admin_2"
-    admin_class = "admin_class"
-    large_class = "large_class"
-    no_teacher_w_kerb = "no_teacher_with_kerb"
-    needs_director_review = "needs_director_review"
-    needs_content_review = "needs_content_review"
-    all_flags_resolved = "all_flags_resolved"
-    room_request = "room_request"
-    software_request = "software_request"
-    security_read_this = "security_read_this"
-    messy = "messy"
-    description_needs_edits = "description_needs_edits"
-    class_supplies = "class_supplies"
-    needs_budget_review = "needs_budget_review"
-    special_scheduling_needs = "special_scheduling_needs"
-    admin_comment = "admin_comment"
-    other = "other"
-
-
 class ClassroomTagCategory(TextChoices):
     location = "location"
     resource = "resource"
