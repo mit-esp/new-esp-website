@@ -12,8 +12,7 @@ Before setup, clone this repo, create a branch for yourself, and checkout into t
 ```
 git clone git@github.com:mit-esp/new-esp-website.git
 cd new-esp-website
-git branch dev-[your name]
-git checkout dev-[your name]
+git checkout -b dev-[your name]
 git push -u origin dev-[your name] (push your new branch to github)
 ```
 
