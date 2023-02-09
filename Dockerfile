@@ -76,7 +76,7 @@ RUN echo "from django.contrib.auth import get_user_model; \
         emergency_contact_home_phone='123-456-7890', \
         emergency_contact_cell_phone='555-555-5555' \
     )" | python manage.py shell
-RUN echo "from esp.models.program_models import Program, ProgramConfiguration, ProgramStage, TimeSlot; \
+RUN echo "from esp.models.program_models import Course, CourseCategory, CourseFlag, Program, ProgramConfiguration, ProgramStage, TimeSlot; \
     from datetime import datetime, timedelta, timezone; \
     timezone_est = timezone(timedelta(hours=-5)); \
     config = ProgramConfiguration.objects.create( \
@@ -97,6 +97,10 @@ RUN echo "from esp.models.program_models import Program, ProgramConfiguration, P
         time_block_minutes=30 \
     ); \
     program_stage = ProgramStage.objects.create( \
+        program=program, \
+        name='Lottery Preferences', \
+        start_date=datetime(2023, 2, 8, 0, 0, 0, 0, timezone_est), \
+        end_date=datetime(2023, 4, 9, 13, 0, 0, 0, timezone_est) \
     ); \
     timeslots = [ \
         TimeSlot.objects.create( \
@@ -129,7 +133,35 @@ RUN echo "from esp.models.program_models import Program, ProgramConfiguration, P
             start_datetime=datetime(2023, 7, 9, 15, 30, 0, 0, timezone_est), \
             end_datetime=datetime(2023, 7, 9, 15, 59, 59, 999999, timezone_est) \
         ), \
-    ]"; \ | python manage.py shell
+    ]; \
+    categories = [ \
+        CourseCategory.objects.create( \
+            display_name='Computer Science', \
+            symbol='C', \
+            current=True \
+        ), \
+    ]; \
+    flag = CourseFlag.objects.create( \
+        display_name='No teacher with kerb', \
+        show_in_dashboard=True, \
+        show_in_scheduler=True \
+    ); \
+    course = Course.objects.create( \
+        program=program, \
+        name='How to Make a Website', \
+        category=categories[0], \
+        description='This class will cover the Django framework for creating websites, like the one you are currently on :)', \
+        max_section_size=50, \
+        max_sections=1, \
+        time_slots_per_session=2, \
+        number_of_weeks=6, \
+        sessions_per_week=1, \
+        prerequisites='None', \
+        min_grade_level=7, \
+        max_grade_level=12, \
+        difficulty=2, \
+        status='unreviewed' \
+    );" | python manage.py shell
 
 # Start server
 CMD python manage.py runserver 0.0.0.0:8000
