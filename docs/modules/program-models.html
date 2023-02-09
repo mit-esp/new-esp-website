@@ -108,9 +108,8 @@
 <li class="toctree-l2"><a class="reference internal" href="#esp.models.program_models.CourseFlag"><code class="docutils literal notranslate"><span class="pre">CourseFlag</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#esp.models.program_models.CourseFlag.display_name"><code class="docutils literal notranslate"><span class="pre">CourseFlag.display_name</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#esp.models.program_models.CourseFlag.flags"><code class="docutils literal notranslate"><span class="pre">CourseFlag.flags</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#esp.models.program_models.CourseFlag.get_tag_category_display"><code class="docutils literal notranslate"><span class="pre">CourseFlag.get_tag_category_display()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#esp.models.program_models.CourseFlag.tag"><code class="docutils literal notranslate"><span class="pre">CourseFlag.tag</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#esp.models.program_models.CourseFlag.tag_category"><code class="docutils literal notranslate"><span class="pre">CourseFlag.tag_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.program_models.CourseFlag.show_in_dashboard"><code class="docutils literal notranslate"><span class="pre">CourseFlag.show_in_dashboard</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.program_models.CourseFlag.show_in_scheduler"><code class="docutils literal notranslate"><span class="pre">CourseFlag.show_in_scheduler</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#esp.models.program_models.ExternalProgramForm"><code class="docutils literal notranslate"><span class="pre">ExternalProgramForm</span></code></a><ul>
@@ -158,10 +157,6 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#esp.models.program_models.Program"><code class="docutils literal notranslate"><span class="pre">Program</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#esp.models.program_models.Program.program_stages"><code class="docutils literal notranslate"><span class="pre">Program.program_stages</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#esp.models.program_models.Program.teacher_program_registration_steps"><code class="docutils literal notranslate"><span class="pre">Program.teacher_program_registration_steps</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#esp.models.program_models.Program.time_slots"><code class="docutils literal notranslate"><span class="pre">Program.time_slots</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#esp.models.program_models.Program.external_program_forms"><code class="docutils literal notranslate"><span class="pre">Program.external_program_forms</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#esp.models.program_models.Program.archive_on"><code class="docutils literal notranslate"><span class="pre">Program.archive_on</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#esp.models.program_models.Program.courses"><code class="docutils literal notranslate"><span class="pre">Program.courses</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#esp.models.program_models.Program.description"><code class="docutils literal notranslate"><span class="pre">Program.description</span></code></a></li>
@@ -193,19 +188,15 @@
 <li class="toctree-l3"><a class="reference internal" href="#esp.models.program_models.Program.teacher_registration_steps"><code class="docutils literal notranslate"><span class="pre">Program.teacher_registration_steps</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#esp.models.program_models.Program.teacher_registrations"><code class="docutils literal notranslate"><span class="pre">Program.teacher_registrations</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#esp.models.program_models.Program.time_block_minutes"><code class="docutils literal notranslate"><span class="pre">Program.time_block_minutes</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id0"><code class="docutils literal notranslate"><span class="pre">Program.time_slots</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.program_models.Program.time_slots"><code class="docutils literal notranslate"><span class="pre">Program.time_slots</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#esp.models.program_models.ProgramConfiguration"><code class="docutils literal notranslate"><span class="pre">ProgramConfiguration</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#esp.models.program_models.ProgramConfiguration.saved_as_preset"><code class="docutils literal notranslate"><span class="pre">ProgramConfiguration.saved_as_preset</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#esp.models.program_models.ProgramConfiguration.name"><code class="docutils literal notranslate"><span class="pre">ProgramConfiguration.name</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#esp.models.program_models.ProgramConfiguration.description"><code class="docutils literal notranslate"><span class="pre">ProgramConfiguration.description</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#esp.models.program_models.ProgramConfiguration.PreferenceEntryRounds"><code class="docutils literal notranslate"><span class="pre">ProgramConfiguration.PreferenceEntryRounds</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id1"><code class="docutils literal notranslate"><span class="pre">ProgramConfiguration.description</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#esp.models.program_models.ProgramConfiguration.get_preferenceentryround_order"><code class="docutils literal notranslate"><span class="pre">ProgramConfiguration.get_preferenceentryround_order()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id2"><code class="docutils literal notranslate"><span class="pre">ProgramConfiguration.name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.program_models.ProgramConfiguration.name"><code class="docutils literal notranslate"><span class="pre">ProgramConfiguration.name</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#esp.models.program_models.ProgramConfiguration.rounds"><code class="docutils literal notranslate"><span class="pre">ProgramConfiguration.rounds</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id3"><code class="docutils literal notranslate"><span class="pre">ProgramConfiguration.saved_as_preset</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#esp.models.program_models.ProgramConfiguration.saved_as_preset"><code class="docutils literal notranslate"><span class="pre">ProgramConfiguration.saved_as_preset</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#esp.models.program_models.ProgramConfiguration.set_preferenceentryround_order"><code class="docutils literal notranslate"><span class="pre">ProgramConfiguration.set_preferenceentryround_order()</span></code></a></li>
 </ul>
 </li>
@@ -752,21 +743,16 @@ instances.</p>
 class built by <code class="docutils literal notranslate"><span class="pre">create_forward_many_to_many_manager()</span></code> defined below.</p>
 </dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="esp.models.program_models.CourseFlag.get_tag_category_display">
-<span class="sig-name descname"><span class="pre">get_tag_category_display</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.CharField:</span> <span class="pre">tag_category&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#esp.models.program_models.CourseFlag.get_tag_category_display" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
 <dl class="py attribute">
-<dt class="sig sig-object py" id="esp.models.program_models.CourseFlag.tag">
-<span class="sig-name descname"><span class="pre">tag</span></span><a class="headerlink" href="#esp.models.program_models.CourseFlag.tag" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="esp.models.program_models.CourseFlag.show_in_dashboard">
+<span class="sig-name descname"><span class="pre">show_in_dashboard</span></span><a class="headerlink" href="#esp.models.program_models.CourseFlag.show_in_dashboard" title="Permalink to this definition"></a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="esp.models.program_models.CourseFlag.tag_category">
-<span class="sig-name descname"><span class="pre">tag_category</span></span><a class="headerlink" href="#esp.models.program_models.CourseFlag.tag_category" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="esp.models.program_models.CourseFlag.show_in_scheduler">
+<span class="sig-name descname"><span class="pre">show_in_scheduler</span></span><a class="headerlink" href="#esp.models.program_models.CourseFlag.show_in_scheduler" title="Permalink to this definition"></a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
@@ -1080,50 +1066,6 @@ object the first time, the query is executed.</p>
 <dd><p>Bases: <a class="reference internal" href="../common.html#common.models.BaseModel" title="common.models.BaseModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></a></p>
 <p>An ESP program instance, e.g. Splash 2021</p>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="esp.models.program_models.Program.program_stages">
-<span class="sig-name descname"><span class="pre">program_stages</span></span><a class="headerlink" href="#esp.models.program_models.Program.program_stages" title="Permalink to this definition"></a></dt>
-<dd><p>set of ProgramStages</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="#esp.models.program_models.ProgramStage" title="esp.models.program_models.ProgramStage">ProgramStage</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="esp.models.program_models.Program.teacher_program_registration_steps">
-<span class="sig-name descname"><span class="pre">teacher_program_registration_steps</span></span><a class="headerlink" href="#esp.models.program_models.Program.teacher_program_registration_steps" title="Permalink to this definition"></a></dt>
-<dd><p>set of TeacherProgramRegistrationSteps</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="#esp.models.program_models.TeacherProgramRegistrationStep" title="esp.models.program_models.TeacherProgramRegistrationStep">TeacherProgramRegistrationStep</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="esp.models.program_models.Program.time_slots">
-<span class="sig-name descname"><span class="pre">time_slots</span></span><a class="headerlink" href="#esp.models.program_models.Program.time_slots" title="Permalink to this definition"></a></dt>
-<dd><p>set of all allowed TimeSlots for this program</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="#esp.models.program_models.TimeSlot" title="esp.models.program_models.TimeSlot">TimeSlot</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="esp.models.program_models.Program.external_program_forms">
-<span class="sig-name descname"><span class="pre">external_program_forms</span></span><a class="headerlink" href="#esp.models.program_models.Program.external_program_forms" title="Permalink to this definition"></a></dt>
-<dd><p>set of ExternalProgramForms</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="#esp.models.program_models.ExternalProgramForm" title="esp.models.program_models.ExternalProgramForm">ExternalProgramForm</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
 <dt class="sig sig-object py" id="esp.models.program_models.Program.archive_on">
 <span class="sig-name descname"><span class="pre">archive_on</span></span><a class="headerlink" href="#esp.models.program_models.Program.archive_on" title="Permalink to this definition"></a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
@@ -1388,8 +1330,8 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="id0">
-<span class="sig-name descname"><span class="pre">time_slots</span></span><a class="headerlink" href="#id0" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="esp.models.program_models.Program.time_slots">
+<span class="sig-name descname"><span class="pre">time_slots</span></span><a class="headerlink" href="#esp.models.program_models.Program.time_slots" title="Permalink to this definition"></a></dt>
 <dd><p>Accessor to the related objects manager on the reverse side of a
 many-to-one relation.</p>
 <p>In the example:</p>
@@ -1410,51 +1352,8 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 <dd><p>Bases: <a class="reference internal" href="../common.html#common.models.BaseModel" title="common.models.BaseModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></a></p>
 <p>ProgramConfiguration represents a set of configuration for programs, e.g. stages and registration steps.</p>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="esp.models.program_models.ProgramConfiguration.saved_as_preset">
-<span class="sig-name descname"><span class="pre">saved_as_preset</span></span><a class="headerlink" href="#esp.models.program_models.ProgramConfiguration.saved_as_preset" title="Permalink to this definition"></a></dt>
-<dd><p>True if this program configuration is saved as a preset, False otherwise</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>models.BooleanField</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="esp.models.program_models.ProgramConfiguration.name">
-<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#esp.models.program_models.ProgramConfiguration.name" title="Permalink to this definition"></a></dt>
-<dd><p>name of program configuration</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>models.CharField</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
 <dt class="sig sig-object py" id="esp.models.program_models.ProgramConfiguration.description">
 <span class="sig-name descname"><span class="pre">description</span></span><a class="headerlink" href="#esp.models.program_models.ProgramConfiguration.description" title="Permalink to this definition"></a></dt>
-<dd><p>description</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>models.TextField</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="esp.models.program_models.ProgramConfiguration.PreferenceEntryRounds">
-<span class="sig-name descname"><span class="pre">PreferenceEntryRounds</span></span><a class="headerlink" href="#esp.models.program_models.ProgramConfiguration.PreferenceEntryRounds" title="Permalink to this definition"></a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="#esp.models.program_models.PreferenceEntryRound" title="esp.models.program_models.PreferenceEntryRound">PreferenceEntryRound</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="id1">
-<span class="sig-name descname"><span class="pre">description</span></span><a class="headerlink" href="#id1" title="Permalink to this definition"></a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
@@ -1465,8 +1364,8 @@ object the first time, the query is executed.</p>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="id2">
-<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#id2" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="esp.models.program_models.ProgramConfiguration.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#esp.models.program_models.ProgramConfiguration.name" title="Permalink to this definition"></a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
@@ -1487,8 +1386,8 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="id3">
-<span class="sig-name descname"><span class="pre">saved_as_preset</span></span><a class="headerlink" href="#id3" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="esp.models.program_models.ProgramConfiguration.saved_as_preset">
+<span class="sig-name descname"><span class="pre">saved_as_preset</span></span><a class="headerlink" href="#esp.models.program_models.ProgramConfiguration.saved_as_preset" title="Permalink to this definition"></a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
