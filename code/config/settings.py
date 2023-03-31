@@ -118,7 +118,18 @@ WSGI_APPLICATION = "config.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
-DATABASES = {"default": env.db()}
+DATABASES = {
+    "default": {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'espmit-database',
+        #IMPORTANT NOTE: You need to create a database with the name above in PGadmin first
+        'USER': 'postgres',
+        'PASSWORD': 'password', #The password you chose for PGadmin
+        'HOST': 'localhost',
+        'PORT': '5432', #The default port, if you chose a different port, change it here
+    }
+             
+    }
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
