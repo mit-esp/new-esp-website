@@ -64,5 +64,8 @@ docs/_build/
 node_modules/
 *.log*
 
+#database migrations
+datadump.json
+
 .gitignore
 compile
