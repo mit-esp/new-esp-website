@@ -39,6 +39,8 @@ cover/
 .venv
 env/
 venv/
+Pipfile
+Pipfile.lock
 
 # Editors
 .idea
