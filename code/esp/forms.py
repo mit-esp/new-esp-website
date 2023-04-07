@@ -35,8 +35,8 @@ class RegisterUserForm(CrispyFormMixin, UserCreationForm):
     )
     first_name = forms.CharField(required=True, max_length=30)
     last_name = forms.CharField(required=True, max_length=30)
-    phone_number = forms.CharField(
-        label="Phone Number", required=True, max_length=32, help_text="Enter a valid phone number."
+    phone_number = forms.RegexField(
+        label="Phone Number", regex= "[0123456789]{10,15}", required=True, max_length=15, help_text="Enter a valid phone number."
     )
     user_type = forms.ChoiceField(
         choices=REGISTRATION_USER_TYPE_CHOICES, label="Account Type", required=True,

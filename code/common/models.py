@@ -1,6 +1,7 @@
 import uuid
 
 from django.contrib.auth.models import AbstractUser
+from django.core import validators
 from django.db import models
 from django.urls import reverse
 from simple_history.models import HistoricalRecords
@@ -33,7 +34,29 @@ class BaseModel(models.Model):
         abstract = True
 
 
+class UsernameValidator(validators.RegexValidator):
+    regex = r'^[\w.-]+\Z'
+    message = (
+        'Enter a valid username. This value may contain only letters, '
+        'numbers, periods, underscores, asterisks, and dashes.'
+    )
+    flags = 0
+
+
 class User(AbstractUser, BaseModel):
+    username_validator = UsernameValidator()
+
+    username = models.CharField(
+        ('username'),
+        max_length=30,
+        unique=True,
+        help_text=('Required. 30 characters or fewer. Letters, digits, periods, underscores, asterisks, and dashes only.'),
+        validators=[username_validator],
+        error_messages={
+            'unique': ("A user with that username already exists."),
+        },
+    )
+
     email = models.EmailField(unique=False)  # allow users to register under different usernames and roles
     first_name = models.CharField(max_length=128, null=True)
     last_name = models.CharField(max_length=128, null=True)
