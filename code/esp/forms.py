@@ -146,10 +146,6 @@ StudentProgramRegistrationStepFormset = inlineformset_factory(
 class TeacherCourseForm(CrispyFormMixin, ModelForm):
     submit_label = "Create Class"
 
-    # category = forms.ModelChoiceField(
-    #     queryset=CourseCategory.objects.filter(current=True)
-    # )
-
     class Meta:
         model = Course
         fields = [
@@ -178,10 +174,9 @@ class TeacherCourseForm(CrispyFormMixin, ModelForm):
             self.submit_label = "Update class"
         super().__init__(*args, **kwargs)
         # if self.instance:
-        #     self.fields["category"].initial = self.instance.tags.filter(tag_category=CourseCategoryCategory.course_category)
-            # self.fields["additional_tags"].initial = self.instance.tags.exclude(tag_category=)
-        if not self.fields["additional_tags"].queryset.exists():
-            self.fields.pop("additional_tags")
+        #     self.fields["additional_tags"].initial = self.instance.tags.exclude(tag_category=)
+        # if not self.fields["additional_tags"].queryset.exists():
+        #     self.fields.pop("additional_tags")
         if not is_update:
             self.helper.add_input(layout.Submit("add_another", "Save and add another", css_class="mt-2"))
         self.fields["time_slots_per_session"].help_text = f"Time slots are {program.time_block_minutes} minutes long."

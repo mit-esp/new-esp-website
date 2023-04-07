@@ -11,8 +11,7 @@ Before setup, clone this repo, create a branch for yourself, and checkout into t
 
     git clone https://github.com/mit-esp/new-esp-website.git
     cd new-esp-website
-    git branch dev-[your name]
-    git checkout dev-[your name]
+    git checkout -b dev-[your name]
 
 File paths in these instructions are relative with respect to the repo's home directory.
 
