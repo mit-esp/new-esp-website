@@ -179,9 +179,9 @@ class TeacherCourseForm(CrispyFormMixin, ModelForm):
         super().__init__(*args, **kwargs)
         # if self.instance:
         #     self.fields["category"].initial = self.instance.tags.filter(tag_category=CourseCategoryCategory.course_category)
-            # self.fields["additional_tags"].initial = self.instance.tags.exclude(tag_category=)
-        if not self.fields["additional_tags"].queryset.exists():
-            self.fields.pop("additional_tags")
+        #     self.fields["additional_tags"].initial = self.instance.tags.exclude(tag_category=CourseCategoryCategory.course_category)
+        # if not self.fields["additional_tags"].queryset.exists():
+        #     self.fields.pop("additional_tags")
         if not is_update:
             self.helper.add_input(layout.Submit("add_another", "Save and add another", css_class="mt-2"))
         self.fields["time_slots_per_session"].help_text = f"Time slots are {program.time_block_minutes} minutes long."
@@ -191,25 +191,25 @@ class TeacherCourseForm(CrispyFormMixin, ModelForm):
         self.fields["min_grade_level"].choices = program_grade_levels
         self.fields["max_grade_level"].choices = program_grade_levels
 
-    def save(self, commit=True):
-        # todo: figure this out
-        pass
-        # category = self.cleaned_data.pop("category")
-        # additional_tags = self.cleaned_data.pop("additional_tags", [])
-        # instance = super().save(commit)
-        # instance.tags.add(*category, *additional_tags)
+    # def save(self, commit=True):
+    #     # todo: figure this out
+    #     #  pass
+    #     # category = self.cleaned_data.pop("category")
+    #     # additional_tags = self.cleaned_data.pop("additional_tags", [])
+    #     # instance.tags.add(*category, *additional_tags)
+    #     instance = super().save(commit)
 
 
 class AdminCourseForm(TeacherCourseForm):
     submit_label = "Update Class"
 
-    additional_tags = forms.ModelMultipleChoiceField(
-        queryset=CourseFlag.objects.all(),
-        required=False,
-    )
+    # additional_tags = forms.ModelMultipleChoiceField(
+    #     queryset=CourseFlag.objects.all(),
+    #     required=False,
+    # )
 
     class Meta(TeacherCourseForm.Meta):
-        fields = TeacherCourseForm.Meta.fields + ['admin_notes', 'status']
+        fields = TeacherCourseForm.Meta.fields + ['flags', 'admin_notes', 'status']
 
 
 class TeacherRegistrationChoiceField(forms.ModelChoiceField):
