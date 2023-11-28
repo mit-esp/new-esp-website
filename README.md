@@ -18,7 +18,7 @@ git push -u origin dev-[your name] (push your new branch to github)
 
 File paths in these instructions are relative with respect to the repo's home directory.
 
-### Docker Setup
+### Docker Setup (run in top directory)
 Docker containers are a way to create/store environments to run programs consistently.
 
 First, install Docker via whichever method your OS uses.
@@ -41,9 +41,8 @@ Depending on how you installed Docker, you may need to run these in `sudo` mode.
 
 Then, go to `localhost:8000` in your browser to see the website.
 
-### Local Project Setup
+### Local Project Setup (run in code folder)
 ```
-# cd into the /code folder
 # Create environment config file.
 cp config/.env.example config/.env
 
@@ -80,7 +79,7 @@ npm install
 python manage.py migrate
 ```
 
-### Setting up postgresql for development
+### Setting up postgresql for development (run in code folder)
 
 1. [Download](https://www.enterprisedb.com/downloads/postgres-postgresql-downloads) and install PostgreSQL. Use all of the default settings.
 2. When setting up PostgreSQL, you will be prompted to create a password for the default database superuser (postgres), remember this password.
@@ -101,17 +100,15 @@ Account type | Username | Password
    Teacher   | teacher  | teacherpassword
    Student   | student  | studentpassword
 
-# Running a local copy
+# Running a local copy (run in code folder)
 
 To run the project:
 ```
-cd code
 python manage.py runserver_plus
 ```
 
 To run the React scheduler in development:
 ```
-cd code
 npm run start
 ```
 
@@ -121,27 +118,22 @@ Install System dependencies (operating system dependent):
 
 To access the database:
 ```
-cd code
 python manage.py shell_plus
 ```
 To run the test suite:
 ```
-cd code
 python manage.py test
 ```
 To get a test coverage report:
 ```
-cd code
 coverage run --source='.' manage.py test; coverage report
 ```
 To run auto formatter(s) and style checks:
 ```
-cd code
 pre-commit run --all-files
 ```
 To add a new dependency to or update requirements, add the entry to requirements.in and run `pip-compile` to generate requirements.txt:
 ```
-cd code
 vim requirements.in  # Updating Python dependencies as needed
 pip-compile --upgrade  # Generate requirements.txt with updated dependencies
 ```
