@@ -18,6 +18,12 @@ git push -u origin dev-[your name] (push your new branch to github)
 
 File paths in these instructions are relative with respect to the repo's home directory.
 
+## Backend setup
+
+Use either the "Docker setup" or "Django setup"
+- Docker ensures consistency of dev environment across devices
+- Django is easier to set up and doesn't require rebuilding after each change of code
+
 ### Docker Setup (run in top directory)
 Docker containers are a way to create/store environments to run programs consistently.
 
@@ -40,6 +46,34 @@ docker run -itp 8000:8000 espdev
 Depending on how you installed Docker, you may need to run these in `sudo` mode.
 
 Then, go to `localhost:8000` in your browser to see the website.
+
+#### Navigation
+Information will not be saved in between Docker runs.
+
+#### Login information
+Account type | Username | Password
+-------------|----------|----------
+   Admin     | admin    | password
+   Teacher   | teacher  | password
+   Student   | student  | password
+
+### Django setup (run in top directory)
+1. git clone the repo into a folder of your choice
+2. create a virtual development environment using the steps below or SKIP
+(It is highly recommended for you to make a virtual development environment, so that the installations we make specifically for this project does not pollute your usual environment)
+3. IF you SKIPPED step 2, run `pip install -r code/requirements.txt`
+
+#### Create a virtual development environment
+1. Open a terminal, make sure you're in the new-esp-website folder, and run `pip install pipenv` (For windows), this installs the virtual environement package
+2. Run `pipenv shell` then `pip install -r code/requirements.txt`, this installs all of the python packages required for the project
+3. Run `pipenv --venv`, this gives you the location of the python interpreter for this virtual environment
+4. Copy the address returned
+5. Go to the Command Palette (ctrl + shift + p) on VSCode (Or the equivalent tool in your IDE), select "Python: Select interpreter"
+6. Select "Enter interpreter path", and paste the address you copied, then append "\Scripts\python" in the end
+
+#### Run a local django server
+1. In the terminal, `cd code` if you are not in the code folder already
+2. `python manage.py runserver` to run the server (On windows)
 
 ### Local Project Setup (run in code folder)
 ```
@@ -210,16 +244,3 @@ make html
 make linkcheck
 ```
  -->
-
-
-## Navigation
-Information will not be saved in between Docker runs.
-
-### Login information
-Account type | Username | Password
--------------|----------|----------
-   Admin     | admin    | password
-   Teacher   | teacher  | password
-   Student   | student  | password
-
-
