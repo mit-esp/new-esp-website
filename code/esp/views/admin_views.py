@@ -730,3 +730,47 @@ class AdminCreateCourseSectionsView(PermissionRequiredMixin, View):
                 count += 1
         messages.success(self.request, f"{count} Course Sections created.")
         return redirect('courses', pk=program_id)
+
+class EditTeachersView(PermissionRequiredMixin, TemplateView): #SingleObjectMixin
+    permission = PermissionType.courses_edit_all
+    template_name = "admin/edit_teachers.html"
+    model = Course
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["program_id"] = self.kwargs['pk']
+        program = get_object_or_404(Program, pk=context["program_id"])
+        context["program"] = program
+
+        context['course_id'] = self.kwargs['class_pk']
+        course = get_object_or_404(Course, pk=context['course_id'])
+        context['course'] = course
+        return context
+
+    # def get_queryset(self, **kwargs):
+    #     program = get_object_or_404(Program, pk=self.kwargs['pk'])
+    #     return Course.objects.filter(program=program, pk=self.kwargs['class_pk']).
+
+    # def get_context_data(self, **kwargs):
+    #     self.object = self.get_object()
+    #     return super().get_context_data()
+
+    # def get_form_kwargs(self):
+    #     kwargs = super().get_form_kwargs()
+    #     kwargs["course"] = self.get_object()
+    #     return kwargs
+
+    # def get_success_url(self):
+        # return
+        # teacher_registration = self.request.user.teacher_registrations.filter(program_id=self.get_object().program_id)
+        # if teacher_registration.exists():
+        #     teacher_registration = teacher_registration.get()
+        #     return reverse("teacher_program_dashboard", kwargs={"pk": teacher_registration.id})
+        # return reverse("teacher_dashboard")
+
+    # def form_valid(self, form):
+    #     return
+    #     CourseTeacher.objects.get_or_create(
+    #         course=self.get_object(), teacher_registration=form.cleaned_data["teacher"], is_course_creator=False
+    #     )
+    #     return super().form_valid(form)

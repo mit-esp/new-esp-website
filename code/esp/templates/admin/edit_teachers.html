@@ -1,0 +1,24 @@
+{% extends "base_templates/base.html" %}
+{% load crispy_forms_tags %}
+{% block head %}{% endblock %}
+{% block title %}Class{% endblock %}
+
+{% block body %}
+<h1>
+  Setting Teachers for &quot;<u>{{course.display_id}}: {{ course.name }}</u>&quot;
+</h1>
+  <p>
+    Please list all teachers that will be helping teach this class. 
+    They will need to create accounts and mark their available times through the teacher 
+    registration page (for scheduling purposes).
+  </p>
+<!-- TODO copy this page https://esp.mit.edu/manage/Splash/2023/coteachers?clsid=15672 -->
+<a
+  class="btn btn-outline-success"
+  href='{% url "update_course" pk=course.program.id class_pk=course.id %}'
+  role="button"
+>
+  Return to the class management page
+</a>
+
+{% endblock %}

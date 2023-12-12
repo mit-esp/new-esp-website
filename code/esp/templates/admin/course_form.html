@@ -5,6 +5,7 @@
 
 {% block body %}
 <h1>Class</h1>
+<a class="btn btn-outline-success" href='{% url "admin_edit_teachers" pk=course.program.id class_pk=course.id %}' role="button">Edit teachers</a>
 <div class="col-sm-6">
   {% crispy form %}
 </div>
